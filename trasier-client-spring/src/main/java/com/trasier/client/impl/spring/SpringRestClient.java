@@ -51,4 +51,5 @@ public class SpringRestClient implements RestClient {
         ResponseEntity<Void> exchange = restTemplate.exchange(appConfig.getWriterEndpoint(), HttpMethod.PUT, requestEntity, Void.class);
         return !exchange.getStatusCode().is4xxClientError() && !exchange.getStatusCode().is5xxServerError() ;
     }
+    
 }
