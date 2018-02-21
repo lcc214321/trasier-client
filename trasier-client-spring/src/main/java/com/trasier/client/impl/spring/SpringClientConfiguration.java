@@ -1,6 +1,6 @@
 package com.trasier.client.impl.spring;
 
-import com.trasier.client.configuration.ClientConfiguration;
+import com.trasier.client.configuration.ClientPropertyConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @PropertySource("classpath:trasier.properties")
-public class SpringClientConfiguration implements ClientConfiguration {
+public class SpringClientConfiguration extends ClientPropertyConfiguration {
 
     @Value("${trasier.client.id}")
     private String clientId;

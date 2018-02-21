@@ -27,6 +27,12 @@ public class SpringRestClient implements RestClient {
         this.restTemplate = new OAuth2RestTemplate(createOAuth2ProtectedResourceDetails(), new DefaultOAuth2ClientContext());
     }
 
+    public SpringRestClient(ApplicationConfiguration appConfig, SpringClientConfiguration configuration, RestTemplate restTemplate) {
+        this.appConfig = appConfig;
+        this.configuration = configuration;
+        this.restTemplate = restTemplate;
+    }
+
     private OAuth2ProtectedResourceDetails createOAuth2ProtectedResourceDetails() {
         ClientCredentialsResourceDetails resource = new ClientCredentialsResourceDetails();
         resource.setAccessTokenUri(appConfig.getAuthEndpoint());

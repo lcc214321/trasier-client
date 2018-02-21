@@ -1,8 +1,5 @@
 package com.trasier.client.utils;
 
-/**
- * Created by lukasz on 04.02.18.
- */
 public class Precondition {
 
     public static void notNull(Object value, String fieldName) {

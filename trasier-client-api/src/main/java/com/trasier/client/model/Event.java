@@ -1,5 +1,8 @@
 package com.trasier.client.model;
 
+import com.trasier.client.utils.Precondition;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,9 +18,14 @@ public class Event {
     private ContentType contentType;
     private Long processingTime;
     private String data;
-    private Map<String, String> custom;
+    private Map<String, String> custom = new HashMap<>();
 
     private Event(Builder builder) {
+        Precondition.notNull(builder.conversationId, "conversationId");
+        Precondition.notNull(builder.correlationId, "correlationId");
+        Precondition.notNull(builder.producer, "producer");
+        Precondition.notNull(builder.consumer, "consumer");
+        Precondition.notNull(builder.operation, "operation");
         this.conversationId = builder.conversationId;
         this.correlationId = builder.correlationId;
         this.producer = builder.producer;
@@ -32,10 +40,10 @@ public class Event {
         this.custom = builder.custom;
     }
 
-    public static Builder newEvent(UUID conversationId, String producerName, String operation) {
+    public static Builder newEvent(UUID conversationId, System producer, String operation) {
         Builder builder = new Builder();
         builder.conversationId(conversationId);
-        builder.producer(new System(producerName));
+        builder.producer(producer);
         builder.operation(operation);
         builder.timestamp(java.lang.System.currentTimeMillis());
         builder.error(false);
@@ -43,15 +51,15 @@ public class Event {
         return builder;
     }
 
-    public static Builder newRequestEvent(UUID conversationId, String producerName, String operation) {
-        Builder builder = newEvent(conversationId, producerName, operation);
+    public static Builder newRequestEvent(UUID conversationId, System producer, String operation) {
+        Builder builder = newEvent(conversationId, producer, operation);
         builder.type(EventType.REQUEST);
         return builder;
     }
 
 
     public static Builder newResponseEvent(Builder requestBuilder) {
-        Builder builder = newEvent(requestBuilder.conversationId, requestBuilder.producer.getName(), requestBuilder.operation);
+        Builder builder = newEvent(requestBuilder.conversationId, requestBuilder.producer, requestBuilder.operation);
         builder.type(EventType.RESPONSE);
         builder.consumer(requestBuilder.consumer);
         builder.correlationId(requestBuilder.correlationId);
