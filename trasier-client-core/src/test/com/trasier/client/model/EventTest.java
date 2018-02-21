@@ -15,8 +15,7 @@ public class EventTest {
         assertTrue(isThrowingException(Event.newEvent(UUID.randomUUID(), new System("Test"), null)));
         assertTrue(isThrowingException(Event.newEvent(UUID.randomUUID(), new System("Test"), "TestOp")));
 
-        assertTrue(isThrowingException(Event.newEvent(UUID.randomUUID(), new System("Test"), "TestOp").correlationId(UUID.randomUUID())));
-
+        assertFalse(isThrowingException(Event.newEvent(UUID.randomUUID(), new System("Test"), "TestOp").correlationId(UUID.randomUUID())));
         assertFalse(isThrowingException(Event.newEvent(UUID.randomUUID(), new System("Test"), "TestOp")
                 .correlationId(UUID.randomUUID())
                 .consumer(new System("Consumer"))

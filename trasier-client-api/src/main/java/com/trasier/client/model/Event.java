@@ -24,7 +24,6 @@ public class Event {
         Precondition.notNull(builder.conversationId, "conversationId");
         Precondition.notNull(builder.correlationId, "correlationId");
         Precondition.notNull(builder.producer, "producer");
-        Precondition.notNull(builder.consumer, "consumer");
         Precondition.notNull(builder.operation, "operation");
         this.conversationId = builder.conversationId;
         this.correlationId = builder.correlationId;
