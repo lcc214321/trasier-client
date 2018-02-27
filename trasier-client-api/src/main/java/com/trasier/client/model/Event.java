@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Event {
+    private UUID id;
+    private UUID parentId;
+    private UUID requestEventId;
     private UUID conversationId;
     private UUID correlationId;
     private System producer;
@@ -37,10 +40,14 @@ public class Event {
         this.processingTime = builder.processingTime;
         this.data = builder.data;
         this.custom = builder.custom;
+        this.id = builder.id;
+        this.parentId = builder.parentId;
+        this.requestEventId = builder.requestEventId;
     }
 
     public static Builder newEvent(UUID conversationId, System producer, String operation) {
         Builder builder = new Builder();
+        builder.id(UUID.randomUUID());
         builder.conversationId(conversationId);
         builder.producer(producer);
         builder.operation(operation);
@@ -60,6 +67,7 @@ public class Event {
     public static Builder newResponseEvent(Builder requestBuilder) {
         Builder builder = newEvent(requestBuilder.conversationId, requestBuilder.producer, requestBuilder.operation);
         builder.type(EventType.RESPONSE);
+        builder.requestEventId(requestBuilder.id);
         builder.consumer(requestBuilder.consumer);
         builder.correlationId(requestBuilder.correlationId);
         builder.processingTime(builder.timestamp - requestBuilder.timestamp);
@@ -163,6 +171,9 @@ public class Event {
     }
 
     public static final class Builder {
+        private UUID id;
+        private UUID parentId;
+        private UUID requestEventId;
         private UUID conversationId;
         private UUID correlationId;
         private System producer;
@@ -181,6 +192,21 @@ public class Event {
 
         public Event build() {
             return new Event(this);
+        }
+
+        private Builder id(UUID id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder parentId(UUID parentId) {
+            this.parentId = parentId;
+            return this;
+        }
+
+        public Builder requestEventId(UUID requestEventId) {
+            this.requestEventId = requestEventId;
+            return this;
         }
 
         public Builder conversationId(UUID conversationId) {
@@ -242,12 +268,16 @@ public class Event {
             this.custom = custom;
             return this;
         }
+
     }
 
     @Override
     public String toString() {
         return "Event{" +
-                "conversationId=" + conversationId +
+                "id=" + id +
+                ", parentId=" + parentId +
+                ", requestEventId=" + requestEventId +
+                ", conversationId=" + conversationId +
                 ", correlationId=" + correlationId +
                 ", producer=" + producer +
                 ", consumer=" + consumer +
