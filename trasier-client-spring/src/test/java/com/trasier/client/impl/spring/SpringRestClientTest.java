@@ -29,7 +29,7 @@ public class SpringRestClientTest {
         Event event = Event.newRequestEvent(UUID.randomUUID(), new System("Test1"), "TEST")
                 .consumer(new System("Test2")).correlationId(UUID.randomUUID()).build();
 
-        boolean result = sut.sendEventsUsingPut(Collections.singletonList(event));
+        boolean result = sut.sendEvents(Collections.singletonList(event));
 
         // then
         assertTrue(result);

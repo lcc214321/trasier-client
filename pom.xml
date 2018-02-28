@@ -24,6 +24,7 @@
         <module>trasier-client-core</module>
         <module>trasier-client-api</module>
         <module>trasier-client-spring</module>
+        <module>trasier-client-pubsub</module>
     </modules>
 
     <dependencyManagement>

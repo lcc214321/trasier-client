@@ -19,7 +19,7 @@ import java.util.UUID;
 @ContextConfiguration(classes = {SpringConfiguration.class, SpringClientConfiguration.class})
 public class SpringRestClientIntegrationTest {
     @Autowired
-    private TrasierSpringClient client;
+    private SpringRestClient client;
 
     @Test
     @Ignore

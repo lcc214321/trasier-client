@@ -1,8 +1,5 @@
 package com.trasier.client.configuration;
 
-/**
- * Created by lukasz on 05.02.18.
- */
 public class ApplicationConfiguration {
 
     private static final String DEFAULT_WRITE_ENDPOINT = "https://trasier-writer-dev.app.trasier.com/api/events";
