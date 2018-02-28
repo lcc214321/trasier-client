@@ -39,20 +39,20 @@ public class PubSubClient implements Client {
         String clientId = builder.clientId;
         String topic = builder.topic;
         String project = builder.project;
-        Integer concurency = builder.concurency != null ? builder.concurency : 128;
+        Integer concurrency = builder.concurrency != null ? builder.concurrency : 128;
 
         Precondition.notNull(project, "project");
         Precondition.notNull(topic, "topic");
         Precondition.notNull(clientId, "clientId");
 
-        Publisher publisher = builder.publisher == null ? createPublisher(project, concurency) : builder.publisher;
+        Publisher publisher = builder.publisher == null ? createPublisher(project, concurrency) : builder.publisher;
         this.sender = new PubSubSender(builder.topic, builder.clientId, publisher);
     }
 
-    private Publisher createPublisher(String project, Integer concurency) {
-        Integer concurencyValue = concurency == null ? 128 : concurency;
+    private Publisher createPublisher(String project, Integer concurrency) {
+        Integer concurrencyValue = concurrency == null ? 128 : concurrency;
         Pubsub pubsub = Pubsub.builder().build();
-        return Publisher.builder().pubsub(pubsub).project(project).concurrency(concurencyValue).build();
+        return Publisher.builder().pubsub(pubsub).project(project).concurrency(concurrencyValue).build();
     }
 
     public static PubSubClient.Builder builder() {
@@ -63,7 +63,7 @@ public class PubSubClient implements Client {
         private String project;
         private String topic;
         private String clientId;
-        private Integer concurency;
+        private Integer concurrency;
         private Publisher publisher;
 
         public PubSubClient.Builder project(String project) {
@@ -81,8 +81,8 @@ public class PubSubClient implements Client {
             return this;
         }
 
-        public PubSubClient.Builder concurency(Integer concurency) {
-            this.concurency = concurency;
+        public PubSubClient.Builder concurrency(Integer concurrency) {
+            this.concurrency = concurrency;
             return this;
         }
 

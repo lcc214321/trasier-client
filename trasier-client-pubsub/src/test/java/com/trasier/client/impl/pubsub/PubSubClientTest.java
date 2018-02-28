@@ -26,7 +26,7 @@ public class PubSubClientTest {
                 .project("trasier-project")
                 .topic("trasier-topic")
                 .clientId("trasier-client")
-                .concurency(100)
+                .concurrency(100)
                 .publisher(publisher)
                 .build();
     }
