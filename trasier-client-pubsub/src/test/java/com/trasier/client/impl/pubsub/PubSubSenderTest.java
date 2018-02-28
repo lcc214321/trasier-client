@@ -2,9 +2,9 @@ package com.trasier.client.impl.pubsub;
 
 import com.spotify.google.cloud.pubsub.client.Message;
 import com.spotify.google.cloud.pubsub.client.Publisher;
+import com.trasier.client.model.Application;
 import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Event;
-import com.trasier.client.model.System;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class PubSubSenderTest {
         // given
         Publisher publisher = mock(Publisher.class);
         PubSubSender sender = new PubSubSender("topic", "client", publisher);
-        Event event = Event.newEvent(UUID.randomUUID(), new System("A"), "OP").correlationId(UUID.randomUUID()).build();
+        Event event = Event.newEvent(UUID.randomUUID(), new Application("A"), "OP").correlationId(UUID.randomUUID()).build();
 
         // when
         Message message = sender.sendEvent(event);
@@ -37,7 +37,7 @@ public class PubSubSenderTest {
         // given
         Publisher publisher = mock(Publisher.class);
         PubSubSender sender = new PubSubSender("topic", "client", publisher);
-        Event event = Event.newEvent(UUID.randomUUID(), new System("A"), "OP")
+        Event event = Event.newEvent(UUID.randomUUID(), new Application("A"), "OP")
                 .data("hello")
                 .correlationId(UUID.randomUUID()).build();
 
@@ -56,7 +56,7 @@ public class PubSubSenderTest {
         // given
         Publisher publisher = mock(Publisher.class);
         PubSubSender sender = new PubSubSender("topic", "client", publisher);
-        Event event = Event.newEvent(UUID.randomUUID(), new System("A"), "OP")
+        Event event = Event.newEvent(UUID.randomUUID(), new Application("A"), "OP")
                 .data(generateBigPayload(PubSubSender.MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES))
                 .correlationId(UUID.randomUUID()).build();
 
@@ -75,7 +75,7 @@ public class PubSubSenderTest {
         // given
         Publisher publisher = mock(Publisher.class);
         PubSubSender sender = new PubSubSender("topic", "client", publisher);
-        Event event = Event.newEvent(UUID.randomUUID(), new System("A"), "OP")
+        Event event = Event.newEvent(UUID.randomUUID(), new Application("A"), "OP")
                 .contentType(ContentType.ENCRYPTED)
                 .data(generateBigPayload(PubSubSender.MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES))
                 .correlationId(UUID.randomUUID()).build();
@@ -95,7 +95,7 @@ public class PubSubSenderTest {
         // given
         Publisher publisher = mock(Publisher.class);
         PubSubSender sender = new PubSubSender("topic", "client", publisher);
-        Event event = Event.newEvent(UUID.randomUUID(), new System("A"), "OP")
+        Event event = Event.newEvent(UUID.randomUUID(), new Application("A"), "OP")
                 .data(generateBigPayload(PubSubSender.MAX_ALLOWED_PAYLOAD_SIZE_BYTES))
                 .correlationId(UUID.randomUUID()).build();
 

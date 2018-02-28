@@ -1,7 +1,7 @@
 package com.trasier.client.impl.pubsub;
 
+import com.trasier.client.model.Application;
 import com.trasier.client.model.Event;
-import com.trasier.client.model.System;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class PubSubConverterTest {
     @Test
     public void convert() throws IOException {
         PubSubConverter sut = new PubSubConverter();
-        Event.Builder builder = Event.newRequestEvent(UUID.randomUUID(), new System("bla"), "noop");
+        Event.Builder builder = Event.newRequestEvent(UUID.randomUUID(), new Application("bla"), "noop");
         builder.correlationId(UUID.randomUUID());
         builder.data("aaaaaaaaaaaaaaabbbcccddddddaaa");
         Event event = builder.build();

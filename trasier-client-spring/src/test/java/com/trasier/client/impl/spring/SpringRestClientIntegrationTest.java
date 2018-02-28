@@ -1,9 +1,9 @@
 
 package com.trasier.client.impl.spring;
 
+import com.trasier.client.model.Application;
 import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Event;
-import com.trasier.client.model.System;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,10 +24,10 @@ public class SpringRestClientIntegrationTest {
     @Test
     @Ignore
     public void sendEventOneByOne() throws InterruptedException {
-        Event.Builder requestBuilder = Event.newRequestEvent(UUID.randomUUID(), new System("Lukasz"), "GIVE_50_CHF");
+        Event.Builder requestBuilder = Event.newRequestEvent(UUID.randomUUID(), new Application("Lukasz"), "GIVE_50_CHF");
 
         requestBuilder.correlationId(UUID.randomUUID());
-        requestBuilder.consumer(new System("Frank"));
+        requestBuilder.consumer(new Application("Frank"));
         requestBuilder.contentType(ContentType.XML);
         requestBuilder.data("<chf>50</chf>");
 
@@ -53,10 +53,10 @@ public class SpringRestClientIntegrationTest {
     @Ignore
     public void sendEventsBulk() throws InterruptedException {
 
-        Event.Builder requestBuilder = Event.newRequestEvent(UUID.randomUUID(), new System("Lukasz"), "GIVE_50_CHF");
+        Event.Builder requestBuilder = Event.newRequestEvent(UUID.randomUUID(), new Application("Lukasz"), "GIVE_50_CHF");
 
         requestBuilder.correlationId(UUID.randomUUID());
-        requestBuilder.consumer(new System("Frank"));
+        requestBuilder.consumer(new Application("Frank"));
         requestBuilder.contentType(ContentType.XML);
         requestBuilder.data("<chf>50</chf>");
 

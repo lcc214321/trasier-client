@@ -1,8 +1,8 @@
 package com.trasier.client.impl.pubsub;
 
+import com.trasier.client.model.Application;
 import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Event;
-import com.trasier.client.model.System;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,10 +27,10 @@ public class PubSubClientIntegrationTest {
                 .clientId(java.lang.System.getProperty("trasier.pubsub.clientId"))
                 .build();
 
-        Event.Builder requestBuilder = Event.newRequestEvent(UUID.randomUUID(), new System("Lukasz"), "GIVE_50_CHF");
+        Event.Builder requestBuilder = Event.newRequestEvent(UUID.randomUUID(), new Application("Lukasz"), "GIVE_50_CHF");
 
         requestBuilder.correlationId(UUID.randomUUID());
-        requestBuilder.consumer(new System("Frank"));
+        requestBuilder.consumer(new Application("Frank"));
         requestBuilder.contentType(ContentType.XML);
         requestBuilder.data("<chf>50</chf>");
 

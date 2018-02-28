@@ -1,8 +1,8 @@
 package com.trasier.client.impl.pubsub;
 
 import com.spotify.google.cloud.pubsub.client.Publisher;
+import com.trasier.client.model.Application;
 import com.trasier.client.model.Event;
-import com.trasier.client.model.System;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ public class PubSubClientTest {
     @Test
     public void shouldSendRequestAndConfirm() {
         // given
-        Event event = Event.newEvent(UUID.randomUUID(), new System("ola"), "1").correlationId(UUID.randomUUID()).build();
+        Event event = Event.newEvent(UUID.randomUUID(), new Application("ola"), "1").correlationId(UUID.randomUUID()).build();
 
         // when
         boolean result = sut.sendEvent(event);
@@ -55,9 +55,9 @@ public class PubSubClientTest {
     @Test
     public void shouldContinueSendingWhileExceptionOccur() {
         // given
-        Event event1 = Event.newEvent(UUID.randomUUID(), new System("ola"), "1").correlationId(UUID.randomUUID()).build();
-        Event event2 = Event.newEvent(UUID.randomUUID(), new System("ola"), "2").correlationId(UUID.randomUUID()).build();
-        Event event3 = Event.newEvent(UUID.randomUUID(), new System("ola"), "3").correlationId(UUID.randomUUID()).build();
+        Event event1 = Event.newEvent(UUID.randomUUID(), new Application("ola"), "1").correlationId(UUID.randomUUID()).build();
+        Event event2 = Event.newEvent(UUID.randomUUID(), new Application("ola"), "2").correlationId(UUID.randomUUID()).build();
+        Event event3 = Event.newEvent(UUID.randomUUID(), new Application("ola"), "3").correlationId(UUID.randomUUID()).build();
 
         when(publisher.publish(any(), any())).thenReturn(null).thenThrow(new RuntimeException("oops")).thenReturn(null);
 

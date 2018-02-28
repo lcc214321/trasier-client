@@ -12,13 +12,12 @@ public class EventTest {
     public void shoudlCheckMandatoryFields() {
         assertTrue(isThrowingException(Event.newEvent(null, null, null)));
         assertTrue(isThrowingException(Event.newEvent(UUID.randomUUID(), null, null)));
-        assertTrue(isThrowingException(Event.newEvent(UUID.randomUUID(), new System("Test"), null)));
-        assertTrue(isThrowingException(Event.newEvent(UUID.randomUUID(), new System("Test"), "TestOp")));
+        assertTrue(isThrowingException(Event.newEvent(UUID.randomUUID(), new Application("Test"), null)));
 
-        assertFalse(isThrowingException(Event.newEvent(UUID.randomUUID(), new System("Test"), "TestOp").correlationId(UUID.randomUUID())));
-        assertFalse(isThrowingException(Event.newEvent(UUID.randomUUID(), new System("Test"), "TestOp")
+        assertFalse(isThrowingException(Event.newEvent(UUID.randomUUID(), new Application("Test"), "TestOp")));
+        assertFalse(isThrowingException(Event.newEvent(UUID.randomUUID(), new Application("Test"), "TestOp")
                 .correlationId(UUID.randomUUID())
-                .consumer(new System("Consumer"))
+                .consumer(new Application("Consumer"))
         ));
     }
 
@@ -27,9 +26,9 @@ public class EventTest {
         // given
         UUID conversationId = UUID.randomUUID();
         UUID correlationId = UUID.randomUUID();
-        Event.Builder requestBuilder = Event.newRequestEvent(conversationId, new System("TestProducer"), "TestOp")
+        Event.Builder requestBuilder = Event.newRequestEvent(conversationId, new Application("TestProducer"), "TestOp")
                 .correlationId(correlationId)
-                .consumer(new System("TestConsumer"));
+                .consumer(new Application("TestConsumer"));
         Event request = requestBuilder.build();
 
         // when
