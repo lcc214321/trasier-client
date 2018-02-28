@@ -20,8 +20,6 @@ public class PubSubClient implements Client {
             Message message = sender.sendEvent(event);
             return message != null;
         } catch (Exception e) {
-            //IGNORE FOR NOW
-            e.printStackTrace();
             return false;
         }
     }

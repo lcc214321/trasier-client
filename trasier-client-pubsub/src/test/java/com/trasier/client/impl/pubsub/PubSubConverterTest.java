@@ -21,10 +21,10 @@ public class PubSubConverterTest {
         byte[] compressed = sut.compressData(event);
         byte[] uncompressed = sut.getByteData(event);
 
-        java.lang.System.out.println(uncompressed.length);
-        java.lang.System.out.println(new String(uncompressed));
-        java.lang.System.out.println(compressed.length);
-        java.lang.System.out.println(new String(compressed));
+        System.out.println(uncompressed.length);
+        System.out.println(new String(uncompressed));
+        System.out.println(compressed.length);
+        System.out.println(new String(compressed));
 
         assertTrue(uncompressed.length > compressed.length);
     }

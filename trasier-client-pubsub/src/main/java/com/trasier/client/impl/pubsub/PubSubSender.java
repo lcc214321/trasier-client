@@ -13,7 +13,7 @@ import java.util.Base64;
 class PubSubSender {
 
     static final int MAX_ALLOWED_PAYLOAD_SIZE_BYTES = 1024 * 1024;
-    static final int MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES = 20 * 1024;
+    static final int MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES = 2 * 1024;
 
     private final String topic;
     private final String clientId;
