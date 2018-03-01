@@ -17,6 +17,7 @@ import java.util.List;
 
 @Component
 public class SpringRestClient implements Client {
+
     private final ApplicationConfiguration appConfig;
     private final SpringClientConfiguration configuration;
     private final RestTemplate restTemplate;
