@@ -1,13 +1,19 @@
 package com.trasier.client.model;
 
+import com.trasier.client.utils.Precondition;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class Event {
+    private UUID id;
+    private UUID parentId;
+    private UUID requestEventId;
     private UUID conversationId;
     private UUID correlationId;
-    private System producer;
-    private System consumer;
+    private Application producer;
+    private Application consumer;
     private String operation;
     private Boolean error;
     private Long timestamp;
@@ -15,9 +21,19 @@ public class Event {
     private ContentType contentType;
     private Long processingTime;
     private String data;
-    private Map<String, String> custom;
+    private Map<String, String> custom = new HashMap<>();
 
     private Event(Builder builder) {
+        Precondition.notNull(builder.id, "id");
+        Precondition.notNull(builder.conversationId, "conversationId");
+        Precondition.notNull(builder.producer, "producer");
+        Precondition.notNull(builder.operation, "operation");
+        Precondition.notNull(builder.timestamp, "timestamp");
+        Precondition.notNull(builder.error, "error");
+        Precondition.notNull(builder.processingTime, "processingTime");
+        this.id = builder.id;
+        this.parentId = builder.parentId;
+        this.requestEventId = builder.requestEventId;
         this.conversationId = builder.conversationId;
         this.correlationId = builder.correlationId;
         this.producer = builder.producer;
@@ -32,10 +48,11 @@ public class Event {
         this.custom = builder.custom;
     }
 
-    public static Builder newEvent(UUID conversationId, String producerName, String operation) {
+    public static Builder newEvent(UUID conversationId, Application producer, String operation) {
         Builder builder = new Builder();
+        builder.id(UUID.randomUUID());
         builder.conversationId(conversationId);
-        builder.producer(new System(producerName));
+        builder.producer(producer);
         builder.operation(operation);
         builder.timestamp(java.lang.System.currentTimeMillis());
         builder.error(false);
@@ -43,16 +60,16 @@ public class Event {
         return builder;
     }
 
-    public static Builder newRequestEvent(UUID conversationId, String producerName, String operation) {
-        Builder builder = newEvent(conversationId, producerName, operation);
+    public static Builder newRequestEvent(UUID conversationId, Application producer, String operation) {
+        Builder builder = newEvent(conversationId, producer, operation);
         builder.type(EventType.REQUEST);
         return builder;
     }
 
-
     public static Builder newResponseEvent(Builder requestBuilder) {
-        Builder builder = newEvent(requestBuilder.conversationId, requestBuilder.producer.getName(), requestBuilder.operation);
+        Builder builder = newEvent(requestBuilder.conversationId, requestBuilder.producer, requestBuilder.operation);
         builder.type(EventType.RESPONSE);
+        builder.requestEventId(requestBuilder.id);
         builder.consumer(requestBuilder.consumer);
         builder.correlationId(requestBuilder.correlationId);
         builder.processingTime(builder.timestamp - requestBuilder.timestamp);
@@ -75,19 +92,19 @@ public class Event {
         this.correlationId = correlationId;
     }
 
-    public System getProducer() {
+    public Application getProducer() {
         return producer;
     }
 
-    public void setProducer(System producer) {
+    public void setProducer(Application producer) {
         this.producer = producer;
     }
 
-    public System getConsumer() {
+    public Application getConsumer() {
         return consumer;
     }
 
-    public void setConsumer(System consumer) {
+    public void setConsumer(Application consumer) {
         this.consumer = consumer;
     }
 
@@ -156,10 +173,13 @@ public class Event {
     }
 
     public static final class Builder {
+        private UUID id;
+        private UUID parentId;
+        private UUID requestEventId;
         private UUID conversationId;
         private UUID correlationId;
-        private System producer;
-        private System consumer;
+        private Application producer;
+        private Application consumer;
         private String operation;
         private Boolean error;
         private Long timestamp;
@@ -176,6 +196,21 @@ public class Event {
             return new Event(this);
         }
 
+        private Builder id(UUID id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder parentId(UUID parentId) {
+            this.parentId = parentId;
+            return this;
+        }
+
+        public Builder requestEventId(UUID requestEventId) {
+            this.requestEventId = requestEventId;
+            return this;
+        }
+
         public Builder conversationId(UUID conversationId) {
             this.conversationId = conversationId;
             return this;
@@ -186,12 +221,12 @@ public class Event {
             return this;
         }
 
-        public Builder producer(System producer) {
+        public Builder producer(Application producer) {
             this.producer = producer;
             return this;
         }
 
-        public Builder consumer(System consumer) {
+        public Builder consumer(Application consumer) {
             this.consumer = consumer;
             return this;
         }
@@ -235,12 +270,16 @@ public class Event {
             this.custom = custom;
             return this;
         }
+
     }
 
     @Override
     public String toString() {
         return "Event{" +
-                "conversationId=" + conversationId +
+                "id=" + id +
+                ", parentId=" + parentId +
+                ", requestEventId=" + requestEventId +
+                ", conversationId=" + conversationId +
                 ", correlationId=" + correlationId +
                 ", producer=" + producer +
                 ", consumer=" + consumer +

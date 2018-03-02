@@ -8,7 +8,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 
 @Configuration
-@ComponentScan(basePackageClasses = TrasierSpringClient.class)
+@ComponentScan(basePackageClasses = SpringRestClient.class)
 @EnableOAuth2Client
 public class SpringConfiguration {
     @Bean

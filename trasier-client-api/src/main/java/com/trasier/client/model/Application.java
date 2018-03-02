@@ -1,11 +1,11 @@
 package com.trasier.client.model;
 
-public class System {
+public class Application {
     private String name;
     private String ipAddress;
     private String hostname;
 
-    public System(String name) {
+    public Application(String name) {
         this.name = name;
     }
 
@@ -35,7 +35,7 @@ public class System {
 
     @Override
     public String toString() {
-        return "System{" +
+        return "Application{" +
                 "name='" + name + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", hostname='" + hostname + '\'' +

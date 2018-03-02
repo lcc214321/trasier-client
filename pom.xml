@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.trasier</groupId>
     <artifactId>trasier-client</artifactId>
-    <version>0.7-SNAPSHOT</version>
+    <version>0.7.4</version>
     <packaging>pom</packaging>
 
     <name>trasier-client</name>
+
+    <description>Java library to injest traceable data into Trasier systems.</description>
+    <url>https://github.com/trasiercom/trasier-client</url>
+    <inceptionYear>2018</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>https://github.com/trasiercom/trasier-client/blob/develop/LICENSE</url>
+        </license>
+    </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,12 +26,15 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.jacoco.plugin.version>0.7.2.201409121644</maven.jacoco.plugin.version>
+        <maven.coveralls.plugin.version>4.3.0</maven.coveralls.plugin.version>
     </properties>
 
     <modules>
         <module>trasier-client-core</module>
         <module>trasier-client-api</module>
         <module>trasier-client-spring</module>
+        <module>trasier-client-pubsub</module>
     </modules>
 
     <dependencyManagement>
@@ -45,22 +58,163 @@
     </dependencyManagement>
 
 
-    <repositories>
-        <repository>
-            <id>maven-group</id>
-            <url>http://repo.weadev.de/repository/maven-group/</url>
-        </repository>
-    </repositories>
+    <scm>
+        <connection>scm:git:git@github.com:trasiercom/trasier-client.git</connection>
+        <url>https://github.com/trasiercom/trasier-client.git</url>
+        <tag>HEAD</tag>
+    </scm>
 
+    <developers>
+        <developer>
+            <id>trasiercom</id>
+            <name>trasiercom</name>
+            <email>trasier@trasier.com</email>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+    
     <distributionManagement>
         <snapshotRepository>
-            <id>nexus-snapshots</id>
-            <url>http://repo.weadev.de/repository/maven-snapshots/</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
         <repository>
-            <id>nexus-releases</id>
-            <url>http://repo.weadev.de/repository/maven-releases/</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>${maven.coveralls.plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${maven.jacoco.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>com/trasier/client/model/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>1.0-m5.1</version>
+                <configuration>
+                    <username>${gituser}</username>
+                    <password>${gitpwd}</password>
+                    <pushFeatures>true</pushFeatures>
+                    <pushReleases>true</pushReleases>
+                    <pushHotfixes>true</pushHotfixes>
+                    <allowUntracked>true</allowUntracked>
+                    <flowInitContext>
+                        <masterBranchName>master</masterBranchName>
+                        <developBranchName>develop</developBranchName>
+                        <featureBranchPrefix>feature/</featureBranchPrefix>
+                        <releaseBranchPrefix>release/</releaseBranchPrefix>
+                        <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
+                        <versionTagPrefix>v</versionTagPrefix>
+                    </flowInitContext>
+                    <noDeploy>false</noDeploy>
+                    <!-- see https://stackoverflow.com/questions/37880781/jgitflowrelease-finish-is-not-deleting-the-release-branch -->
+                    <keepBranch>false</keepBranch>
+                    <squash>true</squash>
+                    <scmCommentPrefix>[RELEASE] </scmCommentPrefix>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <configuration>
+                            <suppressCommitBeforeTag>false</suppressCommitBeforeTag>
+                            <remoteTagging>false</remoteTagging>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
