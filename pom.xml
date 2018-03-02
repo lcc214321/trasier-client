@@ -4,10 +4,21 @@
 
     <groupId>com.trasier</groupId>
     <artifactId>trasier-client</artifactId>
-    <version>0.7.3-SNAPSHOT</version>
+    <version>0.7.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>trasier-client</name>
+
+    <description>Java library to injest traceable data into Trasier systems.</description>
+    <url>https://github.com/trasiercom/trasier-client</url>
+    <inceptionYear>2018</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>https://github.com/trasiercom/trasier-client/blob/develop/LICENSE</url>
+        </license>
+    </licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
