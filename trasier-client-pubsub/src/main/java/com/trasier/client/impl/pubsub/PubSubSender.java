@@ -36,13 +36,13 @@ class PubSubSender {
         }
 
         MessageBuilder messageBuilder = Message.builder();
-        messageBuilder.attributes("clientId", this.clientId);
+        messageBuilder.putAttribute("clientId", this.clientId);
 
         if (payloadSize > MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES && isCompressionSupported(event)) {
-            messageBuilder.attributes("mime-type", CompressionMimeType.SNAPPY);
+            messageBuilder.putAttribute("mime-type", CompressionMimeType.SNAPPY);
             messageBuilder.data(Base64.getEncoder().encodeToString(converter.compressData(event)));
         } else {
-            messageBuilder.attributes("mime-type", CompressionMimeType.NONE);
+            messageBuilder.putAttribute("mime-type", CompressionMimeType.NONE);
             messageBuilder.data(Base64.getEncoder().encodeToString(converter.getByteData(event)));
         }
 
