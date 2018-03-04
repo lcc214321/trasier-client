@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PubSubClient implements Client {
 
@@ -47,20 +48,19 @@ public class PubSubClient implements Client {
         String clientId = builder.clientId;
         String topic = builder.topic;
         String project = builder.project;
-        Integer concurrency = builder.concurrency != null ? builder.concurrency : 128;
+        Integer concurrency = Optional.ofNullable(builder.concurrency).orElse(64);
 
         Precondition.notNull(project, "project");
         Precondition.notNull(topic, "topic");
         Precondition.notNull(clientId, "clientId");
 
         Publisher publisher = builder.publisher == null ? createPublisher(project, concurrency) : builder.publisher;
-        this.sender = new PubSubSender(builder.topic, builder.clientId, publisher);
+        this.sender = new PubSubSender(topic, clientId, publisher);
     }
 
     private Publisher createPublisher(String project, Integer concurrency) {
-        Integer concurrencyValue = concurrency == null ? 128 : concurrency;
         Pubsub pubsub = Pubsub.builder().build();
-        return Publisher.builder().pubsub(pubsub).project(project).concurrency(concurrencyValue).build();
+        return Publisher.builder().pubsub(pubsub).project(project).concurrency(concurrency).build();
     }
 
     public static PubSubClient.Builder builder() {
