@@ -39,8 +39,8 @@ public class PubSubClient implements Client {
     }
 
     @Override
-    public void shutdown() {
-        sender.shutdown();
+    public void close() {
+        sender.close();
     }
 
     private PubSubClient(PubSubClient.Builder builder) {

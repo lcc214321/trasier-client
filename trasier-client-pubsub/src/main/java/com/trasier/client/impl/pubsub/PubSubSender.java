@@ -52,7 +52,7 @@ class PubSubSender {
         return message;
     }
 
-    void shutdown() {
+    void close() {
         publisher.close();
     }
 

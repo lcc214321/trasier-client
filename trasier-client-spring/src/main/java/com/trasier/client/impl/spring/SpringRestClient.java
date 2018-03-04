@@ -60,7 +60,7 @@ public class SpringRestClient implements Client {
     }
 
     @Override
-    public void shutdown() {
+    public void close() {
         // do nothing
     }
 

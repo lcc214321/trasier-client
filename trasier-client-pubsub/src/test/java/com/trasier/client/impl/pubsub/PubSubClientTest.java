@@ -32,9 +32,9 @@ public class PubSubClientTest {
     }
 
     @Test
-    public void shouldShutdownThePublisher() {
+    public void shouldCloseThePublisher() {
         // when
-        sut.shutdown();
+        sut.close();
         // then
         verify(publisher).close();
     }

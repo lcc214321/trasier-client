@@ -10,6 +10,6 @@ public interface Client {
 
     boolean sendEvents(List<Event> events);
 
-    void shutdown();
+    void close();
 
 }
