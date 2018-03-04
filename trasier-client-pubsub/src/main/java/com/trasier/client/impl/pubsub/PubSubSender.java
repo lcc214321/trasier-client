@@ -7,7 +7,6 @@ import com.spotify.google.cloud.pubsub.client.Publisher;
 import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Event;
 
-import java.io.IOException;
 import java.util.Base64;
 
 class PubSubSender {
@@ -27,7 +26,7 @@ class PubSubSender {
         this.converter = new PubSubConverter();
     }
 
-    Message sendEvent(Event event) throws IOException {
+    Message sendEvent(Event event) throws Exception {
 
         int payloadSize = getPayloadSize(event);
 

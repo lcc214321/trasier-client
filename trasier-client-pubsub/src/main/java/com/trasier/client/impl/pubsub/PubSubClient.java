@@ -7,10 +7,14 @@ import com.spotify.google.cloud.pubsub.client.Pubsub;
 import com.trasier.client.Client;
 import com.trasier.client.model.Event;
 import com.trasier.client.utils.Precondition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class PubSubClient implements Client {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PubSubClient.class);
 
     private final PubSubSender sender;
 
@@ -20,6 +24,7 @@ public class PubSubClient implements Client {
             Message message = sender.sendEvent(event);
             return message != null;
         } catch (Exception e) {
+            LOGGER.debug(e.getMessage(), e);
             return false;
         }
     }
