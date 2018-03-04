@@ -32,6 +32,14 @@ public class PubSubClientTest {
     }
 
     @Test
+    public void shouldShutdownThePublisher() {
+        // when
+        sut.shutdown();
+        // then
+        verify(publisher).close();
+    }
+
+    @Test
     public void shouldThrowExceptionWhenClientNotConfigured() {
         assertTrue("project is missing", exceptionThrown(PubSubClient.builder()));
         assertTrue("topic is missing", exceptionThrown(PubSubClient.builder().project("proj")));

@@ -52,12 +52,16 @@ class PubSubSender {
         return message;
     }
 
+    void shutdown() {
+        publisher.close();
+    }
+
     private boolean isCompressionSupported(Event event) {
         ContentType contentType = event.getContentType();
         if (contentType == null) {
             return true;
         }
-        switch(contentType) {
+        switch (contentType) {
             case ENCRYPTED:
                 return false;
             default:

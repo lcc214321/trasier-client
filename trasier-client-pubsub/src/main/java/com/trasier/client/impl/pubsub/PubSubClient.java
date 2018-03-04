@@ -38,6 +38,11 @@ public class PubSubClient implements Client {
         return result;
     }
 
+    @Override
+    public void shutdown() {
+        sender.shutdown();
+    }
+
     private PubSubClient(PubSubClient.Builder builder) {
         String clientId = builder.clientId;
         String topic = builder.topic;
