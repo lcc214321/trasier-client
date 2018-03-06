@@ -22,3 +22,5 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+/trasier-client-pubsub/dependency-reduced-pom.xml
+notes/
