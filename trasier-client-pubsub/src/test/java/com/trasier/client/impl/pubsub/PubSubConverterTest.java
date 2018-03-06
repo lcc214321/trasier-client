@@ -15,7 +15,7 @@ public class PubSubConverterTest {
         PubSubConverter sut = new PubSubConverter();
         Event.Builder builder = Event.newRequestEvent(UUID.randomUUID(), new Application("bla"), "noop");
         builder.correlationId(UUID.randomUUID());
-        builder.data("aaaaaaaaaaaaaaabbbcccddddddaaa");
+        builder.data(generateBigPayload(2000));
         Event event = builder.build();
 
         byte[] compressed = sut.compressData(event);
@@ -27,5 +27,13 @@ public class PubSubConverterTest {
         System.out.println(new String(compressed));
 
         assertTrue(uncompressed.length > compressed.length);
+    }
+
+    private String generateBigPayload(int byteLengthLimit) {
+        StringBuilder sb = new StringBuilder();
+        while(sb.toString().getBytes().length < byteLengthLimit) {
+            sb.append("aaaaaaaaa").append(sb.toString());
+        }
+        return sb.toString();
     }
 }
