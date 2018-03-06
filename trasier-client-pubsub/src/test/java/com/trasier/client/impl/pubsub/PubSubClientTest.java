@@ -1,10 +1,12 @@
 package com.trasier.client.impl.pubsub;
 
 import com.spotify.google.cloud.pubsub.client.Publisher;
+import com.spotify.google.cloud.pubsub.client.Pubsub;
 import com.trasier.client.model.Application;
 import com.trasier.client.model.Event;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.BDDMockito;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -18,17 +20,39 @@ public class PubSubClientTest {
 
     private PubSubClient sut;
     private Publisher publisher;
+    private Pubsub pubsub;
 
     @Before
     public void setup() {
         publisher = mock(Publisher.class);
+        pubsub = mock(Pubsub.class);
         sut = PubSubClient.builder()
                 .project("trasier-project")
                 .topic("trasier-topic")
                 .clientId("trasier-client")
-                .concurrency(100)
                 .publisher(publisher)
+                .pubsub(pubsub)
                 .build();
+    }
+
+    @Test
+    public void shouldNotThrowExceptionOnClose() {
+        // giben
+        BDDMockito.doThrow(new RuntimeException("oops")).when(publisher).close();
+        // when
+        sut.close();
+        // then
+        verify(publisher).close();
+        verify(pubsub).close();
+    }
+
+    @Test
+    public void shouldCloseThePublisherAndPubsub() {
+        // when
+        sut.close();
+        // then
+        verify(publisher).close();
+        verify(pubsub).close();
     }
 
     @Test
@@ -72,7 +96,7 @@ public class PubSubClientTest {
 
     private boolean exceptionThrown(PubSubClient.Builder builder) {
         try{
-            builder.publisher(publisher).build();
+            builder.pubsub(pubsub).publisher(publisher).build();
         } catch(Exception e) {
             return true;
         }

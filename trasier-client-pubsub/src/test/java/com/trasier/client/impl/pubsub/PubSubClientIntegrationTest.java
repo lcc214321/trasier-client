@@ -53,5 +53,7 @@ public class PubSubClientIntegrationTest {
 
         // wait for async write
         TimeUnit.SECONDS.sleep(2);
+
+        client.close();
     }
 }

@@ -7,10 +7,14 @@ import com.spotify.google.cloud.pubsub.client.Pubsub;
 import com.trasier.client.Client;
 import com.trasier.client.model.Event;
 import com.trasier.client.utils.Precondition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class PubSubClient implements Client {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PubSubClient.class);
 
     private final PubSubSender sender;
 
@@ -20,6 +24,7 @@ public class PubSubClient implements Client {
             Message message = sender.sendEvent(event);
             return message != null;
         } catch (Exception e) {
+            LOGGER.debug(e.getMessage(), e);
             return false;
         }
     }
@@ -33,24 +38,20 @@ public class PubSubClient implements Client {
         return result;
     }
 
-    private PubSubClient(PubSubClient.Builder builder) {
-        String clientId = builder.clientId;
-        String topic = builder.topic;
-        String project = builder.project;
-        Integer concurrency = builder.concurrency != null ? builder.concurrency : 128;
-
-        Precondition.notNull(project, "project");
-        Precondition.notNull(topic, "topic");
-        Precondition.notNull(clientId, "clientId");
-
-        Publisher publisher = builder.publisher == null ? createPublisher(project, concurrency) : builder.publisher;
-        this.sender = new PubSubSender(builder.topic, builder.clientId, publisher);
+    @Override
+    public void close() {
+        sender.close();
     }
 
-    private Publisher createPublisher(String project, Integer concurrency) {
-        Integer concurrencyValue = concurrency == null ? 128 : concurrency;
-        Pubsub pubsub = Pubsub.builder().build();
-        return Publisher.builder().pubsub(pubsub).project(project).concurrency(concurrencyValue).build();
+    private PubSubClient(PubSubClient.Builder builder) {
+        Precondition.notNull(builder.project, "project");
+        Precondition.notNull(builder.topic, "topic");
+        Precondition.notNull(builder.clientId, "clientId");
+        if (builder.publisher != null && builder.pubsub != null) {
+            this.sender = new PubSubSender(builder.topic, builder.clientId, builder.pubsub, builder.publisher);
+        } else {
+            this.sender = new PubSubSender(builder.project, builder.topic, builder.clientId);
+        }
     }
 
     public static PubSubClient.Builder builder() {
@@ -61,8 +62,8 @@ public class PubSubClient implements Client {
         private String project;
         private String topic;
         private String clientId;
-        private Integer concurrency;
         private Publisher publisher;
+        private Pubsub pubsub;
 
         public PubSubClient.Builder project(String project) {
             this.project = project;
@@ -79,8 +80,9 @@ public class PubSubClient implements Client {
             return this;
         }
 
-        public PubSubClient.Builder concurrency(Integer concurrency) {
-            this.concurrency = concurrency;
+        @VisibleForTesting
+        PubSubClient.Builder pubsub(Pubsub pubsub) {
+            this.pubsub = pubsub;
             return this;
         }
 

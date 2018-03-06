@@ -10,4 +10,6 @@ public interface Client {
 
     boolean sendEvents(List<Event> events);
 
+    void close();
+
 }
