@@ -48,7 +48,7 @@ The Notice event can be used to trace an internal state of an application (for e
 
 Parameters `converstaionId`, `application` and `aperation` are mandatory.
 
-## Sending events
+### Sending events
 
 It is possible to send a single event using `pubSubClient.sendEvent(event)` or a list of events `pubSubClient.sendEvents(events)`. However internally the events are buffered and send one by one without having a negative impact on the performance.
 
