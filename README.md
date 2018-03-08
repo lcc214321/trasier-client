@@ -10,13 +10,13 @@ Trasier's PubSubClient is a high performant, non I/O blocking pub/sub client. It
 
 ## Configuration
 
-Trasier PubSubClient must be configured with `project`, `clientId` and `topic` paramaters. Those parameters are provided by Trasier during the registration process.
+Trasier PubSubClient must be configured with `project`, `clientId` and `topic` parameters. Those parameters are provided by Trasier during the registration process.
 
 ```
 PubSubClient pubSubClient = PubSubClient.builder().project(...).clientId(...).topic(...).build();
 ```
 
-As for Version 0.7.6 the PubSubClient additionally needs a Google credentials configuration file. This file has to be loaded using the  `GOOGLE_APPLICATION_CREDENTIALS` environment variable:
+The PubSubClient additionally needs a Google credentials configuration file. This file has to be loaded using the  `GOOGLE_APPLICATION_CREDENTIALS` environment variable:
 
 ```
 GOOGLE_APPLICATION_CREDENTIALS=/path-to-config-file/gcp-trasier-client-prod.json
@@ -24,7 +24,7 @@ GOOGLE_APPLICATION_CREDENTIALS=/path-to-config-file/gcp-trasier-client-prod.json
 
 The json file will also be provided by Trasier.
 
-A more conveniant way to configure credentials is planned to be supported in the future.
+A more convenient way to configure credentials is planned to be supported in the future.
 
 ## Usage
 
@@ -32,7 +32,7 @@ A more conveniant way to configure credentials is planned to be supported in the
 
 An event can be either of type `REQUEST`, `RESPONSE` or `NOTICE`.
 
-The Event class has apropriate Builder methods:
+The Event class has appropriate Builder methods:
 
 ```
 Event.Builder requestEvent = Event.newRequestEvent(conversationId, producer, operation);
@@ -46,7 +46,7 @@ The Request and Response Event is used to trace messages exchanged by two Applic
 
 The Notice event can be used to trace an internal state of an application (for example complex filtering algorithm).
 
-Parameters `converstaionId`, `application` and `aperation` are mandatory.
+Parameters `converstaionId`, `application` and `operation` are mandatory.
 
 ### Sending events
 
