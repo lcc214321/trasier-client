@@ -48,9 +48,9 @@ public class PubSubClient implements Client {
         Precondition.notNull(builder.topic, "topic");
         Precondition.notNull(builder.clientId, "clientId");
         if (builder.publisher != null && builder.pubsub != null) {
-            this.sender = new PubSubSender(builder.topic, builder.clientId, builder.pubsub, builder.publisher);
+            this.sender = new PubSubSender(builder.topic.trim(), builder.clientId.trim(), builder.pubsub, builder.publisher);
         } else {
-            this.sender = new PubSubSender(builder.project, builder.topic, builder.clientId);
+            this.sender = new PubSubSender(builder.project.trim(), builder.topic.trim(), builder.clientId.trim());
         }
     }
 
