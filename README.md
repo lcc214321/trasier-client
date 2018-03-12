@@ -10,21 +10,11 @@ Trasier's PubSubClient is a high performant, non I/O blocking pub/sub client. It
 
 ## Configuration
 
-Trasier PubSubClient must be configured with `project`, `clientId` and `topic` parameters. Those parameters are provided by Trasier during the registration process.
+Trasier PubSubClient must be configured with `serviceAccountToken` `project`, `clientId` and `topic` parameters. Those parameters are provided by Trasier during the registration process.
 
 ```
-PubSubClient pubSubClient = PubSubClient.builder().project(...).clientId(...).topic(...).build();
+PubSubClient pubSubClient = PubSubClient.builder().serviceAccountToken(...).project(...).clientId(...).topic(...).build();
 ```
-
-The PubSubClient additionally needs a Google credentials configuration file. This file has to be loaded using the  `GOOGLE_APPLICATION_CREDENTIALS` environment variable:
-
-```
-GOOGLE_APPLICATION_CREDENTIALS=/path-to-config-file/gcp-trasier-client-prod.json
-```
-
-The json file will also be provided by Trasier.
-
-A more convenient way to configure credentials is planned to be supported in the future.
 
 ## Usage
 
@@ -62,7 +52,9 @@ private PubSubClient pubSubClient;
 
 @PostConstruct
 public void initialize() {
-  pubSubClient = PubSubClient.builder().project(config.getTrasierProject())
+  pubSubClient = PubSubClient.builder()
+                              .serviceAccountToken(config.getTrasierServiceAccountToken())
+                              .project(config.getTrasierProject())
                               .clientId(config.getTrasierProject())
                               .topic(config.getTrasierTopic())
                               .build();
