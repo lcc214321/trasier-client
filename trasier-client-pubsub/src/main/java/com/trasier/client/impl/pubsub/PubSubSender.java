@@ -1,6 +1,7 @@
 package com.trasier.client.impl.pubsub;
 
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.common.annotations.VisibleForTesting;
 import com.spotify.google.cloud.pubsub.client.Message;
 import com.spotify.google.cloud.pubsub.client.MessageBuilder;
@@ -26,8 +27,11 @@ class PubSubSender {
     private Publisher publisher;
     private PubSubConverter converter;
 
-    PubSubSender(String project, String topic, String clientId) {
-        Pubsub pubsub = Pubsub.builder().build();
+    PubSubSender(String project, String topic, String clientId, String serviceAccountToken) {
+        CredentialDecoder credentialDecoder = new CredentialDecoder();
+        GoogleCredential credential = credentialDecoder.decode(serviceAccountToken);
+
+        Pubsub pubsub = Pubsub.builder().credential(credential).build();
         Publisher publisher = Publisher.builder().pubsub(pubsub).project(project).build();
         this.initialize(topic, clientId, pubsub, publisher);
     }

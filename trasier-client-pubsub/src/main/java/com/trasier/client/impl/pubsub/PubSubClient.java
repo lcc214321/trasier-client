@@ -44,13 +44,14 @@ public class PubSubClient implements Client {
     }
 
     private PubSubClient(PubSubClient.Builder builder) {
-        Precondition.notNull(builder.project, "project");
-        Precondition.notNull(builder.topic, "topic");
-        Precondition.notNull(builder.clientId, "clientId");
+        Precondition.notBlank(builder.project, "project");
+        Precondition.notBlank(builder.topic, "topic");
+        Precondition.notBlank(builder.clientId, "clientId");
         if (builder.publisher != null && builder.pubsub != null) {
-            this.sender = new PubSubSender(builder.topic, builder.clientId, builder.pubsub, builder.publisher);
+            this.sender = new PubSubSender(builder.topic.trim(), builder.clientId.trim(), builder.pubsub, builder.publisher);
         } else {
-            this.sender = new PubSubSender(builder.project, builder.topic, builder.clientId);
+            Precondition.notBlank(builder.serviceAccountToken, "serviceAccountToken");
+            this.sender = new PubSubSender(builder.project.trim(), builder.topic.trim(), builder.clientId.trim(), builder.serviceAccountToken.trim());
         }
     }
 
@@ -62,8 +63,14 @@ public class PubSubClient implements Client {
         private String project;
         private String topic;
         private String clientId;
+        private String serviceAccountToken;
         private Publisher publisher;
         private Pubsub pubsub;
+
+        public PubSubClient.Builder serviceAccountToken(String serviceAccountToken) {
+            this.serviceAccountToken = serviceAccountToken;
+            return this;
+        }
 
         public PubSubClient.Builder project(String project) {
             this.project = project;

@@ -9,7 +9,6 @@ target/
 .settings
 .springBeans
 
-### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
@@ -22,3 +21,5 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+*/dependency-reduced-pom.xml
+.notes/
