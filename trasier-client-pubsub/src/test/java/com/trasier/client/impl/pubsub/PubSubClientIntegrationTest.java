@@ -22,6 +22,7 @@ public class PubSubClientIntegrationTest {
     @Test
     public void sendEvents() throws InterruptedException {
         PubSubClient client = PubSubClient.builder()
+                .serviceAccountToken(java.lang.System.getProperty("trasier.pubsub.serviceAccountToken"))
                 .project(java.lang.System.getProperty("trasier.pubsub.project"))
                 .topic(java.lang.System.getProperty("trasier.pubsub.topic"))
                 .clientId(java.lang.System.getProperty("trasier.pubsub.clientId"))
