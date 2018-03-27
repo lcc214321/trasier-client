@@ -1,6 +1,8 @@
 package com.trasier.client.impl.pubsub;
 
 import com.trasier.client.model.ContentType;
+import com.trasier.client.model.Endpoint;
+import com.trasier.client.model.Span;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,37 +20,34 @@ public class PubSubClientIntegrationTest {
     }
 
     @Test
-    public void sendEvents() throws InterruptedException {
+    public void sendSpans() throws InterruptedException {
         PubSubClient client = PubSubClient.builder()
                 .serviceAccountToken(java.lang.System.getProperty("trasier.pubsub.serviceAccountToken"))
                 .project(java.lang.System.getProperty("trasier.pubsub.project"))
                 .topic(java.lang.System.getProperty("trasier.pubsub.topic"))
-                .clientId(java.lang.System.getProperty("trasier.pubsub.clientId"))
+                .appId(java.lang.System.getProperty("trasier.pubsub.appId"))
                 .build();
 
-        Event.Builder requestBuilder = Event.newRequestEvent(UUID.randomUUID(), new Application("Lukasz"), "GIVE_50_CHF");
+        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF");
 
-        requestBuilder.correlationId(UUID.randomUUID());
-        requestBuilder.consumer(new Application("Frank"));
-        requestBuilder.contentType(ContentType.XML);
-        requestBuilder.data("<chf>50</chf>");
+        spanBuilder.outgoingEndpoint(new Endpoint("Frank"));
+        spanBuilder.incomingContentType(ContentType.XML);
+        spanBuilder.incomingData("<chf>50</chf>");
 
-        Event event = requestBuilder.build();
-        java.lang.System.out.println(event.getConversationId().toString());
+        Span span = spanBuilder.build();
+        java.lang.System.out.println(span.getConversationId());
 
-        client.sendEvents(Collections.singletonList(event));
-        java.lang.System.out.println("RQ: " + event);
+        java.lang.System.out.println("RQ: " + span);
 
         // wait for async write
         TimeUnit.SECONDS.sleep(2);
 
-        Event.Builder responseBuilder = Event.newResponseEvent(requestBuilder);
-        responseBuilder.contentType(ContentType.XML);
-        responseBuilder.error(false);
-        responseBuilder.data("<response>Sorry, I'm broke!</response>");
+        spanBuilder.outgoingContentType(ContentType.XML);
+        spanBuilder.error(false);
+        spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
-        client.sendEvents(Collections.singletonList(responseBuilder.build()));
-        java.lang.System.out.println("RS: " + responseBuilder.build());
+        client.sendSpans(Collections.singletonList(spanBuilder.build()));
+        java.lang.System.out.println("RS: " + spanBuilder.build());
 
         // wait for async write
         TimeUnit.SECONDS.sleep(2);

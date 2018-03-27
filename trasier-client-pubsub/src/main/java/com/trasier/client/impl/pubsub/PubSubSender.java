@@ -7,7 +7,7 @@ import com.spotify.google.cloud.pubsub.client.Message;
 import com.spotify.google.cloud.pubsub.client.MessageBuilder;
 import com.spotify.google.cloud.pubsub.client.Publisher;
 import com.spotify.google.cloud.pubsub.client.Pubsub;
-import com.trasier.client.model.ContentType;
+import com.trasier.client.model.Span;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ class PubSubSender {
     static final int MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES = 2 * 1024;
 
     private String topic;
-    private String clientId;
+    private String appId;
     private Pubsub pubsub;
     private Publisher publisher;
     private PubSubConverter converter;
@@ -40,32 +40,32 @@ class PubSubSender {
         this.initialize(topic, clientId, pubsub, publisher);
     }
 
-    private void initialize(String topic, String clientId, Pubsub pubsub, Publisher publisher) {
+    private void initialize(String topic, String appId, Pubsub pubsub, Publisher publisher) {
         this.topic = topic;
-        this.clientId = clientId;
+        this.appId = appId;
         this.publisher = publisher;
         this.pubsub = pubsub;
         this.converter = new PubSubConverter();
     }
 
-    Message sendEvent(Event event) throws Exception {
+    Message sendSpan(Span span) throws Exception {
 
-        int payloadSize = getPayloadSize(event);
+        int payloadSize = getIncomingPayloadSize(span) + getOutgoingPayloadSize(span);
 
         if (payloadSize > MAX_ALLOWED_PAYLOAD_SIZE_BYTES) {
             return null;
         }
 
         MessageBuilder messageBuilder = Message.builder();
-        messageBuilder.putAttribute("clientId", this.clientId);
+        messageBuilder.putAttribute("appId", this.appId);
         messageBuilder.putAttribute("api-version", "1");
 
-        if (payloadSize > MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES && isCompressionSupported(event)) {
+        if (payloadSize > MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES) {
             messageBuilder.putAttribute("mime-type", CompressionMimeType.SNAPPY);
-            messageBuilder.data(Base64.getEncoder().encodeToString(converter.compressData(event)));
+            messageBuilder.data(Base64.getEncoder().encodeToString(converter.compress(span)));
         } else {
             messageBuilder.putAttribute("mime-type", CompressionMimeType.NONE);
-            messageBuilder.data(Base64.getEncoder().encodeToString(converter.getByteData(event)));
+            messageBuilder.data(Base64.getEncoder().encodeToString(converter.getByteData(span)));
         }
 
         Message message = messageBuilder.build();
@@ -89,23 +89,17 @@ class PubSubSender {
         }
     }
 
-    private boolean isCompressionSupported(Event event) {
-        ContentType contentType = event.getContentType();
-        if (contentType == null) {
-            return true;
-        }
-        switch (contentType) {
-            case ENCRYPTED:
-                return false;
-            default:
-                return true;
-        }
-    }
-
-    private int getPayloadSize(Event event) {
-        if (event.getData() == null) {
+    private int getIncomingPayloadSize(Span span) {
+        if (span.getIncomingData() == null) {
             return 0;
         }
-        return event.getData().getBytes().length;
+        return span.getIncomingData().getBytes().length;
+    }
+
+    private int getOutgoingPayloadSize(Span span) {
+        if (span.getOutgoingData() == null) {
+            return 0;
+        }
+        return span.getOutgoingData().getBytes().length;
     }
 }

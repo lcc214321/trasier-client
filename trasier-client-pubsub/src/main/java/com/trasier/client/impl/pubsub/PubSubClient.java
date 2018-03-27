@@ -5,6 +5,7 @@ import com.spotify.google.cloud.pubsub.client.Message;
 import com.spotify.google.cloud.pubsub.client.Publisher;
 import com.spotify.google.cloud.pubsub.client.Pubsub;
 import com.trasier.client.Client;
+import com.trasier.client.model.Span;
 import com.trasier.client.utils.Precondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +19,9 @@ public class PubSubClient implements Client {
     private final PubSubSender sender;
 
     @Override
-    public boolean sendEvent(Event event) {
+    public boolean sendSpan(Span span) {
         try {
-            Message message = sender.sendEvent(event);
+            Message message = sender.sendSpan(span);
             return message != null;
         } catch (Exception e) {
             LOGGER.debug(e.getMessage(), e);
@@ -29,10 +30,10 @@ public class PubSubClient implements Client {
     }
 
     @Override
-    public boolean sendEvents(List<Event> events) {
+    public boolean sendSpans(List<Span> spans) {
         boolean result = true;
-        for (Event event : events) {
-            result &= this.sendEvent(event);
+        for (Span span : spans) {
+            result &= this.sendSpan(span);
         }
         return result;
     }
@@ -45,12 +46,12 @@ public class PubSubClient implements Client {
     private PubSubClient(PubSubClient.Builder builder) {
         Precondition.notBlank(builder.project, "project");
         Precondition.notBlank(builder.topic, "topic");
-        Precondition.notBlank(builder.clientId, "clientId");
+        Precondition.notBlank(builder.appId, "appId");
         if (builder.publisher != null && builder.pubsub != null) {
-            this.sender = new PubSubSender(builder.topic.trim(), builder.clientId.trim(), builder.pubsub, builder.publisher);
+            this.sender = new PubSubSender(builder.topic.trim(), builder.appId.trim(), builder.pubsub, builder.publisher);
         } else {
             Precondition.notBlank(builder.serviceAccountToken, "serviceAccountToken");
-            this.sender = new PubSubSender(builder.project.trim(), builder.topic.trim(), builder.clientId.trim(), builder.serviceAccountToken.trim());
+            this.sender = new PubSubSender(builder.project.trim(), builder.topic.trim(), builder.appId.trim(), builder.serviceAccountToken.trim());
         }
     }
 
@@ -61,7 +62,7 @@ public class PubSubClient implements Client {
     public static class Builder {
         private String project;
         private String topic;
-        private String clientId;
+        private String appId;
         private String serviceAccountToken;
         private Publisher publisher;
         private Pubsub pubsub;
@@ -81,8 +82,8 @@ public class PubSubClient implements Client {
             return this;
         }
 
-        public PubSubClient.Builder clientId(String clientId) {
-            this.clientId = clientId;
+        public PubSubClient.Builder appId(String appId) {
+            this.appId = appId;
             return this;
         }
 

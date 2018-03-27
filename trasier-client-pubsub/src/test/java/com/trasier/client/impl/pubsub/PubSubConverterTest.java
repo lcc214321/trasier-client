@@ -1,5 +1,7 @@
 package com.trasier.client.impl.pubsub;
 
+import com.trasier.client.model.Endpoint;
+import com.trasier.client.model.Span;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,13 +13,12 @@ public class PubSubConverterTest {
     @Test
     public void convert() throws IOException {
         PubSubConverter sut = new PubSubConverter();
-        Event.Builder builder = Event.newRequestEvent(UUID.randomUUID(), new Application("bla"), "noop");
-        builder.correlationId(UUID.randomUUID());
-        builder.data(generateBigPayload(2000));
-        Event event = builder.build();
+        Span.Builder builder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("bla"), "noop");
+        builder.incomingData(generateBigPayload(2000));
+        Span span = builder.build();
 
-        byte[] compressed = sut.compressData(event);
-        byte[] uncompressed = sut.getByteData(event);
+        byte[] compressed = sut.compress(span);
+        byte[] uncompressed = sut.getByteData(span);
 
         System.out.println(uncompressed.length);
         System.out.println(new String(uncompressed));

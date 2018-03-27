@@ -2,6 +2,8 @@
 package com.trasier.client.impl.spring;
 
 import com.trasier.client.model.ContentType;
+import com.trasier.client.model.Endpoint;
+import com.trasier.client.model.Span;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,60 +23,56 @@ public class SpringRestClientIntegrationTest {
 
     @Test
     @Ignore
-    public void sendEventOneByOne() throws InterruptedException {
-        Event.Builder requestBuilder = Event.newRequestEvent(UUID.randomUUID(), new Application("Lukasz"), "GIVE_50_CHF");
+    public void sendSpanOneByOne() throws InterruptedException {
+        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF");
 
-        requestBuilder.correlationId(UUID.randomUUID());
-        requestBuilder.consumer(new Application("Frank"));
-        requestBuilder.contentType(ContentType.XML);
-        requestBuilder.data("<chf>50</chf>");
+        spanBuilder.incomingEndpoint(new Endpoint("Frank"));
+        spanBuilder.incomingContentType(ContentType.XML);
+        spanBuilder.incomingData("<chf>50</chf>");
 
-        Event event = requestBuilder.build();
-        java.lang.System.out.println(event.getConversationId().toString());
+        Span span = spanBuilder.build();
+        java.lang.System.out.println(span.getConversationId());
 
-        client.sendEvent(event);
-        java.lang.System.out.println("RQ: " + event);
+        java.lang.System.out.println("RQ: " + span);
 
         // application service call to trace happens here
         Thread.sleep(500);
 
-        Event.Builder responseBuilder = Event.newResponseEvent(requestBuilder);
-        responseBuilder.contentType(ContentType.XML);
-        responseBuilder.error(false);
-        responseBuilder.data("<response>Sorry, I'm broke!</response>");
+        spanBuilder.outgoingContentType(ContentType.XML);
+        spanBuilder.error(false);
+        spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
-        client.sendEvent(responseBuilder.build());
-        java.lang.System.out.println("RS: " + responseBuilder.build());
+        client.sendSpan(spanBuilder.build());
+        java.lang.System.out.println("RS: " + spanBuilder.build());
     }
 
     @Test
     @Ignore
-    public void sendEventsBulk() throws InterruptedException {
+    public void sendSpansBulk() throws InterruptedException {
 
-        Event.Builder requestBuilder = Event.newRequestEvent(UUID.randomUUID(), new Application("Lukasz"), "GIVE_50_CHF");
+        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF");
 
-        requestBuilder.correlationId(UUID.randomUUID());
-        requestBuilder.consumer(new Application("Frank"));
-        requestBuilder.contentType(ContentType.XML);
-        requestBuilder.data("<chf>50</chf>");
+        spanBuilder.incomingEndpoint(new Endpoint("Frank"));
+        spanBuilder.incomingContentType(ContentType.XML);
+        spanBuilder.incomingData("<chf>50</chf>");
 
-        Event event = requestBuilder.build();
-        java.lang.System.out.println(event.getConversationId().toString());
+        Span span = spanBuilder.build();
+        java.lang.System.out.println(span.getConversationId());
 
         // application service call to trace happens here
         Thread.sleep(500);
 
-        Event.Builder responseBuilder = Event.newResponseEvent(requestBuilder);
-        responseBuilder.contentType(ContentType.XML);
-        responseBuilder.error(false);
-        responseBuilder.data("<response>Sorry, I'm broke!</response>");
+        spanBuilder.outgoingContentType(ContentType.XML);
+        spanBuilder.error(false);
+        spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
-        List<Event> events = new ArrayList<>();
-        events.add(requestBuilder.build());
-        events.add(responseBuilder.build());
+        List<Span> spans = new ArrayList<>();
+        spans.add(spanBuilder.build());
+        spanBuilder.id(UUID.randomUUID().toString());
+        spans.add(spanBuilder.build());
 
-        java.lang.System.out.println("Sending events: " + events);
+        java.lang.System.out.println("Sending spans: " + spans);
 
-        client.sendEvents(events);
+        client.sendSpans(spans);
     }
 }
