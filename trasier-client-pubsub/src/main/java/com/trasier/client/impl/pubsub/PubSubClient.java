@@ -5,7 +5,6 @@ import com.spotify.google.cloud.pubsub.client.Message;
 import com.spotify.google.cloud.pubsub.client.Publisher;
 import com.spotify.google.cloud.pubsub.client.Pubsub;
 import com.trasier.client.Client;
-import com.trasier.client.model.Event;
 import com.trasier.client.utils.Precondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

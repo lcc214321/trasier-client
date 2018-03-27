@@ -8,7 +8,6 @@ import com.spotify.google.cloud.pubsub.client.MessageBuilder;
 import com.spotify.google.cloud.pubsub.client.Publisher;
 import com.spotify.google.cloud.pubsub.client.Pubsub;
 import com.trasier.client.model.ContentType;
-import com.trasier.client.model.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

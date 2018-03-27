@@ -2,8 +2,6 @@ package com.trasier.client.impl.pubsub;
 
 import com.spotify.google.cloud.pubsub.client.Publisher;
 import com.spotify.google.cloud.pubsub.client.Pubsub;
-import com.trasier.client.model.Application;
-import com.trasier.client.model.Event;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
@@ -14,7 +12,10 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PubSubClientTest {
 

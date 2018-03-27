@@ -1,8 +1,6 @@
 package com.trasier.client.impl.pubsub;
 
-import com.trasier.client.model.Application;
 import com.trasier.client.model.ContentType;
-import com.trasier.client.model.Event;
 import org.junit.Before;
 import org.junit.Test;
 

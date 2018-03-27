@@ -1,9 +1,7 @@
 
 package com.trasier.client.impl.spring;
 
-import com.trasier.client.model.Application;
 import com.trasier.client.model.ContentType;
-import com.trasier.client.model.Event;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;

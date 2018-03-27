@@ -3,15 +3,17 @@ package com.trasier.client.impl.pubsub;
 import com.spotify.google.cloud.pubsub.client.Message;
 import com.spotify.google.cloud.pubsub.client.Publisher;
 import com.spotify.google.cloud.pubsub.client.Pubsub;
-import com.trasier.client.model.Application;
 import com.trasier.client.model.ContentType;
-import com.trasier.client.model.Event;
 import org.junit.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 public class PubSubSenderTest {
 

@@ -1,7 +1,6 @@
 package com.trasier.client.impl.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trasier.client.model.Event;
 import org.iq80.snappy.Snappy;
 
 import java.io.IOException;

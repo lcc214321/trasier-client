@@ -2,9 +2,13 @@ package com.trasier.client.impl.spring;
 
 import com.trasier.client.Client;
 import com.trasier.client.configuration.ApplicationConfiguration;
-import com.trasier.client.model.Event;
+import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
@@ -45,16 +49,16 @@ public class SpringRestClient implements Client {
     }
 
     @Override
-    public boolean sendEvent(Event event) {
-        return this.sendEvents(Collections.singletonList(event));
+    public boolean sendSpan(Span span) {
+        return this.sendSpans(Collections.singletonList(span));
     }
 
     @Override
-    public boolean sendEvents(List<Event> events) {
+    public boolean sendSpans(List<Span> spans) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<List<Event>> requestEntity = new HttpEntity<>(events, headers);
+        HttpEntity<List<Span>> requestEntity = new HttpEntity<>(spans, headers);
         ResponseEntity<Void> exchange = restTemplate.exchange(appConfig.getWriterEndpoint(), HttpMethod.PUT, requestEntity, Void.class);
         return !exchange.getStatusCode().is4xxClientError() && !exchange.getStatusCode().is5xxServerError() ;
     }
