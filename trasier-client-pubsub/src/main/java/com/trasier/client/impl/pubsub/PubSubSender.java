@@ -58,6 +58,7 @@ class PubSubSender {
 
         MessageBuilder messageBuilder = Message.builder();
         messageBuilder.putAttribute("appId", this.appId);
+        messageBuilder.putAttribute("message-type", "span");
         messageBuilder.putAttribute("api-version", "1");
 
         if (payloadSize > MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES) {
