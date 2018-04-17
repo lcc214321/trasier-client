@@ -56,7 +56,6 @@ public class Span {
         builder.traceId(traceId);
         builder.incomingEndpoint(incomingEndpoint);
         builder.operationName(operationName);
-        builder.startTimestamp(java.lang.System.currentTimeMillis());
         builder.error(false);
         return builder;
     }
