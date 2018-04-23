@@ -49,7 +49,6 @@ public class Span {
         this.outgoingData = builder.outgoingData;
     }
 
-    //TODO from TraceContext
     public static Builder newSpan(String conversationId, String traceId, Endpoint incomingEndpoint, String operationName) {
         Builder builder = new Builder();
         builder.id(UUID.randomUUID().toString());
@@ -57,7 +56,6 @@ public class Span {
         builder.traceId(traceId);
         builder.incomingEndpoint(incomingEndpoint);
         builder.operationName(operationName);
-        builder.startTimestamp(java.lang.System.currentTimeMillis());
         builder.error(false);
         return builder;
     }
