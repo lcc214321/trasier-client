@@ -29,7 +29,7 @@ public class Span {
         Precondition.notNull(builder.incomingEndpoint, "incomingEndpoint");
         Precondition.notNull(builder.operationName, "operationName");
         Precondition.notNull(builder.error, "error");
-        Precondition.notNull(builder.startTimestamp, "startTimestamp");
+        Precondition.notNull(builder.startTimestamp != null ? builder.startTimestamp : builder.endTimestamp, "startTimestamp or endTimestamp");
 
         this.id = builder.id;
         this.parentId = builder.parentId;
