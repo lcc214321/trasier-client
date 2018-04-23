@@ -32,7 +32,7 @@ public class SpringRestClientTest {
 
         // when
         Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Test1"), "TEST")
-                .outgoingEndpoint(new Endpoint("Test2")).build();
+                .outgoingEndpoint(new Endpoint("Test2")).startTimestamp(1L).build();
 
         boolean result = sut.sendSpans(Collections.singletonList(span));
 
