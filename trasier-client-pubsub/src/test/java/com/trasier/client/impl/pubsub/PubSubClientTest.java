@@ -70,7 +70,7 @@ public class PubSubClientTest {
     @Test
     public void shouldSendRequestAndConfirm() {
         // given
-        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "1").build();
+        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "1").endTimestamp(1L).build();
 
         // when
         boolean result = sut.sendSpan(span);

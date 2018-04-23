@@ -13,7 +13,7 @@ public class PubSubConverterTest {
     @Test
     public void convert() throws IOException {
         PubSubConverter sut = new PubSubConverter();
-        Span.Builder builder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("bla"), "noop");
+        Span.Builder builder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("bla"), "noop").endTimestamp(1L);
         builder.incomingData(generateBigPayload(2000));
         Span span = builder.build();
 

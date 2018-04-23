@@ -24,7 +24,7 @@ public class PubSubSenderTest {
         Publisher publisher = mock(Publisher.class);
         Pubsub pubsub = mock(Pubsub.class);
         PubSubSender sender = new PubSubSender("topic", "client", pubsub, publisher);
-        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP").build();
+        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP").startTimestamp(1L).build();
 
         // when
         Message message = sender.sendSpan(span);
@@ -61,7 +61,7 @@ public class PubSubSenderTest {
         Publisher publisher = mock(Publisher.class);
         Pubsub pubsub = mock(Pubsub.class);
         PubSubSender sender = new PubSubSender("topic", "client", pubsub, publisher);
-        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP")
+        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP").startTimestamp(1L)
                 .incomingData(generateBigPayload(PubSubSender.MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES)).build();
 
         // when
@@ -80,7 +80,7 @@ public class PubSubSenderTest {
         Publisher publisher = mock(Publisher.class);
         Pubsub pubsub = mock(Pubsub.class);
         PubSubSender sender = new PubSubSender("topic", "client", pubsub, publisher);
-        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP")
+        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP").startTimestamp(1L)
                 .incomingData(generateBigPayload(PubSubSender.MAX_ALLOWED_PAYLOAD_SIZE_BYTES)).build();
 
         // when

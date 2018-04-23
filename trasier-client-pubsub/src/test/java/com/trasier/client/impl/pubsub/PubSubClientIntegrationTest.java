@@ -28,7 +28,7 @@ public class PubSubClientIntegrationTest {
                 .appId(java.lang.System.getProperty("trasier.pubsub.appId"))
                 .build();
 
-        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF");
+        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF").startTimestamp(1L);
 
         spanBuilder.outgoingEndpoint(new Endpoint("Frank"));
         spanBuilder.incomingContentType(ContentType.XML);
