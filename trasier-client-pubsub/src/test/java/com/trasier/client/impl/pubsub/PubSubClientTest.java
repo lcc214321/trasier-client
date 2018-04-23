@@ -82,9 +82,9 @@ public class PubSubClientTest {
     @Test
     public void shouldContinueSendingWhileExceptionOccur() {
         // given
-        Span span1 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "1").build();
-        Span span2 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "2").build();
-        Span span3 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "3").build();
+        Span span1 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "1").startTimestamp(1L).build();
+        Span span2 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "2").startTimestamp(1L).build();
+        Span span3 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "3").startTimestamp(1L).build();
 
         when(publisher.publish(any(), any())).thenReturn(null).thenThrow(new RuntimeException("oops")).thenReturn(null);
 

@@ -43,7 +43,7 @@ public class PubSubSenderTest {
         Pubsub pubsub = mock(Pubsub.class);
         PubSubSender sender = new PubSubSender("topic", "client", pubsub, publisher);
         Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP")
-                .incomingData("hello").build();
+                .startTimestamp(1L).incomingData("hello").build();
 
         // when
         Message message = sender.sendSpan(span);
