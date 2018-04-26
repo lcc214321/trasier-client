@@ -2,45 +2,48 @@
 [![Coverage Status](https://coveralls.io/repos/github/trasiercom/trasier-client/badge.svg?branch=develop&g=3)](https://coveralls.io/github/trasiercom/trasier-client?branch=develop)
 
 
-Trasier Client sends tracing data into the Trasier System.
+Trasier Client ingests tracing data into the Trasier system.
 
-# PubSubCLient
+# PubSubClient
 
 Trasier's PubSubClient is a high performant, non I/O blocking pub/sub client. It is based on Netty and uses `async-google-pubsub-client` under the hood.
 
 ## Configuration
 
-Trasier PubSubClient must be configured with `serviceAccountToken` `project`, `clientId` and `topic` parameters. Those parameters are provided by Trasier during the registration process.
+Trasier PubSubClient must be configured by setting the `serviceAccountToken` and `appId` parameters.
+These parameters are provided by Trasier during the registration process.
+Optionally there may be a different `project` and `topic` set, if not provided we will assume the default settings.
 
 ```
-PubSubClient pubSubClient = PubSubClient.builder().serviceAccountToken(...).project(...).clientId(...).topic(...).build();
+PubSubClient pubSubClientDefault = PubSubClient.builder().serviceAccountToken(...).appId(...).build();
+PubSubClient pubSubClientCustomized = PubSubClient.builder().serviceAccountToken(...).project(...).appId(...).topic(...).build();
 ```
 
 ## Usage
 
-### Creating an Event
+### Creating a Span
 
-An event can be either of type `REQUEST`, `RESPONSE` or `NOTICE`.
+A span is the main entity within the trasier system and can be a regular span in terms of the OpenTracing standard or a single event.
 
-The Event class has appropriate Builder methods:
+The Span class has appropriate builder methods:
 
 ```
-Event.Builder requestEvent = Event.newRequestEvent(conversationId, producer, operation);
+Span regularSpan = Span.newSpan(conversationId, traceId, endpoint, name).startTimestamp(startTimestamp).endTimestamp(endTimestamp).build();
 
-Event.Builder responseEvent = newResponseEvent(Builder requestEvent);
-
-Event.Builder noticeEvent = newEvent(UUID conversationId, Application producer, String operation);
+Span singleEventSpan = Span.newSpan(conversationId, traceId, endpoint, name).startTimestamp(startTimestamp).build();
 ```
 
-The Request and Response Event is used to trace messages exchanged by two Applications (the producer and the consumer application).
+The regular case is used to trace messages exchanged between two applications. The producing application is considered as the "incoming" endpoint of the span whereas the consuming application is considered the "outgoing" application.
 
-The Notice event can be used to trace an internal state of an application (for example complex filtering algorithm).
+A single event is typically used add additional information to a span that does not represent an actual message but some internal state of an application (for example complex filtering algorithm).
 
-Parameters `converstaionId`, `application` and `operation` are mandatory.
+If there is not way of tracing the incoming and outgoing data in on go (asynchronous / reactive behaviour) it is also possible to trace them in two separate single span-events. The trasier system takes care of merging them into a regular span on read-time. However, it is important to keep the IDs and the operationName of the span the span and to take care of setting the correct timestamps and data attributes.
 
-### Sending events
+The parameters `converstaionId`, `traceId`, one `endpoint`, one `timestamp` and the `operationName` are mandatory.
 
-It is possible to send a single event using `pubSubClient.sendEvent(event)` or a list of events `pubSubClient.sendEvents(events)`. However internally the events are buffered and send one by one without having a negative impact on the performance.
+### Sending spans
+
+It is possible to submit a single span using `pubSubClient.sendSpan(span)` or a list of spans `pubSubClient.sendSpans(spans)`. However internally all spans are buffered and send in chunks to reduce the operational overhead.
 
 A simple Spring application could look like this:
 
@@ -54,9 +57,7 @@ private PubSubClient pubSubClient;
 public void initialize() {
   pubSubClient = PubSubClient.builder()
                               .serviceAccountToken(config.getTrasierServiceAccountToken())
-                              .project(config.getTrasierProject())
                               .clientId(config.getTrasierProject())
-                              .topic(config.getTrasierTopic())
                               .build();
 }
 
@@ -66,18 +67,21 @@ public void shutdown() {
 }
 
 public String sendBookingRequest(Context context, String request) {
-  Event.Builder requestEvent = Event.newRequestEvent(context.getConversationId(), new Application("Sender"), "Booking")
-                .correlationId(context.getCorrelationId()).contentType(ContentType.XML).data(request);
+  Span.Builder span = Span.newSpan(context.getConversationId(), context.getTraceId(), new Endpoint("Sendername"), "Booking");
+  
+  span.startTimestamo(System.currentTimeMillis());
+  span.incomingData(request);
+  span.contentType(ContentType.XML);
+  
+  //Do the actual request processing.
+  String response = subsystem.executeBookRequest();
+  
+  span.endTimestamo(System.currentTimeMillis());
+  span.outgoingData(response);
+  span.contentType(ContentType.XML);
 
-  String response = subsystem.executeBookRequest()
+  pubSubClient.sendSpan(span.build());
 
-  Event responseEvent = Event.newResponseEvent(requestEvent).data(response).build();
-
-  pubSubClient.sendEvents(Arrays.asList(requestEvent.build(), responseEvent));
-
-return response;
-
+  return response;
 }
-
 ```
-
