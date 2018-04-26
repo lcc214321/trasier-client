@@ -44,14 +44,23 @@ public class PubSubClient implements Client {
     }
 
     private PubSubClient(PubSubClient.Builder builder) {
-        Precondition.notBlank(builder.project, "project");
-        Precondition.notBlank(builder.topic, "topic");
         Precondition.notBlank(builder.appId, "appId");
+
+        String project = "trasier-192322";
+        if(builder.project != null) {
+            project = builder.project;
+        }
+
+        String topic = "trasier-prod";
+        if(builder.topic != null) {
+            topic = builder.topic;
+        }
+
         if (builder.publisher != null && builder.pubsub != null) {
-            this.sender = new PubSubSender(builder.topic.trim(), builder.appId.trim(), builder.pubsub, builder.publisher);
+            this.sender = new PubSubSender(topic.trim(), builder.appId.trim(), builder.pubsub, builder.publisher);
         } else {
             Precondition.notBlank(builder.serviceAccountToken, "serviceAccountToken");
-            this.sender = new PubSubSender(builder.project.trim(), builder.topic.trim(), builder.appId.trim(), builder.serviceAccountToken.trim());
+            this.sender = new PubSubSender(project.trim(), topic.trim(), builder.appId.trim(), builder.serviceAccountToken.trim());
         }
     }
 
