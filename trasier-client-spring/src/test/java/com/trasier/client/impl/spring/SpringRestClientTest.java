@@ -1,8 +1,8 @@
 package com.trasier.client.impl.spring;
 
 import com.trasier.client.configuration.ApplicationConfiguration;
-import com.trasier.client.model.Application;
-import com.trasier.client.model.Event;
+import com.trasier.client.model.Endpoint;
+import com.trasier.client.model.Span;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +26,10 @@ public class SpringRestClientTest {
         SpringRestClient sut = new SpringRestClient(new ApplicationConfiguration(), new SpringClientConfiguration(), restTemplate);
 
         // when
-        Event event = Event.newRequestEvent(UUID.randomUUID(), new Application("Test1"), "TEST")
-                .consumer(new Application("Test2")).correlationId(UUID.randomUUID()).build();
+        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Test1"), "TEST")
+                .outgoingEndpoint(new Endpoint("Test2")).startTimestamp(1L).build();
 
-        boolean result = sut.sendEvents(Collections.singletonList(event));
+        boolean result = sut.sendSpans(Collections.singletonList(span));
 
         // then
         assertTrue(result);

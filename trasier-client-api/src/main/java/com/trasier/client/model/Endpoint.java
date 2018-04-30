@@ -1,43 +1,44 @@
 package com.trasier.client.model;
 
-public class Application {
+public class Endpoint {
     private String name;
     private String ipAddress;
+    private String port;
     private String hostname;
 
-    public Application(String name) {
+    public Endpoint(String name) {
         this.name = name;
+    }
+
+    public Endpoint(String name, String ipAddress, String port, String hostname) {
+        this.name = name;
+        this.ipAddress = ipAddress;
+        this.port = port;
+        this.hostname = hostname;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getIpAddress() {
         return ipAddress;
     }
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public String getPort() {
+        return port;
     }
 
     public String getHostname() {
         return hostname;
     }
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
-
     @Override
     public String toString() {
-        return "Application{" +
+        return "Endpoint{" +
                 "name='" + name + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
+                ", port='" + port + '\'' +
                 ", hostname='" + hostname + '\'' +
                 '}';
     }

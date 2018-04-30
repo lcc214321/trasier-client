@@ -2,8 +2,8 @@ package com.trasier.client.impl.pubsub;
 
 import com.spotify.google.cloud.pubsub.client.Publisher;
 import com.spotify.google.cloud.pubsub.client.Pubsub;
-import com.trasier.client.model.Application;
-import com.trasier.client.model.Event;
+import com.trasier.client.model.Endpoint;
+import com.trasier.client.model.Span;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
@@ -29,7 +29,7 @@ public class PubSubClientTest {
         sut = PubSubClient.builder()
                 .project("trasier-project")
                 .topic("trasier-topic")
-                .clientId("trasier-client")
+                .appId("trasier-appId")
                 .publisher(publisher)
                 .pubsub(pubsub)
                 .build();
@@ -59,18 +59,18 @@ public class PubSubClientTest {
     public void shouldThrowExceptionWhenClientNotConfigured() {
         assertTrue("project is missing", exceptionThrown(PubSubClient.builder()));
         assertTrue("topic is missing", exceptionThrown(PubSubClient.builder().project("proj")));
-        assertTrue("clientId is missing", exceptionThrown(PubSubClient.builder().project("proj").topic("topic")));
+        assertTrue("appId is missing", exceptionThrown(PubSubClient.builder().project("proj").topic("topic")));
 
-        assertFalse(exceptionThrown(PubSubClient.builder().project("proj").topic("topic").clientId("cid")));
+        assertFalse(exceptionThrown(PubSubClient.builder().project("proj").topic("topic").appId("appId")));
     }
 
     @Test
     public void shouldSendRequestAndConfirm() {
         // given
-        Event event = Event.newEvent(UUID.randomUUID(), new Application("ola"), "1").correlationId(UUID.randomUUID()).build();
+        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "1").endTimestamp(1L).build();
 
         // when
-        boolean result = sut.sendEvent(event);
+        boolean result = sut.sendSpan(span);
 
         // then
         assertTrue(result);
@@ -79,14 +79,14 @@ public class PubSubClientTest {
     @Test
     public void shouldContinueSendingWhileExceptionOccur() {
         // given
-        Event event1 = Event.newEvent(UUID.randomUUID(), new Application("ola"), "1").correlationId(UUID.randomUUID()).build();
-        Event event2 = Event.newEvent(UUID.randomUUID(), new Application("ola"), "2").correlationId(UUID.randomUUID()).build();
-        Event event3 = Event.newEvent(UUID.randomUUID(), new Application("ola"), "3").correlationId(UUID.randomUUID()).build();
+        Span span1 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "1").startTimestamp(1L).build();
+        Span span2 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "2").startTimestamp(1L).build();
+        Span span3 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "3").startTimestamp(1L).build();
 
         when(publisher.publish(any(), any())).thenReturn(null).thenThrow(new RuntimeException("oops")).thenReturn(null);
 
         // when
-        boolean result = sut.sendEvents(Arrays.asList(event1, event2, event3));
+        boolean result = sut.sendSpans(Arrays.asList(span1, span2, span3));
 
         // then
         assertFalse(result);

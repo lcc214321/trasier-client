@@ -1,14 +1,14 @@
 package com.trasier.client;
 
-import com.trasier.client.model.Event;
+import com.trasier.client.model.Span;
 
 import java.util.List;
 
 public interface Client {
 
-    boolean sendEvent(Event event);
+    boolean sendSpan(Span span);
 
-    boolean sendEvents(List<Event> events);
+    boolean sendSpans(List<Span> spans);
 
     void close();
 

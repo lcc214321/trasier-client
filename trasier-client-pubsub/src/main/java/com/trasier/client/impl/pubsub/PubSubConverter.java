@@ -1,7 +1,7 @@
 package com.trasier.client.impl.pubsub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.trasier.client.model.Event;
+import com.trasier.client.model.Span;
 import org.iq80.snappy.Snappy;
 
 import java.io.IOException;
@@ -14,11 +14,11 @@ class PubSubConverter {
         this.mapper = new ObjectMapper();
     }
 
-    byte[] compressData(Event event) throws IOException {
-        return Snappy.compress(mapper.writer().writeValueAsBytes(event));
+    byte[] compress(Span span) throws IOException {
+        return Snappy.compress(mapper.writer().writeValueAsBytes(span));
     }
 
-    byte[] getByteData(Event event) throws IOException {
-        return mapper.writer().writeValueAsBytes(event);
+    byte[] getByteData(Span span) throws IOException {
+        return mapper.writer().writeValueAsBytes(span);
     }
 }
