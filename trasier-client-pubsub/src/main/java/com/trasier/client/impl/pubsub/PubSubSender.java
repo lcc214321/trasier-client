@@ -21,7 +21,7 @@ class PubSubSender {
     static final int MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES = 2 * 1024;
 
     private String topic;
-    private String appId;
+    private String spaceId;
     private Pubsub pubsub;
     private Publisher publisher;
     private PubSubConverter converter;
@@ -40,9 +40,9 @@ class PubSubSender {
         this.initialize(topic, clientId, pubsub, publisher);
     }
 
-    private void initialize(String topic, String appId, Pubsub pubsub, Publisher publisher) {
+    private void initialize(String topic, String spaceId, Pubsub pubsub, Publisher publisher) {
         this.topic = topic;
-        this.appId = appId;
+        this.spaceId = spaceId;
         this.publisher = publisher;
         this.pubsub = pubsub;
         this.converter = new PubSubConverter();
@@ -57,7 +57,7 @@ class PubSubSender {
         }
 
         MessageBuilder messageBuilder = Message.builder();
-        messageBuilder.putAttribute("appId", this.appId);
+        messageBuilder.putAttribute("spaceId", this.spaceId);
         messageBuilder.putAttribute("message-type", "span");
         messageBuilder.putAttribute("api-version", "1");
 

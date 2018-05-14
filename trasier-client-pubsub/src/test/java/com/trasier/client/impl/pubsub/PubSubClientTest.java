@@ -32,7 +32,7 @@ public class PubSubClientTest {
         sut = PubSubClient.builder()
                 .project("trasier-project")
                 .topic("trasier-topic")
-                .appId("trasier-appId")
+                .spaceId("trasier-spaceId")
                 .publisher(publisher)
                 .pubsub(pubsub)
                 .build();
@@ -62,9 +62,9 @@ public class PubSubClientTest {
     public void shouldThrowExceptionWhenClientNotConfigured() {
         assertTrue("project is missing", exceptionThrown(PubSubClient.builder()));
         assertTrue("topic is missing", exceptionThrown(PubSubClient.builder().project("proj")));
-        assertTrue("appId is missing", exceptionThrown(PubSubClient.builder().project("proj").topic("topic")));
+        assertTrue("spaceId is missing", exceptionThrown(PubSubClient.builder().project("proj").topic("topic")));
 
-        assertFalse(exceptionThrown(PubSubClient.builder().project("proj").topic("topic").appId("appId")));
+        assertFalse(exceptionThrown(PubSubClient.builder().project("proj").topic("topic").spaceId("spaceId")));
     }
 
     @Test
