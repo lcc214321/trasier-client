@@ -36,7 +36,8 @@
         <module>trasier-client-spring</module>
         <module>trasier-client-pubsub</module>
         <module>trasier-client-pubsub-shaded</module>
-    </modules>
+		<module>trasier-client-spring-sleuth</module>
+	</modules>
 
     <dependencyManagement>
         <dependencies>
