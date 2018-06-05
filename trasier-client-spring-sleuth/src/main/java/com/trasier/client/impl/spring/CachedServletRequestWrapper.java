@@ -6,6 +6,7 @@ package com.trasier.client.impl.spring;
 
 import org.apache.commons.io.IOUtils;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -51,6 +52,21 @@ public class CachedServletRequestWrapper extends HttpServletRequestWrapper {
         @Override
         public int read() throws IOException {
             return byteArrayInputStream.read();
+        }
+
+        @Override
+        public boolean isFinished() {
+            return !isReady();
+        }
+
+        @Override
+        public boolean isReady() {
+            return byteArrayInputStream.available() > 0;
+        }
+
+        @Override
+        public void setReadListener(ReadListener readListener) {
+
         }
     }
 }
