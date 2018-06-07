@@ -1,6 +1,7 @@
-package com.trasier.client.impl.spring;
+package com.trasier.client.impl.spring4.sleuth;
 
 import com.trasier.client.Client;
+import com.trasier.client.impl.spring4.TrasierConstants;
 import com.trasier.client.model.Endpoint;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.SpanReporter;

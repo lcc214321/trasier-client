@@ -18,7 +18,7 @@
 	<dependencies>
         <dependency>
             <groupId>com.trasier</groupId>
-            <artifactId>trasier-client-spring</artifactId>
+            <artifactId>trasier-client-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

@@ -33,11 +33,12 @@
     <modules>
         <module>trasier-client-core</module>
         <module>trasier-client-api</module>
-        <module>trasier-client-spring</module>
         <module>trasier-client-pubsub</module>
         <module>trasier-client-pubsub-shaded</module>
+        <module>trasier-client-spring4</module>
+        <module>trasier-client-spring5</module>
 		<module>trasier-client-spring-sleuth</module>
-	</modules>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
@@ -53,7 +54,12 @@
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-spring</artifactId>
+                <artifactId>trasier-client-spring4</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trasier</groupId>
+                <artifactId>trasier-client-spring5</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

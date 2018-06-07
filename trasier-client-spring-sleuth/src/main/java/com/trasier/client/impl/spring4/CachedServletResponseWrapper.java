@@ -2,9 +2,10 @@
  * Copyright (C) Schweizerische Bundesbahnen SBB, 2017.
  */
 
-package com.trasier.client.impl.spring;
+package com.trasier.client.impl.spring4;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.ByteArrayOutputStream;
@@ -43,7 +44,6 @@ public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
         private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         public CachedOutputStream(ServletOutputStream outputStream) {
-
             this.outputStream = outputStream;
         }
 
@@ -51,6 +51,16 @@ public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
         public void write(int b) throws IOException {
             outputStream.write(b);
             out.write(b);
+        }
+
+        @Override
+        public boolean isReady() {
+            return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+
         }
     }
 }

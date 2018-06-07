@@ -1,6 +1,9 @@
-package com.trasier.client.impl.spring;
+package com.trasier.client.impl.spring4.sleuth;
 
 import com.google.gson.GsonBuilder;
+import com.trasier.client.impl.spring4.CachedServletRequestWrapper;
+import com.trasier.client.impl.spring4.CachedServletResponseWrapper;
+import com.trasier.client.impl.spring4.TrasierConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.SpanAccessor;
