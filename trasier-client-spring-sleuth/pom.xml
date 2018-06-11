@@ -20,6 +20,7 @@
             <groupId>com.trasier</groupId>
             <artifactId>trasier-client-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>

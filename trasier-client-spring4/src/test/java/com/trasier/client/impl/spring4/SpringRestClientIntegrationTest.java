@@ -22,7 +22,7 @@ public class SpringRestClientIntegrationTest {
     private SpringRestClient client;
 
     @Test
-    @Ignore
+//    @Ignore
     public void sendSpanOneByOne() throws InterruptedException {
         Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF").startTimestamp(1L);
 
