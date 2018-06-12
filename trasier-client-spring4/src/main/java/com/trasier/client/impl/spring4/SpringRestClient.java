@@ -4,6 +4,7 @@ import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierApplicationConfiguration;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,11 +21,12 @@ import java.util.List;
 @Component
 public class SpringRestClient implements Client {
     private final TrasierApplicationConfiguration appConfig;
+
     private final RestTemplate restTemplate;
     private final OAuthTokenSafe tokenSafe;
 
     @Autowired
-    public SpringRestClient(TrasierApplicationConfiguration appConfig, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
+    public SpringRestClient(TrasierApplicationConfiguration appConfig, @Qualifier("trasierRestTemplate") RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
         this.appConfig = appConfig;
         this.restTemplate = restTemplate;
         this.tokenSafe = tokenSafe;
