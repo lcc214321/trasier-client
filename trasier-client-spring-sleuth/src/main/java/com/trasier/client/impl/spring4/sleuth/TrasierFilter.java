@@ -45,6 +45,7 @@ public class TrasierFilter extends GenericFilterBean {
             Span currentSpan = spanAccessor.getCurrentSpan();
             String conversationId = request.getHeader(TrasierConstants.HEADER_CONVERSATION_ID);
             currentSpan.tag(TrasierConstants.TAG_CONVERSATION_ID, conversationId);
+            currentSpan.tag(TrasierConstants.TAG_OPERATION_NAME, getOperationName(request));
 
             Map<String, String> requestHeaders = getRequestHeaders(request);
             Map<String, List<String>> parameters = getRequestParameters(request);
@@ -62,7 +63,6 @@ public class TrasierFilter extends GenericFilterBean {
             String responseBody = response.getCachedData();
             String responseMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(statusMap, responseHeaders, responseBody));
             currentSpan.tag(TrasierConstants.TAG_RESPONSE_MESSAGE, responseMessage);
-            currentSpan.tag(TrasierConstants.TAG_OPERATION_NAME, getOperationName(request));
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
