@@ -58,28 +58,4 @@ public class OAuthTokenSafe {
 
         this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - 60) * 1000);
     }
-
-    public OAuthToken getToken() {
-        return token;
-    }
-
-    public void setToken(OAuthToken token) {
-        this.token = token;
-    }
-
-    public long getTokenIssued() {
-        return tokenIssued;
-    }
-
-    public void setTokenIssued(long tokenIssued) {
-        this.tokenIssued = tokenIssued;
-    }
-
-    public long getTokenExpiresAt() {
-        return tokenExpiresAt;
-    }
-
-    public void setTokenExpiresAt(long tokenExpiresAt) {
-        this.tokenExpiresAt = tokenExpiresAt;
-    }
 }
