@@ -110,6 +110,9 @@ public class TrasierFilter extends GenericFilterBean {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
         String operation = requestURI.replace("/api/", "");
+        if(operation.contains("/")) {
+            operation = operation.substring(0, operation.indexOf("/"));
+        }
         return method.toUpperCase() + "_" + operation.toUpperCase();
     }
 }
