@@ -36,7 +36,7 @@ public class OAuthTokenSafe {
     }
 
     private boolean isTokenValid() {
-        return token != null && tokenExpiresAt < System.currentTimeMillis();
+        return token != null && tokenExpiresAt > System.currentTimeMillis();
     }
 
     private synchronized void refreshToken() {
