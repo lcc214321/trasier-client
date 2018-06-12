@@ -6,12 +6,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
-public class ApplicationConfigurationTest {
+public class TrasierApplicationConfigurationTest {
 
     @Test
     public void shouldUseDefaultProperties() {
         // given
-        ApplicationConfiguration sut = new ApplicationConfiguration();
+        TrasierApplicationConfiguration sut = new TrasierApplicationConfiguration();
 
         // when / then
         assertTrue(sut.getAuthEndpoint().length() > 1);
@@ -21,7 +21,7 @@ public class ApplicationConfigurationTest {
         System.setProperty("trasier.app.auth.endpoint", "auth_endpoint");
         System.setProperty( "trasier.app.writer.endpoint", "write_endpoint");
 
-        sut = new ApplicationConfiguration();
+        sut = new TrasierApplicationConfiguration();
 
         // then
         assertEquals("auth_endpoint", sut.getAuthEndpoint());
