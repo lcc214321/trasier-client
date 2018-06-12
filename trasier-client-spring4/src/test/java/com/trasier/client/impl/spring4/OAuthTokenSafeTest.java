@@ -20,7 +20,7 @@ public class OAuthTokenSafeTest {
 
         OAuthToken token = new OAuthToken();
         token.setAccessToken("accessTokenMock");
-        token.setExpiresIn("" + (System.currentTimeMillis() + (80 * 1000)));
+        token.setExpiresIn("" + (80 * 1000));
         when(exchange.getBody()).thenReturn(token);
 
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class))).thenReturn(exchange);
@@ -33,6 +33,30 @@ public class OAuthTokenSafeTest {
 
         // then
         verify(restTemplate).postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class));
+    }
 
+    @Test
+    public void testRefreshExpiredToken() {
+        // given
+        RestTemplate restTemplate = mock(RestTemplate.class);
+        TrasierSpringClientConfiguration clientConfig = new TrasierSpringClientConfiguration();
+        TrasierApplicationConfiguration appConfig = new TrasierApplicationConfiguration();
+        ResponseEntity exchange = mock(ResponseEntity.class);
+
+        OAuthToken token = new OAuthToken();
+        token.setAccessToken("accessTokenMock");
+        token.setExpiresIn("" + (-80 * 1000));
+        when(exchange.getBody()).thenReturn(token);
+
+        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class))).thenReturn(exchange);
+
+        OAuthTokenSafe sut = new OAuthTokenSafe(appConfig, clientConfig, restTemplate);
+
+        // when
+        sut.getAuthHeader();
+        sut.getAuthHeader();
+
+        // then
+        verify(restTemplate, times(2)).postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class));
     }
 }
