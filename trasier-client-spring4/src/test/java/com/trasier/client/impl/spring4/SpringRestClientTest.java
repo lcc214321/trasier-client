@@ -28,13 +28,13 @@ public class SpringRestClientTest {
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
         when(restTemplate.exchange(anyString(), any(), any(), eq(Void.class))).thenReturn(responseEntity);
 
-        SpringRestClient sut = new SpringRestClient(new ApplicationConfiguration(), new SpringClientConfiguration(), restTemplate);
+        SpringRestClient sut = new SpringRestClient(new ApplicationConfiguration(), new TrasierSpringClientConfiguration(), restTemplate);
 
         // when
         Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Test1"), "TEST")
                 .outgoingEndpoint(new Endpoint("Test2")).startTimestamp(1L).build();
 
-        boolean result = sut.sendSpans(Collections.singletonList(span));
+        boolean result = sut.sendSpans("170520", "test-1", Collections.singletonList(span));
 
         // then
         assertTrue(result);

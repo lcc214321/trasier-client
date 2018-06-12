@@ -46,7 +46,7 @@ public class PubSubClientIntegrationTest {
         spanBuilder.error(false);
         spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
-        client.sendSpans(Collections.singletonList(spanBuilder.build()));
+        client.sendSpans("170520", "test-1", Collections.singletonList(spanBuilder.build()));
         java.lang.System.out.println("RS: " + spanBuilder.build());
 
         // wait for async write

@@ -19,7 +19,7 @@ public class PubSubClient implements Client {
     private final PubSubSender sender;
 
     @Override
-    public boolean sendSpan(Span span) {
+    public boolean sendSpan(String accountId, String spaceKey, Span span) {
         try {
             Message message = sender.sendSpan(span);
             return message != null;
@@ -30,10 +30,10 @@ public class PubSubClient implements Client {
     }
 
     @Override
-    public boolean sendSpans(List<Span> spans) {
+    public boolean sendSpans(String accountId, String spaceKey, List<Span> spans) {
         boolean result = true;
         for (Span span : spans) {
-            result &= this.sendSpan(span);
+            result &= this.sendSpan(accountId, spaceKey, span);
         }
         return result;
     }

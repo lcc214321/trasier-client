@@ -7,8 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @PropertySource("classpath:trasier.properties")
-public class SpringClientConfiguration extends ClientPropertyConfiguration {
-
+public class TrasierSpringClientConfiguration extends ClientPropertyConfiguration {
     @Value("${trasier.client.id}")
     private String clientId;
 

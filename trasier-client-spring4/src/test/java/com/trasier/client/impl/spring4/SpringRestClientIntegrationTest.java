@@ -16,15 +16,15 @@ import java.util.List;
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TrasierSpringConfiguration.class, SpringClientConfiguration.class})
+@ContextConfiguration(classes = {TrasierSpringConfiguration.class, TrasierSpringClientConfiguration.class})
 public class SpringRestClientIntegrationTest {
     @Autowired
     private SpringRestClient client;
 
     @Test
-//    @Ignore
+    @Ignore
     public void sendSpanOneByOne() throws InterruptedException {
-        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF").startTimestamp(1L);
+        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF").startTimestamp(System.currentTimeMillis());
 
         spanBuilder.incomingEndpoint(new Endpoint("Frank"));
         spanBuilder.incomingContentType(ContentType.XML);
@@ -42,7 +42,8 @@ public class SpringRestClientIntegrationTest {
         spanBuilder.error(false);
         spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
-        client.sendSpan(spanBuilder.build());
+        client.sendSpan("170520", "test-1", spanBuilder.build());
+        client.sendSpan("170520", "test-1", spanBuilder.error(true).build());
         java.lang.System.out.println("RS: " + spanBuilder.build());
     }
 
@@ -50,7 +51,7 @@ public class SpringRestClientIntegrationTest {
     @Ignore
     public void sendSpansBulk() throws InterruptedException {
 
-        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF").endTimestamp(1L);
+        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF").endTimestamp(System.currentTimeMillis());
 
         spanBuilder.incomingEndpoint(new Endpoint("Frank"));
         spanBuilder.incomingContentType(ContentType.XML);
@@ -73,6 +74,6 @@ public class SpringRestClientIntegrationTest {
 
         java.lang.System.out.println("Sending spans: " + spans);
 
-        client.sendSpans(spans);
+        client.sendSpans("170520", "test-1", spans);
     }
 }

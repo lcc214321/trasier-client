@@ -38,7 +38,6 @@
         <module>trasier-client-spring4</module>
         <module>trasier-client-spring5</module>
 		<module>trasier-client-spring-sleuth</module>
-        <module>trasier-client-apache</module>
     </modules>
 
     <dependencyManagement>

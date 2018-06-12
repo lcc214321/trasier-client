@@ -73,7 +73,7 @@ public class PubSubClientTest {
         Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "1").endTimestamp(1L).build();
 
         // when
-        boolean result = sut.sendSpan(span);
+        boolean result = sut.sendSpan("170520", "test-1", span);
 
         // then
         assertTrue(result);
@@ -89,7 +89,7 @@ public class PubSubClientTest {
         when(publisher.publish(any(), any())).thenReturn(null).thenThrow(new RuntimeException("oops")).thenReturn(null);
 
         // when
-        boolean result = sut.sendSpans(Arrays.asList(span1, span2, span3));
+        boolean result = sut.sendSpans("170520", "test-1", Arrays.asList(span1, span2, span3));
 
         // then
         assertFalse(result);

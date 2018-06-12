@@ -8,4 +8,22 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan(basePackageClasses = TrasierSleuthConfiguration.class)
 @ConfigurationProperties("trasier.sleuth")
 public class TrasierSleuthConfiguration {
+    private String accountId;
+    private String spaceKey;
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
+
+    public String getSpaceKey() {
+        return spaceKey;
+    }
+
+    public void setSpaceKey(String spaceKey) {
+        this.spaceKey = spaceKey;
+    }
 }

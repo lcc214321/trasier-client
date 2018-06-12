@@ -14,9 +14,11 @@ import java.util.Map;
 @Component
 public class TrasierReporter implements SpanReporter {
     private final Client client;
+    private final TrasierSleuthConfiguration configuration;
 
-    public TrasierReporter(Client client) {
+    public TrasierReporter(Client client, TrasierSleuthConfiguration configuration) {
         this.client = client;
+        this.configuration = configuration;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class TrasierReporter implements SpanReporter {
             builder.incomingData(tags.get(TrasierConstants.TAG_REQUEST_MESSAGE));
             builder.outgoingData(tags.get(TrasierConstants.TAG_RESPONSE_MESSAGE));
 //            builder.outgoingEndpoint(new Endpoint(tags.get("empfaenger")));
-            client.sendSpan(builder.build());
+            client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), builder.build());
         }
     }
 }

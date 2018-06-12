@@ -9,11 +9,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TrasierSpringConfiguration.class, SpringClientConfiguration.class})
-public class SpringClientConfigurationTest {
+@ContextConfiguration(classes = {TrasierSpringConfiguration.class, TrasierSpringClientConfiguration.class})
+public class TrasierSpringClientConfigurationTest {
 
     @Autowired
-    private SpringClientConfiguration config;
+    private TrasierSpringClientConfiguration config;
 
     @Test
     public void testPropertiesSet() throws Exception {
