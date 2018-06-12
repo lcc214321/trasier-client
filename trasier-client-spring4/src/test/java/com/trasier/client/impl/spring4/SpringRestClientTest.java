@@ -1,6 +1,6 @@
 package com.trasier.client.impl.spring4;
 
-import com.trasier.client.configuration.ApplicationConfiguration;
+import com.trasier.client.configuration.TrasierApplicationConfiguration;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.junit.Test;
@@ -27,8 +27,9 @@ public class SpringRestClientTest {
         RestTemplate restTemplate = mock(RestTemplate.class);
         ResponseEntity<Void> responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
         when(restTemplate.exchange(anyString(), any(), any(), eq(Void.class))).thenReturn(responseEntity);
+        OAuthTokenSafe oAuthTokenSafe = mock(OAuthTokenSafe.class);
 
-        SpringRestClient sut = new SpringRestClient(new ApplicationConfiguration(), new TrasierSpringClientConfiguration(), restTemplate);
+        SpringRestClient sut = new SpringRestClient(new TrasierApplicationConfiguration(), restTemplate,  oAuthTokenSafe);
 
         // when
         Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Test1"), "TEST")

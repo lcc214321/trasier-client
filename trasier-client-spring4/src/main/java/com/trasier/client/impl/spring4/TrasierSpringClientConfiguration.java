@@ -23,5 +23,4 @@ public class TrasierSpringClientConfiguration extends ClientPropertyConfiguratio
     public String getSecret() {
         return secret;
     }
-
 }

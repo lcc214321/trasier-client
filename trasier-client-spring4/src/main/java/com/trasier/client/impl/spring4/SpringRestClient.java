@@ -1,7 +1,7 @@
 package com.trasier.client.impl.spring4;
 
 import com.trasier.client.Client;
-import com.trasier.client.configuration.ApplicationConfiguration;
+import com.trasier.client.configuration.TrasierApplicationConfiguration;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -9,70 +9,25 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
 @Component
 public class SpringRestClient implements Client {
-    private final ApplicationConfiguration appConfig;
-    private final TrasierSpringClientConfiguration configuration;
+    private final TrasierApplicationConfiguration appConfig;
     private final RestTemplate restTemplate;
-
-    private OAuthToken token;
-    private long tokenIssued;
-    private long tokenExpiresAt;
+    private final OAuthTokenSafe tokenSafe;
 
     @Autowired
-    public SpringRestClient(ApplicationConfiguration appConfig, TrasierSpringClientConfiguration configuration) {
-        this(appConfig, configuration, new RestTemplate());
-    }
-
-    public SpringRestClient(ApplicationConfiguration appConfig, TrasierSpringClientConfiguration configuration, RestTemplate restTemplate) {
+    public SpringRestClient(TrasierApplicationConfiguration appConfig, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
         this.appConfig = appConfig;
-        this.configuration = configuration;
         this.restTemplate = restTemplate;
-
-        this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-    }
-
-    private String getAuthHeader() {
-        if (!isTokenValid()) {
-            refreshToken();
-        }
-        return token.getAccessToken();
-    }
-
-    private boolean isTokenValid() {
-        return token != null && tokenExpiresAt < System.currentTimeMillis();
-    }
-
-    private synchronized void refreshToken() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        String basicAuth = Base64.getEncoder().encodeToString((configuration.getClientId() + ":" + configuration.getSecret()).getBytes());
-        headers.add("Authorization", "Basic " + basicAuth);
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("grant_type", "client_credentials");
-        map.add("scope", "");
-        map.add("client_id", configuration.getClientId());
-
-        this.tokenIssued = System.currentTimeMillis();
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
-        ResponseEntity<OAuthToken> exchange = restTemplate.postForEntity(appConfig.getAuthEndpoint(), requestEntity, OAuthToken.class);
-        this.token = exchange.getBody();
-
-        this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - 60) * 1000);
+        this.tokenSafe = tokenSafe;
     }
 
     @Override
@@ -84,7 +39,7 @@ public class SpringRestClient implements Client {
     public boolean sendSpans(String accountId, String spaceKey, List<Span> spans) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getAuthHeader());
+        headers.add("Authorization", "Bearer " + tokenSafe.getAuthHeader());
 
         UriComponents builder = UriComponentsBuilder.fromHttpUrl(appConfig.getWriterEndpoint()).buildAndExpand(accountId, spaceKey);
         HttpEntity<List<Span>> requestEntity = new HttpEntity<>(spans, headers);
