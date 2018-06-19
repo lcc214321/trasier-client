@@ -10,14 +10,14 @@ public class ClientPropertyConfigurationTest {
 
     @Before
     public void setup() {
-        System.setProperty("trasier.client.id", "client-id");
-        System.setProperty("trasier.client.secret", "client-secret");
+        System.setProperty("trasier.client.clientId", "client-id");
+        System.setProperty("trasier.client.clientSecret", "client-secret");
     }
 
     @After
     public void cleanup() {
-        System.setProperty("trasier.client.id", "");
-        System.setProperty("trasier.client.secret", "");
+        System.setProperty("trasier.client.clientId", "");
+        System.setProperty("trasier.client.clientSecret", "");
     }
 
     @Test
