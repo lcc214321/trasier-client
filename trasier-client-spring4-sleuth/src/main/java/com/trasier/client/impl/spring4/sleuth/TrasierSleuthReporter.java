@@ -2,6 +2,7 @@ package com.trasier.client.impl.spring4.sleuth;
 
 import com.trasier.client.Client;
 import com.trasier.client.impl.spring4.TrasierConstants;
+import com.trasier.client.impl.spring4.TrasierSpringClientConfiguration;
 import com.trasier.client.model.Endpoint;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.SpanReporter;
@@ -12,11 +13,11 @@ import java.util.Map;
 
 @Primary
 @Component
-public class TrasierReporter implements SpanReporter {
+public class TrasierSleuthReporter implements SpanReporter {
     private final Client client;
-    private final TrasierSleuthConfiguration configuration;
+    private final TrasierSpringClientConfiguration configuration;
 
-    public TrasierReporter(Client client, TrasierSleuthConfiguration configuration) {
+    public TrasierSleuthReporter(Client client, TrasierSpringClientConfiguration configuration) {
         this.client = client;
         this.configuration = configuration;
     }

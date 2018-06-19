@@ -40,22 +40,24 @@ public class OAuthTokenSafe {
     }
 
     private synchronized void refreshToken() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        String basicAuth = Base64.getEncoder().encodeToString((springConfig.getClientId() + ":" + springConfig.getSecret()).getBytes());
-        headers.add("Authorization", "Basic " + basicAuth);
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        if(!isTokenValid()) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            String basicAuth = Base64.getEncoder().encodeToString((springConfig.getClientId() + ":" + springConfig.getClientSecret()).getBytes());
+            headers.add("Authorization", "Basic " + basicAuth);
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("grant_type", "client_credentials");
-        map.add("scope", "");
-        map.add("client_id", springConfig.getClientId());
+            MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+            map.add("grant_type", "client_credentials");
+            map.add("scope", "");
+            map.add("client_id", springConfig.getClientId());
 
-        this.tokenIssued = System.currentTimeMillis();
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
-        ResponseEntity<OAuthToken> exchange = restTemplate.postForEntity(appConfig.getAuthEndpoint(), requestEntity, OAuthToken.class);
-        this.token = exchange.getBody();
+            this.tokenIssued = System.currentTimeMillis();
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
+            ResponseEntity<OAuthToken> exchange = restTemplate.postForEntity(appConfig.getAuthEndpoint(), requestEntity, OAuthToken.class);
+            this.token = exchange.getBody();
 
-        this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - 60) * 1000);
+            this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - 60) * 1000);
+        }
     }
 }

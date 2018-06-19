@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Import(TrasierSleuthConfiguration.class)
 @Documented
-public @interface EnbaleTrasierSleuth {
+public @interface EnableTrasierSleuth {
 }

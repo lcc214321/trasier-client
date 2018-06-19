@@ -18,6 +18,6 @@ public class TrasierSpringClientConfigurationTest {
     @Test
     public void testPropertiesSet() throws Exception {
         assertNotNull(config.getClientId());
-        assertNotNull(config.getSecret());
+        assertNotNull(config.getClientSecret());
     }
 }

@@ -27,7 +27,7 @@ public class ClientPropertyConfigurationTest {
 
         // when
         String clientId = sut.getClientId();
-        String secret = sut.getSecret();
+        String secret = sut.getClientSecret();
 
         // then
         assertEquals("client-id", clientId);

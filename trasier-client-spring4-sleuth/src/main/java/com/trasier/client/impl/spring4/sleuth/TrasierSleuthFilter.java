@@ -26,13 +26,13 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @Component
-public class TrasierFilter extends GenericFilterBean {
+public class TrasierSleuthFilter extends GenericFilterBean {
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";
 
     private final SpanAccessor spanAccessor;
 
     @Autowired
-    public TrasierFilter(SpanAccessor spanAccessor) {
+    public TrasierSleuthFilter(SpanAccessor spanAccessor) {
         this.spanAccessor = spanAccessor;
     }
 
