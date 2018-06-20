@@ -1,12 +1,9 @@
 language: java
 
-dist: precise
+dist: trusty
 
 jdk:
-  - oraclejdk8
-
-install:
-- mvn clean install -Dmaven.javadoc.skip=true -B -V
+  - openjdk8
 
 after_success:
   - mvn jacoco:report coveralls:report

@@ -25,7 +25,7 @@ public class PubSubClientIntegrationTest {
                 .serviceAccountToken(java.lang.System.getProperty("trasier.pubsub.serviceAccountToken"))
                 .project(java.lang.System.getProperty("trasier.pubsub.project"))
                 .topic(java.lang.System.getProperty("trasier.pubsub.topic"))
-                .appId(java.lang.System.getProperty("trasier.pubsub.appId"))
+                .spaceId(java.lang.System.getProperty("trasier.pubsub.spaceId"))
                 .build();
 
         Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF").startTimestamp(1L);
@@ -46,7 +46,7 @@ public class PubSubClientIntegrationTest {
         spanBuilder.error(false);
         spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
-        client.sendSpans(Collections.singletonList(spanBuilder.build()));
+        client.sendSpans("170520", "test-1", Collections.singletonList(spanBuilder.build()));
         java.lang.System.out.println("RS: " + spanBuilder.build());
 
         // wait for async write

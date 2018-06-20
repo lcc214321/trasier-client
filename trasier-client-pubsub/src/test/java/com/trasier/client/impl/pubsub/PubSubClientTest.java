@@ -14,7 +14,10 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PubSubClientTest {
 
@@ -29,7 +32,7 @@ public class PubSubClientTest {
         sut = PubSubClient.builder()
                 .project("trasier-project")
                 .topic("trasier-topic")
-                .appId("trasier-appId")
+                .spaceId("trasier-spaceId")
                 .publisher(publisher)
                 .pubsub(pubsub)
                 .build();
@@ -59,9 +62,9 @@ public class PubSubClientTest {
     public void shouldThrowExceptionWhenClientNotConfigured() {
         assertTrue("project is missing", exceptionThrown(PubSubClient.builder()));
         assertTrue("topic is missing", exceptionThrown(PubSubClient.builder().project("proj")));
-        assertTrue("appId is missing", exceptionThrown(PubSubClient.builder().project("proj").topic("topic")));
+        assertTrue("spaceId is missing", exceptionThrown(PubSubClient.builder().project("proj").topic("topic")));
 
-        assertFalse(exceptionThrown(PubSubClient.builder().project("proj").topic("topic").appId("appId")));
+        assertFalse(exceptionThrown(PubSubClient.builder().project("proj").topic("topic").spaceId("spaceId")));
     }
 
     @Test
@@ -70,7 +73,7 @@ public class PubSubClientTest {
         Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "1").endTimestamp(1L).build();
 
         // when
-        boolean result = sut.sendSpan(span);
+        boolean result = sut.sendSpan("170520", "test-1", span);
 
         // then
         assertTrue(result);
@@ -86,7 +89,7 @@ public class PubSubClientTest {
         when(publisher.publish(any(), any())).thenReturn(null).thenThrow(new RuntimeException("oops")).thenReturn(null);
 
         // when
-        boolean result = sut.sendSpans(Arrays.asList(span1, span2, span3));
+        boolean result = sut.sendSpans("170520", "test-1", Arrays.asList(span1, span2, span3));
 
         // then
         assertFalse(result);

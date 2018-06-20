@@ -1,13 +1,31 @@
 package com.trasier.client.configuration;
 
 public class ClientPropertyConfiguration implements ClientConfiguration {
-
-    private String clientId;
-    private String secret;
+    private final String accountId;
+    private final String spaceKey;
+    private final String clientId;
+    private final String clientSecret;
 
     public ClientPropertyConfiguration() {
-        this.clientId = System.getProperty("trasier.client.id");
-        this.secret = System.getProperty("trasier.client.secret");
+        this(System.getProperty("trasier.client.accountId"), System.getProperty("trasier.client.spaceKey"),
+                System.getProperty("trasier.client.clientId"), System.getProperty("trasier.client.clientSecret"));
+    }
+
+    public ClientPropertyConfiguration(String accountId, String spaceKey, String clientId, String clientSecret) {
+        this.accountId = accountId;
+        this.spaceKey = spaceKey;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+    }
+
+    @Override
+    public String getAccountId() {
+        return accountId;
+    }
+
+    @Override
+    public String getSpaceKey() {
+        return spaceKey;
     }
 
     @Override
@@ -16,15 +34,7 @@ public class ClientPropertyConfiguration implements ClientConfiguration {
     }
 
     @Override
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
+    public String getClientSecret() {
+        return clientSecret;
     }
 }
