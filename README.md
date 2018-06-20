@@ -10,13 +10,13 @@ Trasier's PubSubClient is a high performant, non I/O blocking pub/sub client. It
 
 ## Configuration
 
-Trasier PubSubClient must be configured by setting the `serviceAccountToken` and `appId` parameters.
+Trasier PubSubClient must be configured by setting the `serviceAccountToken` and `spaceId` parameters.
 These parameters are provided by Trasier during the registration process.
 Optionally there may be a different `project` and `topic` set, if not provided we will assume the default settings.
 
 ```
-PubSubClient pubSubClientDefault = PubSubClient.builder().serviceAccountToken(...).appId(...).build();
-PubSubClient pubSubClientCustomized = PubSubClient.builder().serviceAccountToken(...).project(...).appId(...).topic(...).build();
+PubSubClient pubSubClientDefault = PubSubClient.builder().serviceAccountToken(...).spaceId(...).build();
+PubSubClient pubSubClientCustomized = PubSubClient.builder().serviceAccountToken(...).project(...).spaceId(...).topic(...).build();
 ```
 
 ## Usage

@@ -6,10 +6,9 @@ import java.util.List;
 
 public interface Client {
 
-    boolean sendSpan(Span span);
+    boolean sendSpan(String accountId, String spaceKey, Span span);
 
-    boolean sendSpans(List<Span> spans);
+    boolean sendSpans(String accountId, String spaceKey, List<Span> spans);
 
     void close();
-
 }

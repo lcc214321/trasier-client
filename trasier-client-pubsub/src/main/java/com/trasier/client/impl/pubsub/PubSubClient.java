@@ -19,7 +19,7 @@ public class PubSubClient implements Client {
     private final PubSubSender sender;
 
     @Override
-    public boolean sendSpan(Span span) {
+    public boolean sendSpan(String accountId, String spaceKey, Span span) {
         try {
             Message message = sender.sendSpan(span);
             return message != null;
@@ -30,10 +30,10 @@ public class PubSubClient implements Client {
     }
 
     @Override
-    public boolean sendSpans(List<Span> spans) {
+    public boolean sendSpans(String accountId, String spaceKey, List<Span> spans) {
         boolean result = true;
         for (Span span : spans) {
-            result &= this.sendSpan(span);
+            result &= this.sendSpan(accountId, spaceKey, span);
         }
         return result;
     }
@@ -44,7 +44,7 @@ public class PubSubClient implements Client {
     }
 
     private PubSubClient(PubSubClient.Builder builder) {
-        Precondition.notBlank(builder.appId, "appId");
+        Precondition.notBlank(builder.spaceId, "spaceId");
 
         String project = "trasier-192322";
         if(builder.project != null) {
@@ -57,10 +57,10 @@ public class PubSubClient implements Client {
         }
 
         if (builder.publisher != null && builder.pubsub != null) {
-            this.sender = new PubSubSender(topic.trim(), builder.appId.trim(), builder.pubsub, builder.publisher);
+            this.sender = new PubSubSender(topic.trim(), builder.spaceId.trim(), builder.pubsub, builder.publisher);
         } else {
             Precondition.notBlank(builder.serviceAccountToken, "serviceAccountToken");
-            this.sender = new PubSubSender(project.trim(), topic.trim(), builder.appId.trim(), builder.serviceAccountToken.trim());
+            this.sender = new PubSubSender(project.trim(), topic.trim(), builder.spaceId.trim(), builder.serviceAccountToken.trim());
         }
     }
 
@@ -71,7 +71,7 @@ public class PubSubClient implements Client {
     public static class Builder {
         private String project;
         private String topic;
-        private String appId;
+        private String spaceId;
         private String serviceAccountToken;
         private Publisher publisher;
         private Pubsub pubsub;
@@ -91,8 +91,8 @@ public class PubSubClient implements Client {
             return this;
         }
 
-        public PubSubClient.Builder appId(String appId) {
-            this.appId = appId;
+        public PubSubClient.Builder spaceId(String spaceId) {
+            this.spaceId = spaceId;
             return this;
         }
 
