@@ -1,7 +1,3 @@
-/*
- * Copyright (C) Schweizerische Bundesbahnen SBB, 2017.
- */
-
 package com.trasier.client.impl.spring4;
 
 import javax.servlet.ServletOutputStream;
