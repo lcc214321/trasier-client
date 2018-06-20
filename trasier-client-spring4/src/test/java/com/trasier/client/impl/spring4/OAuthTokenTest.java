@@ -28,7 +28,7 @@ public class OAuthTokenTest {
     @Test
     public void getRefreshExpiresIn() {
         OAuthToken token = new OAuthToken();
-        token.setExpiresIn("2");
-        assertEquals("2", token.getExpiresIn());
+        token.setRefreshExpiresIn("2");
+        assertEquals("2", token.getRefreshExpiresIn());
     }
 }
