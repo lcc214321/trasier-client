@@ -4,6 +4,7 @@ import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,12 +18,11 @@ public class OAuthTokenSafeTest {
         RestTemplate restTemplate = mock(RestTemplate.class);
         TrasierClientConfiguration clientConfig = new TrasierClientConfiguration();
         TrasierEndpointConfiguration appConfig = new TrasierEndpointConfiguration();
-        ResponseEntity exchange = mock(ResponseEntity.class);
 
         OAuthToken token = new OAuthToken();
         token.setAccessToken("accessTokenMock");
         token.setExpiresIn("" + (80 * 1000));
-        when(exchange.getBody()).thenReturn(token);
+        ResponseEntity<OAuthToken> exchange = new ResponseEntity<>(token, HttpStatus.OK);
 
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class))).thenReturn(exchange);
 
@@ -42,12 +42,11 @@ public class OAuthTokenSafeTest {
         RestTemplate restTemplate = mock(RestTemplate.class);
         TrasierClientConfiguration clientConfig = new TrasierClientConfiguration();
         TrasierEndpointConfiguration appConfig = new TrasierEndpointConfiguration();
-        ResponseEntity exchange = mock(ResponseEntity.class);
 
         OAuthToken token = new OAuthToken();
         token.setAccessToken("accessTokenMock");
         token.setExpiresIn("" + (-80 * 1000));
-        when(exchange.getBody()).thenReturn(token);
+        ResponseEntity<OAuthToken> exchange = new ResponseEntity<>(token, HttpStatus.OK);
 
         when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class))).thenReturn(exchange);
 
