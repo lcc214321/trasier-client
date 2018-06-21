@@ -1,6 +1,7 @@
 package com.trasier.client.impl.spring4;
 
-import com.trasier.client.configuration.TrasierApplicationConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.configuration.TrasierClientConfiguration;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +15,8 @@ public class OAuthTokenSafeTest {
     public void testRefreshTokenRequestedOnce() {
         // given
         RestTemplate restTemplate = mock(RestTemplate.class);
-        TrasierSpringClientConfiguration clientConfig = new TrasierSpringClientConfiguration();
-        TrasierApplicationConfiguration appConfig = new TrasierApplicationConfiguration();
+        TrasierClientConfiguration clientConfig = new TrasierClientConfiguration();
+        TrasierEndpointConfiguration appConfig = new TrasierEndpointConfiguration();
         ResponseEntity exchange = mock(ResponseEntity.class);
 
         OAuthToken token = new OAuthToken();
@@ -39,8 +40,8 @@ public class OAuthTokenSafeTest {
     public void testRefreshExpiredToken() {
         // given
         RestTemplate restTemplate = mock(RestTemplate.class);
-        TrasierSpringClientConfiguration clientConfig = new TrasierSpringClientConfiguration();
-        TrasierApplicationConfiguration appConfig = new TrasierApplicationConfiguration();
+        TrasierClientConfiguration clientConfig = new TrasierClientConfiguration();
+        TrasierEndpointConfiguration appConfig = new TrasierEndpointConfiguration();
         ResponseEntity exchange = mock(ResponseEntity.class);
 
         OAuthToken token = new OAuthToken();

@@ -1,8 +1,8 @@
-package com.trasier.client.impl.spring4;
+package com.trasier.client.configuration;
 
 import com.trasier.client.configuration.ClientConfiguration;
 
-public class TrasierSpringClientConfiguration implements ClientConfiguration {
+public class TrasierClientConfiguration implements ClientConfiguration {
     private String accountId;
     private String spaceKey;
     private String clientId;
