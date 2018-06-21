@@ -1,6 +1,7 @@
 package com.trasier.client.impl.spring4.sleuth;
 
-import com.trasier.client.impl.spring4.TrasierSpringClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.configuration.TrasierClientConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -11,7 +12,12 @@ import org.springframework.context.annotation.Configuration;
 public class TrasierSleuthConfiguration {
     @Bean
     @ConfigurationProperties("trasier.client")
-    public TrasierSpringClientConfiguration trasierSpringClientConfiguration() {
-        return new TrasierSpringClientConfiguration();
+    public TrasierClientConfiguration trasierSpringClientConfiguration() {
+        return new TrasierClientConfiguration();
+    }
+    @Bean
+    @ConfigurationProperties("trasier.app")
+    protected TrasierEndpointConfiguration appConfig() {
+        return new TrasierEndpointConfiguration();
     }
 }

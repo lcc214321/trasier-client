@@ -1,6 +1,7 @@
 
 package com.trasier.client.impl.spring4;
 
+import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TrasierSpringConfiguration.class, TrasierSpringClientConfiguration.class})
+@ContextConfiguration(classes = {TrasierSpringConfiguration.class, TrasierClientConfiguration.class})
 public class SpringRestClientIntegrationTest {
     @Autowired
     private SpringRestClient client;
