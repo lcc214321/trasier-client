@@ -58,11 +58,6 @@
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-spring5</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.trasier</groupId>
                 <artifactId>trasier-client-pubsub</artifactId>
                 <version>${project.version}</version>
             </dependency>
