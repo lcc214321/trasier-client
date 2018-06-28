@@ -1,8 +1,8 @@
 package com.trasier.client.configuration;
 
 public class TrasierEndpointConfiguration {
-    private static final String TRASIER_AUTH_ENDPOINT_PROPERTY = "trasier.endpoint.auth";
-    private static final String TRASIER_WRITE_ENDPOINT_PROPERTY = "trasier.endpoint.writer";
+    private static final String TRASIER_AUTH_ENDPOINT_PROPERTY = "trasier.endpoint.authEndpoint";
+    private static final String TRASIER_WRITE_ENDPOINT_PROPERTY = "trasier.endpoint.writerEndpoint";
     private static final String DEFAULT_WRITE_ENDPOINT = "https://writer.trasier.com/api/accounts/{accountId}/spaces/{spaceKey}/spans";
     private static final String DEFAULT_AUTH_ENDPOINT = "https://auth.trasier.com/auth/realms/trasier-dev/protocol/openid-connect/token";
 
