@@ -1,14 +1,13 @@
-package com.trasier.client.impl.spring4.sleuth;
+package com.trasier.client.impl.spring4.filter;
 
 import com.google.gson.GsonBuilder;
-import com.trasier.client.TrasierConstants;
-import com.trasier.client.impl.spring4.TrasierSleuthConstants;
-import com.trasier.client.impl.spring4.filter.AbstractTrasierFilter;
+import com.trasier.client.Client;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.impl.spring4.context.TrasierContextHolder;
 import com.trasier.client.impl.spring4.servlet.CachedServletRequestWrapper;
 import com.trasier.client.impl.spring4.servlet.CachedServletResponseWrapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.SpanAccessor;
+import com.trasier.client.model.Endpoint;
+import com.trasier.client.model.Span;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
@@ -22,14 +21,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
-public class TrasierSleuthFilter extends AbstractTrasierFilter {
-    private final SpanAccessor spanAccessor;
+public class TrasierFilter extends AbstractTrasierFilter {
+    private final Client client;
+    private final TrasierClientConfiguration configuration;
 
-    @Autowired
-    public TrasierSleuthFilter(SpanAccessor spanAccessor) {
-        this.spanAccessor = spanAccessor;
+    public TrasierFilter(Client client, TrasierClientConfiguration configuration) {
+        this.client = client;
+        this.configuration = configuration;
     }
 
     @Override
@@ -38,15 +39,28 @@ public class TrasierSleuthFilter extends AbstractTrasierFilter {
             CachedServletRequestWrapper request = CachedServletRequestWrapper.create((HttpServletRequest) servletRequest);
             CachedServletResponseWrapper response = CachedServletResponseWrapper.create((HttpServletResponse) servletResponse);
 
-            Span currentSpan = spanAccessor.getCurrentSpan();
-            String conversationId = request.getHeader(TrasierConstants.HEADER_CONVERSATION_ID);
-            currentSpan.tag(TrasierSleuthConstants.TAG_CONVERSATION_ID, conversationId);
-            currentSpan.tag(TrasierSleuthConstants.TAG_OPERATION_NAME, getOperationName(request));
+            Span currentSpan = TrasierContextHolder.getCurrentSpan();
+            if(currentSpan == null) {
+                String conversationId = extractConversationId(request);
+                String traceId = extractTraceId(request);
+                if(traceId == null) {
+                    traceId = UUID.randomUUID().toString();
+                }
+                String spanId = extractSpanId(request);
+                if(spanId == null) {
+                    spanId = UUID.randomUUID().toString();
+                }
+
+
+                Span.Builder spanBuilder = Span.newSpan(conversationId, traceId, new Endpoint("in"), getOperationName(request));
+                spanBuilder.parentId(spanId);
+                currentSpan = spanBuilder.build();
+            }
 
             Map<String, String> requestHeaders = getRequestHeaders(request);
             Map<String, List<String>> parameters = getRequestParameters(request);
             String requestMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(requestHeaders, parameters));
-            currentSpan.tag(TrasierSleuthConstants.TAG_REQUEST_MESSAGE, requestMessage);
+            currentSpan.setIncomingData(requestMessage);
 
             try {
                 filterChain.doFilter(request, response);
@@ -58,7 +72,10 @@ public class TrasierSleuthFilter extends AbstractTrasierFilter {
             Map<String, String> responseHeaders = getResponseHeaders(response);
             String responseBody = response.getCachedData();
             String responseMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(statusMap, responseHeaders, responseBody));
-            currentSpan.tag(TrasierSleuthConstants.TAG_RESPONSE_MESSAGE, responseMessage);
+            currentSpan.setOutgoingData(responseMessage);
+            //TODO entkoppeln
+            client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
+            TrasierContextHolder.removeCurrentSpan();
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }

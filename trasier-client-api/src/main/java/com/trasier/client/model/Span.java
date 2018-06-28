@@ -124,6 +124,50 @@ public class Span {
         return outgoingData;
     }
 
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public void setError(Boolean error) {
+        this.error = error;
+    }
+
+    public void setStartTimestamp(Long startTimestamp) {
+        this.startTimestamp = startTimestamp;
+    }
+
+    public void setBeginProcessingTimestamp(Long beginProcessingTimestamp) {
+        this.beginProcessingTimestamp = beginProcessingTimestamp;
+    }
+
+    public void setIncomingContentType(ContentType incomingContentType) {
+        this.incomingContentType = incomingContentType;
+    }
+
+    public void setIncomingData(String incomingData) {
+        this.incomingData = incomingData;
+    }
+
+    public void setFinishProcessingTimestamp(Long finishProcessingTimestamp) {
+        this.finishProcessingTimestamp = finishProcessingTimestamp;
+    }
+
+    public void setEndTimestamp(Long endTimestamp) {
+        this.endTimestamp = endTimestamp;
+    }
+
+    public void setOutgoingEndpoint(Endpoint outgoingEndpoint) {
+        this.outgoingEndpoint = outgoingEndpoint;
+    }
+
+    public void setOutgoingContentType(ContentType outgoingContentType) {
+        this.outgoingContentType = outgoingContentType;
+    }
+
+    public void setOutgoingData(String outgoingData) {
+        this.outgoingData = outgoingData;
+    }
+
     @Override
     public String toString() {
         return "Span{" +

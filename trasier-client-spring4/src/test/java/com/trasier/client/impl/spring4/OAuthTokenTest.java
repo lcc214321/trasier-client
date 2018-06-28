@@ -1,5 +1,6 @@
 package com.trasier.client.impl.spring4;
 
+import com.trasier.client.impl.spring4.auth.OAuthToken;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

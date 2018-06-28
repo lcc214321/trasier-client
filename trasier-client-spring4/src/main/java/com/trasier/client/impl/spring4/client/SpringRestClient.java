@@ -1,8 +1,9 @@
-package com.trasier.client.impl.spring4;
+package com.trasier.client.impl.spring4.client;
 
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.impl.spring4.auth.OAuthTokenSafe;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

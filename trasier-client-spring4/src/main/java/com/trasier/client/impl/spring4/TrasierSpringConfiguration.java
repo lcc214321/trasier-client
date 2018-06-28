@@ -1,5 +1,6 @@
 package com.trasier.client.impl.spring4;
 
+import com.trasier.client.impl.spring4.client.SpringRestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

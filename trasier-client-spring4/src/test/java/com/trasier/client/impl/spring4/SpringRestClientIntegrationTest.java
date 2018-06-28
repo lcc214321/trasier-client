@@ -2,6 +2,7 @@
 package com.trasier.client.impl.spring4;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.impl.spring4.client.SpringRestClient;
 import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;

@@ -59,6 +59,16 @@
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
+                <artifactId>trasier-client-spring4-interceptor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trasier</groupId>
+                <artifactId>trasier-client-spring4-sleuth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trasier</groupId>
                 <artifactId>trasier-client-pubsub</artifactId>
                 <version>${project.version}</version>
             </dependency>

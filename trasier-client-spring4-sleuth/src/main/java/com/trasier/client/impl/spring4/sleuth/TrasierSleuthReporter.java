@@ -1,7 +1,7 @@
 package com.trasier.client.impl.spring4.sleuth;
 
 import com.trasier.client.Client;
-import com.trasier.client.impl.spring4.TrasierConstants;
+import com.trasier.client.impl.spring4.TrasierSleuthConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.model.Endpoint;
 import org.springframework.cloud.sleuth.Span;
@@ -27,10 +27,10 @@ public class TrasierSleuthReporter implements SpanReporter {
     @Async //there has to be sth better than this
     public void report(Span span) {
         Map<String, String> tags = span.tags();
-        String conversationId = tags.get(TrasierConstants.TAG_CONVERSATION_ID);
+        String conversationId = tags.get(TrasierSleuthConstants.TAG_CONVERSATION_ID);
         if(conversationId != null) {
 //            String incoming = tags.get("sender");
-            String operationName = tags.get(TrasierConstants.TAG_OPERATION_NAME);
+            String operationName = tags.get(TrasierSleuthConstants.TAG_OPERATION_NAME);
             String traceId = span.traceIdString();
 
             com.trasier.client.model.Span.Builder builder = com.trasier.client.model.Span.newSpan(conversationId, traceId, new Endpoint("in"), operationName);
@@ -40,8 +40,8 @@ public class TrasierSleuthReporter implements SpanReporter {
             }
             builder.startTimestamp(span.getBegin());
             builder.endTimestamp(span.getEnd());
-            builder.incomingData(tags.get(TrasierConstants.TAG_REQUEST_MESSAGE));
-            builder.outgoingData(tags.get(TrasierConstants.TAG_RESPONSE_MESSAGE));
+            builder.incomingData(tags.get(TrasierSleuthConstants.TAG_REQUEST_MESSAGE));
+            builder.outgoingData(tags.get(TrasierSleuthConstants.TAG_RESPONSE_MESSAGE));
 //            builder.outgoingEndpoint(new Endpoint(tags.get("empfaenger")));
             client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), builder.build());
         }

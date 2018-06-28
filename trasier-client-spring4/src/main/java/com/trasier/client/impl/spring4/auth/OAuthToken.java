@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring4;
+package com.trasier.client.impl.spring4.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

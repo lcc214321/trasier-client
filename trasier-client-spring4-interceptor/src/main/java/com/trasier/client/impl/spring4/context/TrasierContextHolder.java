@@ -1,6 +1,4 @@
-/*
- * Copyright (C) Schweizerische Bundesbahnen SBB, 2018.
- */
+package com.trasier.client.impl.spring4.context;
 
 import com.trasier.client.model.Span;
 import org.springframework.core.NamedThreadLocal;
@@ -8,23 +6,23 @@ import org.springframework.core.NamedThreadLocal;
 public class TrasierContextHolder {
     private static final ThreadLocal<TrasierContext> CURRENT_TRASIER_CONTEXT = new NamedThreadLocal<>("TrasierContext");
 
-    static Span getCurrentSpan() {
+    public static Span getCurrentSpan() {
         return isTracing() ? CURRENT_TRASIER_CONTEXT.get().span : null;
     }
 
-    static void setCurrentSpan(Span span) {
+    public static void setCurrentSpan(Span span) {
         push(span, false);
     }
 
-    static void removeCurrentSpan() {
+    public static void removeCurrentSpan() {
         CURRENT_TRASIER_CONTEXT.remove();
     }
 
-    static boolean isTracing() {
+    public static boolean isTracing() {
         return CURRENT_TRASIER_CONTEXT.get() != null;
     }
 
-    static void close() {
+    public static void close() {
         TrasierContext current = CURRENT_TRASIER_CONTEXT.get();
         CURRENT_TRASIER_CONTEXT.remove();
         while (current != null) {
@@ -57,7 +55,7 @@ public class TrasierContextHolder {
         boolean autoClose;
         TrasierContext parent;
 
-        public TrasierContext(Span span, boolean autoClose) {
+        TrasierContext(Span span, boolean autoClose) {
             this.span = span;
             this.autoClose = autoClose;
             this.parent = CURRENT_TRASIER_CONTEXT.get();
