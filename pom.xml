@@ -4,7 +4,7 @@
 
     <groupId>com.trasier</groupId>
     <artifactId>trasier-client</artifactId>
-    <version>0.8.1</version>
+    <version>0.8.3</version>
     <packaging>pom</packaging>
 
     <name>trasier-client</name>
@@ -37,7 +37,8 @@
         <module>trasier-client-pubsub-shaded</module>
         <module>trasier-client-spring4</module>
 		<module>trasier-client-spring4-sleuth</module>
-    </modules>
+		<module>trasier-client-spring4-interceptor</module>
+	</modules>
 
     <dependencyManagement>
         <dependencies>

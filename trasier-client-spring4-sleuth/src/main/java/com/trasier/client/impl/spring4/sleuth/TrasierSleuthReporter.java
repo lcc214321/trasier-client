@@ -7,6 +7,7 @@ import com.trasier.client.model.Endpoint;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.SpanReporter;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -23,6 +24,7 @@ public class TrasierSleuthReporter implements SpanReporter {
     }
 
     @Override
+    @Async //there has to be sth better than this
     public void report(Span span) {
         Map<String, String> tags = span.tags();
         String conversationId = tags.get(TrasierConstants.TAG_CONVERSATION_ID);
