@@ -37,7 +37,8 @@
         <module>trasier-client-pubsub-shaded</module>
         <module>trasier-client-spring4</module>
 		<module>trasier-client-spring4-sleuth</module>
-    </modules>
+		<module>trasier-client-spring4-interceptor</module>
+	</modules>
 
     <dependencyManagement>
         <dependencies>

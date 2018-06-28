@@ -15,9 +15,10 @@ public class TrasierSleuthConfiguration {
     public TrasierClientConfiguration trasierSpringClientConfiguration() {
         return new TrasierClientConfiguration();
     }
+
     @Bean
-    @ConfigurationProperties("trasier.app")
-    protected TrasierEndpointConfiguration appConfig() {
+    @ConfigurationProperties("trasier.endpoint")
+    protected TrasierEndpointConfiguration endpointConfig() {
         return new TrasierEndpointConfiguration();
     }
 }
