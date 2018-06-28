@@ -1,6 +1,7 @@
 package com.trasier.client.impl.spring4;
 
-import com.trasier.client.configuration.TrasierApplicationConfiguration;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -14,15 +15,15 @@ import java.util.Base64;
 
 @Component
 public class OAuthTokenSafe {
-    private final TrasierApplicationConfiguration appConfig;
-    private final TrasierSpringClientConfiguration springConfig;
+    private final TrasierEndpointConfiguration appConfig;
+    private final TrasierClientConfiguration springConfig;
     private final RestTemplate restTemplate;
 
     private OAuthToken token;
     private long tokenIssued;
     private long tokenExpiresAt;
 
-    public OAuthTokenSafe(TrasierApplicationConfiguration appConfig, TrasierSpringClientConfiguration springConfig, RestTemplate restTemplate) {
+    public OAuthTokenSafe(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig, RestTemplate restTemplate) {
         this.appConfig = appConfig;
         this.springConfig = springConfig;
         this.restTemplate = restTemplate;

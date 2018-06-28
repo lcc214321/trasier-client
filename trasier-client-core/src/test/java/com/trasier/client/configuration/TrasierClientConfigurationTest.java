@@ -1,14 +1,14 @@
-package com.trasier.client.impl.spring4;
+package com.trasier.client.configuration;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
-public class TrasierSpringClientConfigurationTest {
-    private TrasierSpringClientConfiguration config;
+public class TrasierClientConfigurationTest {
+    private TrasierClientConfiguration config;
 
-    public TrasierSpringClientConfigurationTest() {
-        config = new TrasierSpringClientConfiguration();
+    public TrasierClientConfigurationTest() {
+        config = new TrasierClientConfiguration();
         config.setAccountId("account-id");
         config.setSpaceKey("space-key");
         config.setClientId("client-id");

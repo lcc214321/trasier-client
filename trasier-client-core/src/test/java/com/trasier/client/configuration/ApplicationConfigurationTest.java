@@ -11,17 +11,17 @@ public class ApplicationConfigurationTest {
     @Test
     public void shouldUseDefaultProperties() {
         // given
-        TrasierApplicationConfiguration sut = new TrasierApplicationConfiguration();
+        TrasierEndpointConfiguration sut = new TrasierEndpointConfiguration();
 
         // when / then
         assertTrue(sut.getAuthEndpoint().length() > 1);
         assertTrue(sut.getWriterEndpoint().length() > 1);
 
         // and when
-        System.setProperty("trasier.app.auth.endpoint", "auth_endpoint");
-        System.setProperty( "trasier.app.writer.endpoint", "write_endpoint");
+        System.setProperty("trasier.endpoint.auth", "auth_endpoint");
+        System.setProperty( "trasier.endpoint.writer", "write_endpoint");
 
-        sut = new TrasierApplicationConfiguration();
+        sut = new TrasierEndpointConfiguration();
 
         // then
         assertEquals("auth_endpoint", sut.getAuthEndpoint());

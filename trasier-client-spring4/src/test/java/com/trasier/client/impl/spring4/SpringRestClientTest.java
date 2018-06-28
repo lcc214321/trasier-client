@@ -1,6 +1,7 @@
 package com.trasier.client.impl.spring4;
 
-import com.trasier.client.configuration.TrasierApplicationConfiguration;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.junit.Before;
@@ -18,13 +19,13 @@ import static org.mockito.Mockito.*;
 public class SpringRestClientTest {
     private ResponseEntity<Void> responseEntity;
     private OAuthTokenSafe oAuthTokenSafe;
-    private TrasierSpringClientConfiguration clientConfiguration;
+    private TrasierClientConfiguration clientConfiguration;
 
     @Before
     public void setup() {
         this.responseEntity = new ResponseEntity<>(HttpStatus.ACCEPTED);
         this.oAuthTokenSafe = mock(OAuthTokenSafe.class);
-        this.clientConfiguration = new TrasierSpringClientConfiguration();
+        this.clientConfiguration = new TrasierClientConfiguration();
 
         clientConfiguration.setAccountId("170520");
         clientConfiguration.setSpaceKey("test-1");
@@ -36,7 +37,7 @@ public class SpringRestClientTest {
         when(restTemplate.exchange(anyString(), any(), any(), eq(Void.class))).thenReturn(responseEntity);
 
         // given
-        SpringRestClient sut = new SpringRestClient(new TrasierApplicationConfiguration(), clientConfiguration, restTemplate,  oAuthTokenSafe);
+        SpringRestClient sut = new SpringRestClient(new TrasierEndpointConfiguration(), clientConfiguration, restTemplate,  oAuthTokenSafe);
 
         // when
         Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Test1"), "TEST")

@@ -1,6 +1,5 @@
 package com.trasier.client.impl.spring4;
 
-import com.trasier.client.configuration.TrasierApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -11,11 +10,6 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 @ComponentScan(basePackageClasses = SpringRestClient.class)
 public class TrasierSpringConfiguration {
-    @Bean
-    protected TrasierApplicationConfiguration appConfig() {
-        return new TrasierApplicationConfiguration();
-    }
-
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();

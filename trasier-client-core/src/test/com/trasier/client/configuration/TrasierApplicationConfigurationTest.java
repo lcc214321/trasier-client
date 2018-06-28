@@ -18,8 +18,8 @@ public class TrasierApplicationConfigurationTest {
         assertTrue(sut.getWriterEndpoint().length() > 1);
 
         // and when
-        System.setProperty("trasier.app.auth.endpoint", "auth_endpoint");
-        System.setProperty( "trasier.app.writer.endpoint", "write_endpoint");
+        System.setProperty("trasier.endpoint.auth", "auth_endpoint");
+        System.setProperty( "trasier.endpoint.writer", "write_endpoint");
 
         sut = new TrasierApplicationConfiguration();
 

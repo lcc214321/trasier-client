@@ -1,7 +1,8 @@
 package com.trasier.client.impl.spring4;
 
 import com.trasier.client.Client;
-import com.trasier.client.configuration.TrasierApplicationConfiguration;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,13 +17,13 @@ import java.util.List;
 
 @Component
 public class SpringRestClient implements Client {
-    private final TrasierApplicationConfiguration applicationConfiguration;
-    private final TrasierSpringClientConfiguration clientConfiguration;
+    private final TrasierEndpointConfiguration applicationConfiguration;
+    private final TrasierClientConfiguration clientConfiguration;
     private final RestTemplate restTemplate;
     private final OAuthTokenSafe tokenSafe;
 
     @Autowired
-    public SpringRestClient(TrasierApplicationConfiguration applicationConfiguration, TrasierSpringClientConfiguration clientConfiguration, @Qualifier("trasierRestTemplate") RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
+    public SpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, @Qualifier("trasierRestTemplate") RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
         this.applicationConfiguration = applicationConfiguration;
         this.clientConfiguration = clientConfiguration;
         this.restTemplate = restTemplate;
