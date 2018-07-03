@@ -15,6 +15,8 @@ import java.util.Base64;
 
 @Component
 public class OAuthTokenSafe {
+    private static final int EXPIRES_IN_TOLERANCE = 60;
+
     private final TrasierEndpointConfiguration appConfig;
     private final TrasierClientConfiguration springConfig;
     private final RestTemplate restTemplate;
@@ -59,7 +61,7 @@ public class OAuthTokenSafe {
             ResponseEntity<OAuthToken> exchange = restTemplate.postForEntity(appConfig.getAuthEndpoint(), requestEntity, OAuthToken.class);
             this.token = exchange.getBody();
 
-            this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - 60) * 1000);
+            this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
         }
     }
 }
