@@ -1,7 +1,7 @@
 package com.trasier.client.impl.spring4.auth;
 
-import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -42,6 +42,7 @@ public class OAuthTokenSafe {
 
     private synchronized void refreshToken() {
         if(!isTokenValid()) {
+            //TODO Use refresh_token
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             String basicAuth = Base64.getEncoder().encodeToString((springConfig.getClientId() + ":" + springConfig.getClientSecret()).getBytes());
