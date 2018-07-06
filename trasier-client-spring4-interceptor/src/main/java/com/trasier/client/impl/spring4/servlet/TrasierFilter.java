@@ -1,13 +1,13 @@
-package com.trasier.client.impl.spring4.filter;
+package com.trasier.client.impl.spring4.servlet;
 
 import com.google.gson.GsonBuilder;
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.context.TrasierContextHolder;
-import com.trasier.client.impl.spring4.servlet.CachedServletRequestWrapper;
-import com.trasier.client.impl.spring4.servlet.CachedServletResponseWrapper;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
@@ -24,7 +24,10 @@ import java.util.Map;
 import java.util.UUID;
 
 @Component
+@Order(TraceFilter.ORDER)
 public class TrasierFilter extends AbstractTrasierFilter {
+
+    protected static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 5;
     private final Client client;
     private final TrasierClientConfiguration configuration;
 

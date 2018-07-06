@@ -3,7 +3,7 @@ package com.trasier.client.impl.spring4.sleuth;
 import com.google.gson.GsonBuilder;
 import com.trasier.client.TrasierConstants;
 import com.trasier.client.impl.spring4.TrasierSleuthConstants;
-import com.trasier.client.impl.spring4.filter.AbstractTrasierFilter;
+import com.trasier.client.impl.spring4.servlet.AbstractTrasierFilter;
 import com.trasier.client.impl.spring4.servlet.CachedServletRequestWrapper;
 import com.trasier.client.impl.spring4.servlet.CachedServletResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;

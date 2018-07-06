@@ -6,32 +6,29 @@ import org.springframework.core.NamedThreadLocal;
 public class TrasierContextHolder {
     private static final ThreadLocal<TrasierContext> CURRENT_TRASIER_CONTEXT = new NamedThreadLocal<>("TrasierContext");
 
-    public static Span getCurrentSpan() {
+    static Span getCurrentSpan() {
         return isTracing() ? CURRENT_TRASIER_CONTEXT.get().span : null;
     }
 
-    public static void setCurrentSpan(Span span) {
+    static void setCurrentSpan(Span span) {
         push(span, false);
     }
 
-    public static void removeCurrentSpan() {
+    static void removeCurrentSpan() {
         CURRENT_TRASIER_CONTEXT.remove();
     }
 
-    public static boolean isTracing() {
+    static boolean isTracing() {
         return CURRENT_TRASIER_CONTEXT.get() != null;
     }
 
-    public static void close() {
+    static void close() {
         TrasierContext current = CURRENT_TRASIER_CONTEXT.get();
         CURRENT_TRASIER_CONTEXT.remove();
         while (current != null) {
             current = current.parent;
-            if (current != null) {
-                if (!current.autoClose) {
-                    CURRENT_TRASIER_CONTEXT.set(current);
-                    current = null;
-                }
+            if (current != null && !current.autoClose) {
+                CURRENT_TRASIER_CONTEXT.set(current);
             }
         }
     }

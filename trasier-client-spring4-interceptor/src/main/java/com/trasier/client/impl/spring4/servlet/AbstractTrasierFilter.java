@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring4.filter;
+package com.trasier.client.impl.spring4.servlet;
 
 import com.trasier.client.TrasierConstants;
 import com.trasier.client.impl.spring4.servlet.CachedServletRequestWrapper;

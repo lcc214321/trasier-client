@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring4.interceptor;
+package com.trasier.client.impl.spring4.http;
 
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
