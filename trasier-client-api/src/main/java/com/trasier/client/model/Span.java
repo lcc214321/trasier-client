@@ -26,7 +26,6 @@ public class Span {
         Precondition.notNull(builder.id, "id");
         Precondition.notNull(builder.traceId, "traceId");
         Precondition.notNull(builder.conversationId, "conversationId");
-        Precondition.notNull(builder.incomingEndpoint, "incomingEndpoint");
         Precondition.notNull(builder.operationName, "operationName");
         Precondition.notNull(builder.error, "error");
         Precondition.notNull(builder.startTimestamp != null ? builder.startTimestamp : builder.endTimestamp, "startTimestamp or endTimestamp");
@@ -49,12 +48,11 @@ public class Span {
         this.outgoingData = builder.outgoingData;
     }
 
-    public static Builder newSpan(String conversationId, String traceId, Endpoint incomingEndpoint, String operationName) {
+    public static Builder newSpan(String operationName, String conversationId, String traceId, String spanId) {
         Builder builder = new Builder();
-        builder.id(UUID.randomUUID().toString());
+        builder.id(spanId);
         builder.conversationId(conversationId);
         builder.traceId(traceId);
-        builder.incomingEndpoint(incomingEndpoint);
         builder.operationName(operationName);
         builder.error(false);
         return builder;
@@ -94,6 +92,10 @@ public class Span {
 
     public Endpoint getIncomingEndpoint() {
         return incomingEndpoint;
+    }
+
+    public void setIncomingEndpoint(Endpoint incomingEndpoint) {
+        this.incomingEndpoint = incomingEndpoint;
     }
 
     public ContentType getIncomingContentType() {

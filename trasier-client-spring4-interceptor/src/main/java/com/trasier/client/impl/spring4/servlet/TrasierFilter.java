@@ -3,8 +3,7 @@ package com.trasier.client.impl.spring4.servlet;
 import com.google.gson.GsonBuilder;
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.impl.spring4.context.TrasierContextHolder;
-import com.trasier.client.model.Endpoint;
+import com.trasier.client.impl.spring4.context.TrasierSpringAccessor;
 import com.trasier.client.model.Span;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -21,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Component
 @Order(TrasierFilter.ORDER)
@@ -30,10 +28,12 @@ public class TrasierFilter extends AbstractTrasierFilter {
 
     private final Client client;
     private final TrasierClientConfiguration configuration;
+    private final TrasierSpringAccessor trasierSpringAccessor;
 
-    public TrasierFilter(Client client, TrasierClientConfiguration configuration) {
+    public TrasierFilter(Client client, TrasierClientConfiguration configuration, TrasierSpringAccessor trasierSpringAccessor) {
         this.client = client;
         this.configuration = configuration;
+        this.trasierSpringAccessor = trasierSpringAccessor;
     }
 
     @Override
@@ -46,29 +46,9 @@ public class TrasierFilter extends AbstractTrasierFilter {
             String traceId = extractTraceId(request);
             String spanId = extractSpanId(request);
 
+            Span currentSpan = trasierSpringAccessor.createSpan(getOperationName(request), conversationId, traceId, spanId);
 
-
-
-            Span currentSpan = TrasierContextHolder.getCurrentSpan();
-            if(currentSpan == null) {
-                if(traceId == null) {
-                    traceId = UUID.randomUUID().toString();
-                }
-                String spanId = extractSpanId(request);
-                if(spanId == null) {
-                    spanId = UUID.randomUUID().toString();
-                }
-
-
-                Span.Builder spanBuilder = Span.newSpan(conversationId, traceId, new Endpoint("in"), getOperationName(request));
-                spanBuilder.parentId(spanId);
-                currentSpan = spanBuilder.build();
-            }
-
-            Map<String, String> requestHeaders = getRequestHeaders(request);
-            Map<String, List<String>> parameters = getRequestParameters(request);
-            String requestMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(requestHeaders, parameters));
-            currentSpan.setIncomingData(requestMessage);
+            handleRequest(request, currentSpan);
 
             try {
                 filterChain.doFilter(request, response);
@@ -76,16 +56,28 @@ public class TrasierFilter extends AbstractTrasierFilter {
                 //handle exception to log and rethrow
             }
 
-            Map<String, Integer> statusMap = Collections.singletonMap("status", response.getStatus());
-            Map<String, String> responseHeaders = getResponseHeaders(response);
-            String responseBody = response.getCachedData();
-            String responseMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(statusMap, responseHeaders, responseBody));
-            currentSpan.setOutgoingData(responseMessage);
+            handleResponse(response, currentSpan);
+
             //TODO entkoppeln
             client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
-            TrasierContextHolder.removeCurrentSpan();
+            trasierSpringAccessor.closeSpan(currentSpan);
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
+    }
+
+    private void handleResponse(CachedServletResponseWrapper response, Span currentSpan) {
+        Map<String, Integer> statusMap = Collections.singletonMap("status", response.getStatus());
+        Map<String, String> responseHeaders = getResponseHeaders(response);
+        String responseBody = response.getCachedData();
+        String responseMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(statusMap, responseHeaders, responseBody));
+        currentSpan.setOutgoingData(responseMessage);
+    }
+
+    private void handleRequest(CachedServletRequestWrapper request, Span currentSpan) {
+        Map<String, String> requestHeaders = getRequestHeaders(request);
+        Map<String, List<String>> parameters = getRequestParameters(request);
+        String requestMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(requestHeaders, parameters));
+        currentSpan.setIncomingData(requestMessage);
     }
 }
