@@ -1,7 +1,6 @@
 package com.trasier.client.impl.spring4.servlet;
 
 import com.trasier.client.TrasierConstants;
-import com.trasier.client.impl.spring4.servlet.CachedServletRequestWrapper;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.ServletRequest;
@@ -70,7 +69,7 @@ public abstract class AbstractTrasierFilter extends GenericFilterBean {
     protected String getOperationName(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
-        String operation = requestURI.replace("/api/", "");
+        String operation = requestURI;
         if(operation.contains("/")) {
             operation = operation.substring(0, operation.indexOf("/"));
         }

@@ -44,7 +44,7 @@ public class OAuthTokenSafe {
 
     private synchronized void refreshToken() {
         if(!isTokenValid()) {
-            //TODO Use refresh_token
+            //TODO Hackergarten? -> Use refresh_token
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             String basicAuth = Base64.getEncoder().encodeToString((springConfig.getClientId() + ":" + springConfig.getClientSecret()).getBytes());

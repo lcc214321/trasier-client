@@ -24,10 +24,10 @@ import java.util.Map;
 import java.util.UUID;
 
 @Component
-@Order(TraceFilter.ORDER)
+@Order(TrasierFilter.ORDER)
 public class TrasierFilter extends AbstractTrasierFilter {
+    static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 6;
 
-    protected static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 5;
     private final Client client;
     private final TrasierClientConfiguration configuration;
 
@@ -42,10 +42,15 @@ public class TrasierFilter extends AbstractTrasierFilter {
             CachedServletRequestWrapper request = CachedServletRequestWrapper.create((HttpServletRequest) servletRequest);
             CachedServletResponseWrapper response = CachedServletResponseWrapper.create((HttpServletResponse) servletResponse);
 
+            String conversationId = extractConversationId(request);
+            String traceId = extractTraceId(request);
+            String spanId = extractSpanId(request);
+
+
+
+
             Span currentSpan = TrasierContextHolder.getCurrentSpan();
             if(currentSpan == null) {
-                String conversationId = extractConversationId(request);
-                String traceId = extractTraceId(request);
                 if(traceId == null) {
                     traceId = UUID.randomUUID().toString();
                 }
