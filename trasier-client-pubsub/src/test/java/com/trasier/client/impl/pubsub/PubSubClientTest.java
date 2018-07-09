@@ -70,7 +70,7 @@ public class PubSubClientTest {
     @Test
     public void shouldSendRequestAndConfirm() {
         // given
-        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "1").endTimestamp(1L).build();
+        Span span = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "1").endTimestamp(1L).build();
 
         // when
         boolean result = sut.sendSpan("170520", "test-1", span);
@@ -82,9 +82,9 @@ public class PubSubClientTest {
     @Test
     public void shouldContinueSendingWhileExceptionOccur() {
         // given
-        Span span1 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "1").startTimestamp(1L).build();
-        Span span2 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "2").startTimestamp(1L).build();
-        Span span3 = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("ola"), "3").startTimestamp(1L).build();
+        Span span1 = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(),"1").startTimestamp(1L).build();
+        Span span2 = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(),"2").startTimestamp(1L).build();
+        Span span3 = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(),"3").startTimestamp(1L).build();
 
         when(publisher.publish(any(), any())).thenReturn(null).thenThrow(new RuntimeException("oops")).thenReturn(null);
 

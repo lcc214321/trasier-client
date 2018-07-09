@@ -26,7 +26,7 @@ public class SpringRestClientIntegrationTest {
     @Test
     @Ignore
     public void sendSpanOneByOne() throws InterruptedException {
-        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF").startTimestamp(System.currentTimeMillis());
+        Span.Builder spanBuilder = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "GIVE_50_CHF").startTimestamp(System.currentTimeMillis());
 
         spanBuilder.incomingEndpoint(new Endpoint("Frank"));
         spanBuilder.incomingContentType(ContentType.XML);
@@ -53,7 +53,7 @@ public class SpringRestClientIntegrationTest {
     @Ignore
     public void sendSpansBulk() throws InterruptedException {
 
-        Span.Builder spanBuilder = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Lukasz"), "GIVE_50_CHF").endTimestamp(System.currentTimeMillis());
+        Span.Builder spanBuilder = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "GIVE_50_CHF").endTimestamp(System.currentTimeMillis());
 
         spanBuilder.incomingEndpoint(new Endpoint("Frank"));
         spanBuilder.incomingContentType(ContentType.XML);

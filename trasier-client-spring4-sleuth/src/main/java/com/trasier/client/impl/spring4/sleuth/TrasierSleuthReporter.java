@@ -1,9 +1,8 @@
 package com.trasier.client.impl.spring4.sleuth;
 
 import com.trasier.client.Client;
-import com.trasier.client.impl.spring4.TrasierSleuthConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.model.Endpoint;
+import com.trasier.client.impl.spring4.TrasierSleuthConstants;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.SpanReporter;
 import org.springframework.context.annotation.Primary;
@@ -33,10 +32,9 @@ public class TrasierSleuthReporter implements SpanReporter {
             String operationName = tags.get(TrasierSleuthConstants.TAG_OPERATION_NAME);
             String traceId = span.traceIdString();
 
-            com.trasier.client.model.Span.Builder builder = com.trasier.client.model.Span.newSpan(conversationId, traceId, new Endpoint("in"), operationName);
-            builder.id(span.idToHex(span.getSpanId()));
+            com.trasier.client.model.Span.Builder builder = com.trasier.client.model.Span.newSpan(operationName, conversationId, traceId, Span.idToHex(span.getSpanId()));
             if (!span.getParents().isEmpty()) {
-                builder.parentId(span.idToHex(span.getParents().iterator().next()));
+                builder.parentId(Span.idToHex(span.getParents().iterator().next()));
             }
             builder.startTimestamp(span.getBegin());
             builder.endTimestamp(span.getEnd());
