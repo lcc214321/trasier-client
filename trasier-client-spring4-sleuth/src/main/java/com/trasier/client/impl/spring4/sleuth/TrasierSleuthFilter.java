@@ -54,11 +54,13 @@ public class TrasierSleuthFilter extends AbstractTrasierFilter {
                 //handle exception to log and rethrow
             }
 
-            Map<String, Integer> statusMap = Collections.singletonMap("status", response.getStatus());
-            Map<String, String> responseHeaders = getResponseHeaders(response);
-            String responseBody = response.getCachedData();
-            String responseMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(statusMap, responseHeaders, responseBody));
-            currentSpan.tag(TrasierSleuthConstants.TAG_RESPONSE_MESSAGE, responseMessage);
+            //TODO handle header and parameters
+//            Map<String, Integer> statusMap = Collections.singletonMap("status", response.getStatus());
+//            Map<String, String> responseHeaders = getResponseHeaders(response);
+//            String responseMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(statusMap, responseHeaders, responseBody));
+
+            String responseBody = new String(response.getContentAsByteArray());
+            currentSpan.tag(TrasierSleuthConstants.TAG_RESPONSE_MESSAGE, responseBody);
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }

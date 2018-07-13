@@ -31,8 +31,8 @@ public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
         return cachedOutputStream;
     }
 
-    public String getCachedData() {
-        return new String(cachedOutputStream.out.toByteArray());
+    public byte[] getContentAsByteArray() {
+        return cachedOutputStream.out.toByteArray();
     }
 
     private static class CachedOutputStream extends ServletOutputStream {

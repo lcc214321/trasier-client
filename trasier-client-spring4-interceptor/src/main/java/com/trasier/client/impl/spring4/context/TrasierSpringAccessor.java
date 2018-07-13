@@ -27,6 +27,7 @@ public class TrasierSpringAccessor {
         }
 
         Span.Builder spanBuilder = Span.newSpan(operationName, conversationId, traceId, spanId);
+        spanBuilder.startTimestamp(System.currentTimeMillis());
         Span span = spanBuilder.build();
         TrasierContextHolder.setCurrentSpan(span);
         return span;
@@ -36,6 +37,7 @@ public class TrasierSpringAccessor {
     public void closeSpan(Span span) {
         if (span != null) {
             Span currentSpan = TrasierContextHolder.getCurrentSpan();
+            currentSpan.setEndTimestamp(System.currentTimeMillis());
             if (!span.equals(currentSpan)) {
                 throw new IllegalArgumentException("Tried to close wrong span.");
             } else {

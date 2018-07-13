@@ -3,7 +3,9 @@ package com.trasier.client.impl.spring4.ws;
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.context.TrasierSpringAccessor;
+import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.interceptor.EndpointInterceptorAdapter;
@@ -17,6 +19,7 @@ public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
     private final TrasierClientConfiguration configuration;
     private final TrasierSpringAccessor trasierSpringAccessor;
 
+    @Autowired
     public TrasierEndpointInterceptor(Client client, TrasierClientConfiguration configuration, TrasierSpringAccessor trasierSpringAccessor) {
         this.client = client;
         this.configuration = configuration;
@@ -32,6 +35,8 @@ public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
     public boolean handleRequest(MessageContext messageContext, Object endpoint) throws Exception {
         if(trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.createChildSpan("TODO-operationName");
+            currentSpan.setIncomingEndpoint(new Endpoint(configuration.getSystemName()));
+            currentSpan.setOutgoingEndpoint(new Endpoint("UNKNOWN"));
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             messageContext.getRequest().writeTo(out);

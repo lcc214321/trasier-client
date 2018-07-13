@@ -2,6 +2,7 @@ package com.trasier.client.impl.spring4.http;
 
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -15,6 +16,7 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
     private final Client client;
     private final TrasierClientConfiguration configuration;
 
+    @Autowired
     public TrasierClientRequestInterceptor(Client client, TrasierClientConfiguration configuration) {
         this.client = client;
         this.configuration = configuration;

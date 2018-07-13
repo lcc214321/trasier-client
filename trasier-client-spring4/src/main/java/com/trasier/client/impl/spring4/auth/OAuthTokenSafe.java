@@ -2,6 +2,8 @@ package com.trasier.client.impl.spring4.auth;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,7 +27,8 @@ public class OAuthTokenSafe {
     private long tokenIssued;
     private long tokenExpiresAt;
 
-    public OAuthTokenSafe(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig, RestTemplate restTemplate) {
+    @Autowired
+    public OAuthTokenSafe(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig, @Qualifier("trasierRestTemplate") RestTemplate restTemplate) {
         this.appConfig = appConfig;
         this.springConfig = springConfig;
         this.restTemplate = restTemplate;

@@ -70,9 +70,6 @@ public abstract class AbstractTrasierFilter extends GenericFilterBean {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
         String operation = requestURI;
-        if(operation.contains("/")) {
-            operation = operation.substring(0, operation.indexOf("/"));
-        }
         return method.toUpperCase() + "_" + operation.toUpperCase();
     }
 }
