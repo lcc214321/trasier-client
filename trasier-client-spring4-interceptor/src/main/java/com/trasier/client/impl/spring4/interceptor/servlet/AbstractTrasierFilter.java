@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring4.servlet;
+package com.trasier.client.impl.spring4.interceptor.servlet;
 
 import com.trasier.client.TrasierConstants;
 import org.springframework.web.filter.GenericFilterBean;

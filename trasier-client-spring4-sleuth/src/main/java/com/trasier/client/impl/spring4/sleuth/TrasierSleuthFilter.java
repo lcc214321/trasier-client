@@ -2,10 +2,9 @@ package com.trasier.client.impl.spring4.sleuth;
 
 import com.google.gson.GsonBuilder;
 import com.trasier.client.TrasierConstants;
-import com.trasier.client.impl.spring4.TrasierSleuthConstants;
-import com.trasier.client.impl.spring4.servlet.AbstractTrasierFilter;
-import com.trasier.client.impl.spring4.servlet.CachedServletRequestWrapper;
-import com.trasier.client.impl.spring4.servlet.CachedServletResponseWrapper;
+import com.trasier.client.impl.spring4.interceptor.servlet.AbstractTrasierFilter;
+import com.trasier.client.impl.spring4.sleuth.servlet.CachedServletRequestWrapper;
+import com.trasier.client.impl.spring4.sleuth.servlet.CachedServletResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.SpanAccessor;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 

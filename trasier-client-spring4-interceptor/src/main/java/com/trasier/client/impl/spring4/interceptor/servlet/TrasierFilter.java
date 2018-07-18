@@ -1,9 +1,8 @@
-package com.trasier.client.impl.spring4.servlet;
+package com.trasier.client.impl.spring4.interceptor.servlet;
 
-import com.google.gson.GsonBuilder;
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.impl.spring4.context.TrasierSpringAccessor;
+import com.trasier.client.impl.spring4.interceptor.context.TrasierSpringAccessor;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +19,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 @Component
 @Order(TrasierFilter.ORDER)
@@ -65,7 +60,6 @@ public class TrasierFilter extends AbstractTrasierFilter {
 
             handleResponse(response, currentSpan);
 
-            //TODO entkoppeln
             client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
             trasierSpringAccessor.closeSpan(currentSpan);
         } else {
@@ -97,7 +91,7 @@ public class TrasierFilter extends AbstractTrasierFilter {
     }
 
     private synchronized void initialize() {
-        if(needsInitialization()) {
+        if(needsInitialization()) { //TODO optimize this shit
             WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
             client = webApplicationContext.getBean(Client.class);
             configuration = webApplicationContext.getBean(TrasierClientConfiguration.class);

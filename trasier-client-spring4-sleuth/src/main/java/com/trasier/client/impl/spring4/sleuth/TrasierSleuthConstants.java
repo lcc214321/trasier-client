@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring4;
+package com.trasier.client.impl.spring4.sleuth;
 
 public interface TrasierSleuthConstants {
     String TAG_REQUEST_MESSAGE = "TAG_REQUEST_MESSAGE";

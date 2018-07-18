@@ -1,7 +1,5 @@
 package com.trasier.client.configuration;
 
-import com.trasier.client.configuration.ClientConfiguration;
-
 public class TrasierClientConfiguration implements ClientConfiguration {
     private String accountId;
     private String spaceKey;

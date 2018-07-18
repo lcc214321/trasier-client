@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring4.context;
+package com.trasier.client.impl.spring4.interceptor.context;
 
 import com.trasier.client.model.Span;
 import org.springframework.core.NamedThreadLocal;

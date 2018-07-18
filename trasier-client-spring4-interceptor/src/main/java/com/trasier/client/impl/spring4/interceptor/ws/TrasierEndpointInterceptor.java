@@ -1,8 +1,8 @@
-package com.trasier.client.impl.spring4.ws;
+package com.trasier.client.impl.spring4.interceptor.ws;
 
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.impl.spring4.context.TrasierSpringAccessor;
+import com.trasier.client.impl.spring4.interceptor.context.TrasierSpringAccessor;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,6 @@ public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
             messageContext.getResponse().writeTo(out);
             currentSpan.setIncomingData(out.toString());
 
-            //TODO entkoppeln
             client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
             trasierSpringAccessor.closeSpan(currentSpan);
         }

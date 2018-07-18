@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring4.servlet;
+package com.trasier.client.impl.spring4.sleuth.servlet;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
