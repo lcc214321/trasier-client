@@ -3,6 +3,7 @@ package com.trasier.client.impl.spring4.interceptor.ws;
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.interceptor.context.TrasierSpringAccessor;
+import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +36,15 @@ public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
     public boolean handleRequest(MessageContext messageContext, Object endpoint) throws Exception {
         if(trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.createChildSpan("TODO-operationName");
+            currentSpan.setStartTimestamp(System.currentTimeMillis());
+            currentSpan.setIncomingContentType(ContentType.XML);
             currentSpan.setIncomingEndpoint(new Endpoint(configuration.getSystemName()));
-            currentSpan.setOutgoingEndpoint(new Endpoint("UNKNOWN"));
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             messageContext.getRequest().writeTo(out);
             currentSpan.setIncomingData(out.toString());
+
+            currentSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
         }
 
         return super.handleRequest(messageContext, endpoint);
@@ -51,12 +55,17 @@ public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
         if(trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
+            currentSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
+            currentSpan.setOutgoingContentType(ContentType.XML);
+            currentSpan.setOutgoingEndpoint(new Endpoint("UNKNOWN"));
+
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             messageContext.getResponse().writeTo(out);
             currentSpan.setIncomingData(out.toString());
+            currentSpan.setEndTimestamp(System.currentTimeMillis());
 
-            client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
             trasierSpringAccessor.closeSpan(currentSpan);
+            client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
         }
 
         return super.handleResponse(messageContext, endpoint);
