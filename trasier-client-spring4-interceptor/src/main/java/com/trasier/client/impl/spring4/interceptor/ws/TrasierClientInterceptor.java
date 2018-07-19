@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) Schweizerische Bundesbahnen SBB, 2018.
+ */
+
 package com.trasier.client.impl.spring4.interceptor.ws;
 
 import com.trasier.client.Client;
@@ -8,59 +12,54 @@ import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.ws.client.WebServiceClientException;
+import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.server.endpoint.MethodEndpoint;
 import org.springframework.ws.server.endpoint.interceptor.EndpointInterceptorAdapter;
 import org.w3c.dom.Element;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 @Component
-public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
+public class TrasierClientInterceptor extends ClientInterceptorAdapter {
     private final Client client;
     private final TrasierClientConfiguration configuration;
     private final TrasierSpringAccessor trasierSpringAccessor;
 
     @Autowired
-    public TrasierEndpointInterceptor(Client client, TrasierClientConfiguration configuration, TrasierSpringAccessor trasierSpringAccessor) {
+    public TrasierClientInterceptor(Client client, TrasierClientConfiguration configuration, TrasierSpringAccessor trasierSpringAccessor) {
         this.client = client;
         this.configuration = configuration;
         this.trasierSpringAccessor = trasierSpringAccessor;
     }
 
     @Override
-    public boolean understands(Element header) {
-        return true;
-    }
-
-    @Override
-    public boolean handleRequest(MessageContext messageContext, Object endpoint) throws Exception {
+    public boolean handleRequest(MessageContext messageContext) {
         if(trasierSpringAccessor.isTracing()) {
-            Span currentSpan = trasierSpringAccessor.createChildSpan(extractOperationName(endpoint));
+            Span currentSpan = trasierSpringAccessor.createChildSpan("TODO-operationName");
             currentSpan.setStartTimestamp(System.currentTimeMillis());
             currentSpan.setIncomingContentType(ContentType.XML);
 
             currentSpan.setIncomingEndpoint(new Endpoint("UNKNOWN"));
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            messageContext.getRequest().writeTo(out);
+            try {
+                messageContext.getRequest().writeTo(out);
+            } catch (IOException e) {
+                //TODO log
+                e.printStackTrace();
+            }
             currentSpan.setIncomingData(out.toString());
 
             currentSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
         }
 
-        return super.handleRequest(messageContext, endpoint);
-    }
-
-    private String extractOperationName(Object endpoint) {
-        if(endpoint instanceof MethodEndpoint) {
-            return ((MethodEndpoint)endpoint).getMethod().getName();
-        }
-        return "UNKNOWN";
+        return super.handleRequest(messageContext);
     }
 
     @Override
-    public boolean handleResponse(MessageContext messageContext, Object endpoint) throws Exception {
+    public boolean handleResponse(MessageContext messageContext) {
         if(trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
@@ -69,7 +68,12 @@ public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
             currentSpan.setOutgoingEndpoint(new Endpoint(configuration.getSystemName()));
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            messageContext.getResponse().writeTo(out);
+            try {
+                messageContext.getResponse().writeTo(out);
+            } catch (IOException e) {
+                //TODO log
+                e.printStackTrace();
+            }
             String outgoingData = out.toString();
             currentSpan.setOutgoingData(outgoingData);
             currentSpan.setError(outgoingData.toLowerCase().contains(":fault>"));
@@ -79,7 +83,7 @@ public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
             client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
         }
 
-        return super.handleResponse(messageContext, endpoint);
+        return super.handleResponse(messageContext);
     }
 
     //TODO handle fault
