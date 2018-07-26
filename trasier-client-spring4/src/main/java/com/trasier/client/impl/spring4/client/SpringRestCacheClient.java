@@ -1,6 +1,7 @@
 package com.trasier.client.impl.spring4.client;
 
 import com.trasier.client.impl.spring4.TrasierSpringConfiguration;
+import com.trasier.client.model.ConversationInfo;
 import com.trasier.client.model.Span;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Primary
@@ -52,6 +49,16 @@ public class SpringRestCacheClient implements SpringClient, Runnable {
     @Override
     public boolean sendSpans(String accountId, String spaceKey, List<Span> spans) {
         return sendSpans(spans);
+    }
+
+    @Override
+    public ConversationInfo readConversation(String accountId, String spaceKey, String conversationId) {
+        return springRestClient.readConversation(accountId, spaceKey, conversationId);
+    }
+
+    @Override
+    public Span readSpan(String accountId, String spaceKey, String conversationId, String traceId, String spanId) {
+        return springRestClient.readSpan(accountId, spaceKey, conversationId, traceId, spanId);
     }
 
     @Override

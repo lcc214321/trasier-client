@@ -57,13 +57,28 @@ public class SpringRestClient implements SpringClient {
     }
 
     @Override
-    public ConversationInfo readConversation(String conversationId) {
-        return null;
+    public ConversationInfo readConversation(String accountId, String spaceKey, String conversationId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + tokenSafe.getAuthHeader());
+
+        UriComponents builder = UriComponentsBuilder.fromHttpUrl(applicationConfiguration.getReaderEndpoint()).buildAndExpand(accountId, spaceKey, conversationId);
+
+        ResponseEntity<ConversationInfo> forEntity = restTemplate.getForEntity(builder.toUriString(), ConversationInfo.class);
+        return forEntity.getBody();
     }
 
     @Override
-    public ConversationInfo readSpan(String spanId) {
-        return null;
+    public Span readSpan(String accountId, String spaceKey, String conversationId, String traceId, String spanId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + tokenSafe.getAuthHeader());
+
+        String url = applicationConfiguration.getReaderEndpoint() + "/traces/{traceId}/spans/{spanId}" ;
+        UriComponents builder = UriComponentsBuilder.fromHttpUrl(url).buildAndExpand(accountId, spaceKey, conversationId, traceId, spanId);
+
+        ResponseEntity<Span> forEntity = restTemplate.getForEntity(builder.toUriString(), Span.class);
+        return forEntity.getBody();
     }
 
     @Override

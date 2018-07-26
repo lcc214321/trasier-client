@@ -11,9 +11,9 @@ public interface Client {
 
     boolean sendSpans(String accountId, String spaceKey, List<Span> spans);
 
-    ConversationInfo readConversation(String conversationId);
+    ConversationInfo readConversation(String accountId, String spaceKey, String conversationId);
 
-    ConversationInfo readSpan(String spanId);
+    Span readSpan(String accountId, String spaceKey, String conversationId, String traceId, String spanId);
 
     void close();
 }

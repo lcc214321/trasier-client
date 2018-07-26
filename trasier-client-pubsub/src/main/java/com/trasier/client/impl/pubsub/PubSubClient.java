@@ -40,14 +40,15 @@ public class PubSubClient implements Client {
     }
 
     @Override
-    public ConversationInfo readConversation(String conversationId) {
+    public ConversationInfo readConversation(String accountId, String spaceKey, String conversationId) {
         throw new UnsupportedOperationException("Read operation currently unsupported");
     }
 
     @Override
-    public ConversationInfo readSpan(String spanId) {
+    public Span readSpan(String accountId, String spaceKey, String conversationId, String traceId, String spanId) {
         throw new UnsupportedOperationException("Read operation currently unsupported");
     }
+
 
     @Override
     public void close() {
