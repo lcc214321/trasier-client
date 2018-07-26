@@ -15,14 +15,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.soap.SoapBody;
-import org.springframework.ws.soap.SoapMessage;
-import org.springframework.ws.soap.saaj.SaajSoapBodyException;
-import org.springframework.ws.soap.soap11.Soap11Body;
-import org.w3c.dom.Node;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMResult;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -46,7 +39,7 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
     @Override
     public boolean handleRequest(MessageContext messageContext) {
         if (trasierSpringAccessor.isTracing()) {
-//            TransportContextHolder.getTransportContext()
+//            TransportContext transportContext = TransportContextHolder.getTransportContext();
             String operationName = extractOperationName(messageContext, null);
             Span currentSpan = trasierSpringAccessor.createChildSpan(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN : operationName);
             currentSpan.setStartTimestamp(System.currentTimeMillis());

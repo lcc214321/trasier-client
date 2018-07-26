@@ -5,6 +5,8 @@ import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.interceptor.context.TrasierSpringAccessor;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -23,6 +25,7 @@ import java.io.IOException;
 @Component
 @Order(TrasierFilter.ORDER)
 public class TrasierFilter extends AbstractTrasierFilter {
+    private static final Logger LOG = LoggerFactory.getLogger(TrasierFilter.class);
     static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 6;
 
     @Autowired
@@ -56,14 +59,11 @@ public class TrasierFilter extends AbstractTrasierFilter {
 
             try {
                 filterChain.doFilter(request, response);
-            } catch (Exception e) {
-                //handle exception to log and rethrow
+            } finally {
+                handleResponse(response, currentSpan);
+                client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
+                trasierSpringAccessor.closeSpan(currentSpan);
             }
-
-            handleResponse(response, currentSpan);
-
-            client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
-            trasierSpringAccessor.closeSpan(currentSpan);
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
