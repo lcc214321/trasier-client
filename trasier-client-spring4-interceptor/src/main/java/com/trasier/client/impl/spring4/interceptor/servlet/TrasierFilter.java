@@ -3,7 +3,6 @@ package com.trasier.client.impl.spring4.interceptor.servlet;
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.interceptor.context.TrasierSpringAccessor;
-import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +46,10 @@ public class TrasierFilter extends AbstractTrasierFilter {
             String traceId = extractTraceId(request);
             String spanId = extractSpanId(request);
 
-            Span currentSpan = trasierSpringAccessor.createSpan(getOperationName(request), conversationId, traceId, spanId);
-            currentSpan.setIncomingContentType(ContentType.XML);
-            currentSpan.setIncomingEndpoint(new Endpoint("UNKNOWN"));
-            currentSpan.setOutgoingContentType(ContentType.XML);
+            Span currentSpan = trasierSpringAccessor.createSpan(extractOperationName(request), conversationId, traceId, spanId);
+            currentSpan.setIncomingContentType(extractContentType(request));
+            currentSpan.setIncomingEndpoint(new Endpoint(extractIncomingEndpointName(request)));
+            currentSpan.setOutgoingContentType(extractContentType(request));
             currentSpan.setOutgoingEndpoint(new Endpoint(configuration.getSystemName()));
 
             handleRequest(request, currentSpan);

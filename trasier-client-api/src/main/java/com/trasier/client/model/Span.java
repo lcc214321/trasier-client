@@ -77,6 +77,11 @@ public class Span {
         return operationName;
     }
 
+    public void setOperationName(String operationName) {
+        Precondition.notNull(operationName, "operationName");
+        this.operationName = operationName;
+    }
+
     public Boolean getError() {
         return error;
     }

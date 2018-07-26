@@ -1,6 +1,8 @@
 package com.trasier.client.impl.spring4.interceptor.servlet;
 
 import com.trasier.client.TrasierConstants;
+import com.trasier.client.model.ContentType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.ServletRequest;
@@ -31,6 +33,15 @@ public abstract class AbstractTrasierFilter extends GenericFilterBean {
 
     protected String extractSpanId(HttpServletRequest servletRequest) {
         return servletRequest.getHeader(TrasierConstants.HEADER_SPAN_ID);
+    }
+
+    protected String extractIncomingEndpointName(HttpServletRequest servletRequest) {
+        String incomingEndpointName = servletRequest.getHeader(TrasierConstants.HEADER_INCOMING_ENDPOINT_NAME);
+        return StringUtils.isEmpty(incomingEndpointName) ? TrasierConstants.UNKNOWN : incomingEndpointName;
+    }
+
+    protected ContentType extractContentType(HttpServletRequest servletRequest) {
+        return ContentType.XML;
     }
 
     protected Map<String, String> getRequestHeaders(HttpServletRequest request) {
@@ -66,7 +77,7 @@ public abstract class AbstractTrasierFilter extends GenericFilterBean {
         return headerMap;
     }
 
-    protected String getOperationName(HttpServletRequest request) {
+    protected String extractOperationName(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
         String operation = requestURI;

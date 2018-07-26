@@ -39,7 +39,7 @@ public class TrasierSleuthFilter extends AbstractTrasierFilter {
             Span currentSpan = spanAccessor.getCurrentSpan();
             String conversationId = request.getHeader(TrasierConstants.HEADER_CONVERSATION_ID);
             currentSpan.tag(TrasierSleuthConstants.TAG_CONVERSATION_ID, conversationId);
-            currentSpan.tag(TrasierSleuthConstants.TAG_OPERATION_NAME, getOperationName(request));
+            currentSpan.tag(TrasierSleuthConstants.TAG_OPERATION_NAME, extractOperationName(request));
 
             Map<String, String> requestHeaders = getRequestHeaders(request);
             Map<String, List<String>> parameters = getRequestParameters(request);

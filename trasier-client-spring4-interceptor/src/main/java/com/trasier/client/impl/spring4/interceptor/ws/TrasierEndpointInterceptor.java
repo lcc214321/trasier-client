@@ -3,20 +3,17 @@ package com.trasier.client.impl.spring4.interceptor.ws;
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.interceptor.context.TrasierSpringAccessor;
-import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.server.endpoint.MethodEndpoint;
-import org.springframework.ws.server.endpoint.interceptor.EndpointInterceptorAdapter;
-import org.w3c.dom.Element;
+import org.springframework.ws.server.EndpointInterceptor;
 
 import java.io.ByteArrayOutputStream;
 
 @Component
-public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
+public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor implements EndpointInterceptor {
     private final Client client;
     private final TrasierClientConfiguration configuration;
     private final TrasierSpringAccessor trasierSpringAccessor;
@@ -29,34 +26,16 @@ public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
     }
 
     @Override
-    public boolean understands(Element header) {
-        return true;
-    }
-
-    @Override
     public boolean handleRequest(MessageContext messageContext, Object endpoint) throws Exception {
         if(trasierSpringAccessor.isTracing()) {
-            Span currentSpan = trasierSpringAccessor.createChildSpan(extractOperationName(endpoint));
-            currentSpan.setStartTimestamp(System.currentTimeMillis());
-            currentSpan.setIncomingContentType(ContentType.XML);
+            Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
-            currentSpan.setIncomingEndpoint(new Endpoint("UNKNOWN"));
-
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            messageContext.getRequest().writeTo(out);
-            currentSpan.setIncomingData(out.toString());
-
-            currentSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
+            String operationName = extractOperationName(messageContext, endpoint);
+            currentSpan.setOperationName(operationName);
+//            currentSpan.setOutgoingEndpoint(new Endpoint(extractOutgoingEndpointName(messageContext, endpoint)));
         }
 
-        return super.handleRequest(messageContext, endpoint);
-    }
-
-    private String extractOperationName(Object endpoint) {
-        if(endpoint instanceof MethodEndpoint) {
-            return ((MethodEndpoint)endpoint).getMethod().getName();
-        }
-        return "UNKNOWN";
+        return true;
     }
 
     @Override
@@ -64,23 +43,24 @@ public class TrasierEndpointInterceptor extends EndpointInterceptorAdapter {
         if(trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
-            currentSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
-            currentSpan.setOutgoingContentType(ContentType.XML);
-            currentSpan.setOutgoingEndpoint(new Endpoint(configuration.getSystemName()));
-
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             messageContext.getResponse().writeTo(out);
             String outgoingData = out.toString();
-            currentSpan.setOutgoingData(outgoingData);
             currentSpan.setError(outgoingData.toLowerCase().contains(":fault>"));
-            currentSpan.setEndTimestamp(System.currentTimeMillis());
-
-            trasierSpringAccessor.closeSpan(currentSpan);
-            client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
         }
 
-        return super.handleResponse(messageContext, endpoint);
+        return true;
     }
 
-    //TODO handle fault
+    //TODO handle fault usw
+
+    @Override
+    public boolean handleFault(MessageContext messageContext, Object endpoint) throws Exception {
+        return false;
+    }
+
+    @Override
+    public void afterCompletion(MessageContext messageContext, Object endpoint, Exception ex) throws Exception {
+
+    }
 }
