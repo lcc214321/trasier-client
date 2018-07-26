@@ -3,14 +3,11 @@ package com.trasier.client.impl.spring4.client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.impl.spring4.auth.OAuthTokenSafe;
+import com.trasier.client.model.ConversationInfo;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
@@ -57,6 +54,16 @@ public class SpringRestClient implements SpringClient {
         HttpEntity<List<Span>> requestEntity = new HttpEntity<>(spans, headers);
         ResponseEntity<Void> exchange = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, requestEntity, Void.class);
         return !exchange.getStatusCode().is4xxClientError() && !exchange.getStatusCode().is5xxServerError();
+    }
+
+    @Override
+    public ConversationInfo readConversation(String conversationId) {
+        return null;
+    }
+
+    @Override
+    public ConversationInfo readSpan(String spanId) {
+        return null;
     }
 
     @Override

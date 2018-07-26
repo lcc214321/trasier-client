@@ -5,6 +5,7 @@ import com.spotify.google.cloud.pubsub.client.Message;
 import com.spotify.google.cloud.pubsub.client.Publisher;
 import com.spotify.google.cloud.pubsub.client.Pubsub;
 import com.trasier.client.Client;
+import com.trasier.client.model.ConversationInfo;
 import com.trasier.client.model.Span;
 import com.trasier.client.utils.Precondition;
 import org.slf4j.Logger;
@@ -36,6 +37,16 @@ public class PubSubClient implements Client {
             result &= this.sendSpan(accountId, spaceKey, span);
         }
         return result;
+    }
+
+    @Override
+    public ConversationInfo readConversation(String conversationId) {
+        throw new UnsupportedOperationException("Read operation currently unsupported");
+    }
+
+    @Override
+    public ConversationInfo readSpan(String spanId) {
+        throw new UnsupportedOperationException("Read operation currently unsupported");
     }
 
     @Override
