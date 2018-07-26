@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
@@ -47,11 +48,12 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
         if (trasierSpringAccessor.isTracing()) {
 //            TransportContextHolder.getTransportContext()
             String operationName = extractOperationName(messageContext, null);
-            Span currentSpan = trasierSpringAccessor.createChildSpan(operationName);
+            Span currentSpan = trasierSpringAccessor.createChildSpan(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN : operationName);
             currentSpan.setStartTimestamp(System.currentTimeMillis());
             currentSpan.setIncomingContentType(ContentType.XML);
             currentSpan.setIncomingEndpoint(new Endpoint(configuration.getSystemName()));
-            currentSpan.setOutgoingEndpoint(new Endpoint(extractOutgoingEndpointName(messageContext, null)));
+            String endpointName = extractOutgoingEndpointName(messageContext, null);
+            currentSpan.setOutgoingEndpoint(new Endpoint(StringUtils.isEmpty(endpointName) ? TrasierConstants.UNKNOWN : endpointName));
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {

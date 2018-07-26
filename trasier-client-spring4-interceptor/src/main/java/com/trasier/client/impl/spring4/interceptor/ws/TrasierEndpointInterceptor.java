@@ -1,12 +1,14 @@
 package com.trasier.client.impl.spring4.interceptor.ws;
 
 import com.trasier.client.Client;
+import com.trasier.client.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.interceptor.context.TrasierSpringAccessor;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.EndpointInterceptor;
 
@@ -31,7 +33,7 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
             String operationName = extractOperationName(messageContext, endpoint);
-            currentSpan.setOperationName(operationName);
+            currentSpan.setOperationName(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN : operationName);
 //            currentSpan.setOutgoingEndpoint(new Endpoint(extractOutgoingEndpointName(messageContext, endpoint)));
         }
 

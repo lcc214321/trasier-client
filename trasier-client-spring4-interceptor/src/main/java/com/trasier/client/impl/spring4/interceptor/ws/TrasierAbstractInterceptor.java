@@ -19,11 +19,15 @@ public abstract class TrasierAbstractInterceptor {
             SoapBody body = soapMessage.getSoapBody();
             if (body.getPayloadSource() instanceof DOMSource) {
                 Node node = ((DOMSource) body.getPayloadSource()).getNode();
-                return node.getPrefix();
+                String namespace = node.getNamespaceURI();
+                if(namespace != null) {
+                    String[] soapActionArray = namespace.split("/");
+                    return soapActionArray[soapActionArray.length - 1];
+                }
             }
         }
 
-        return TrasierConstants.UNKNOWN;
+        return null;
     }
 
     protected String extractOperationName(MessageContext messageContext, Object endpoint) {
@@ -45,11 +49,11 @@ public abstract class TrasierAbstractInterceptor {
         return extractOperationName(endpoint);
     }
 
-    protected String extractOperationName(Object endpoint) {
+    private String extractOperationName(Object endpoint) {
         if (endpoint instanceof MethodEndpoint) {
             return ((MethodEndpoint) endpoint).getMethod().getName();
         }
 
-        return TrasierConstants.UNKNOWN;
+        return null;
     }
 }
