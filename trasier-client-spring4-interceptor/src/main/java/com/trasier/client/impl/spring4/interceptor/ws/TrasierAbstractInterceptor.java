@@ -19,6 +19,9 @@ public abstract class TrasierAbstractInterceptor {
             SoapBody body = soapMessage.getSoapBody();
             if (body.getPayloadSource() instanceof DOMSource) {
                 Node node = ((DOMSource) body.getPayloadSource()).getNode();
+                if(!StringUtils.isEmpty(node.getPrefix())) {
+                    return node.getPrefix();
+                }
                 String namespace = node.getNamespaceURI();
                 if(namespace != null) {
                     String[] soapActionArray = namespace.split("/");
