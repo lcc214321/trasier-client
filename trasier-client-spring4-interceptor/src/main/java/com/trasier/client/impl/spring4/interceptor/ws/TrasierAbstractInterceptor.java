@@ -36,6 +36,7 @@ public abstract class TrasierAbstractInterceptor {
                 Node node = ((DOMSource) body.getPayloadSource()).getNode();
                 return node.getPrefix();
             } else if(!StringUtils.isEmpty(soapAction)) {
+                soapAction = soapAction.replaceAll("\"", "");
                 String[] soapActionArray = soapAction.split("/");
                 return soapActionArray[soapActionArray.length - 1];
             }

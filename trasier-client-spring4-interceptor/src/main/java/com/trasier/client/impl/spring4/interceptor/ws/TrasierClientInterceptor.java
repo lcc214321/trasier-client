@@ -46,7 +46,7 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
     public boolean handleRequest(MessageContext messageContext) {
         if (trasierSpringAccessor.isTracing()) {
 //            TransportContextHolder.getTransportContext()
-            String operationName = extractOperationName(messageContext);
+            String operationName = extractOperationName(messageContext, null);
             Span currentSpan = trasierSpringAccessor.createChildSpan(operationName);
             currentSpan.setStartTimestamp(System.currentTimeMillis());
             currentSpan.setIncomingContentType(ContentType.XML);
