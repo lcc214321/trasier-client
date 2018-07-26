@@ -36,7 +36,7 @@ public class SpringRestCacheClient implements SpringClient, Runnable {
         this.springRestClient = springRestClient;
 
         this.spanQueue = new LinkedBlockingDeque<>(springConfiguration.getQueueSize());
-        this.countFullQueueErrorsThreshold = springConfiguration.getQueueSize() * 10;
+        this.countFullQueueErrorsThreshold = springConfiguration.getQueueSize() * springConfiguration.getQueueSizeErrorThresholdMultiplicator();
 
         this.scheduler = new ScheduledThreadPoolExecutor(1);
         this.scheduler.scheduleWithFixedDelay(this, springConfiguration.getQueueDelay(), springConfiguration.getQueueDelay(), TimeUnit.MILLISECONDS);
@@ -103,5 +103,9 @@ public class SpringRestCacheClient implements SpringClient, Runnable {
                 executor.submit(() -> springRestClient.sendSpans(spans));
             }
         } while(spanCount == springConfiguration.getMaxSpansPerTask() && (maxNewTasks--) > 0);
+    }
+
+    public AtomicInteger getCountFullQueueErrors() {
+        return countFullQueueErrors;
     }
 }

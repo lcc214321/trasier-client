@@ -1,12 +1,9 @@
 package com.trasier.client.impl.spring4;
 
-import com.trasier.client.impl.spring4.client.SpringClient;
-import com.trasier.client.impl.spring4.client.SpringRestCacheClient;
 import com.trasier.client.impl.spring4.client.SpringRestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -15,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 @ComponentScan(basePackageClasses = SpringRestClient.class)
 public class TrasierSpringConfiguration {
     private int queueSize = 100;
+    private int queueSizeErrorThresholdMultiplicator = 10;
     private long queueDelay = 1000L;
     private int maxTaskCount = 100;
     private int maxSpansPerTask = 10;
@@ -61,5 +59,13 @@ public class TrasierSpringConfiguration {
 
     public void setMaxSpansPerTask(int maxSpansPerTask) {
         this.maxSpansPerTask = maxSpansPerTask;
+    }
+
+    public int getQueueSizeErrorThresholdMultiplicator() {
+        return queueSizeErrorThresholdMultiplicator;
+    }
+
+    public void setQueueSizeErrorThresholdMultiplicator(int queueSizeErrorThresholdMultiplicator) {
+        this.queueSizeErrorThresholdMultiplicator = queueSizeErrorThresholdMultiplicator;
     }
 }
