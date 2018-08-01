@@ -4,6 +4,7 @@ import com.trasier.client.model.Span;
 import org.springframework.core.NamedThreadLocal;
 
 public class TrasierContextHolder {
+
     private static final ThreadLocal<TrasierContext> CURRENT_TRASIER_CONTEXT = new NamedThreadLocal<>("TrasierContext");
 
     static Span getCurrentSpan() {
@@ -11,11 +12,7 @@ public class TrasierContextHolder {
     }
 
     static void setCurrentSpan(Span span) {
-        push(span, false);
-    }
-
-    static void removeCurrentSpan() {
-        CURRENT_TRASIER_CONTEXT.remove();
+        push(span);
     }
 
     static boolean isTracing() {
@@ -25,19 +22,19 @@ public class TrasierContextHolder {
     static void close() {
         TrasierContext current = CURRENT_TRASIER_CONTEXT.get();
         CURRENT_TRASIER_CONTEXT.remove();
-        while (current != null) {
-            current = current.parent;
-            if (current != null && !current.autoClose) {
-                CURRENT_TRASIER_CONTEXT.set(current);
+        if (current != null) {
+            TrasierContext parent = current.parent;
+            if (parent != null) {
+                CURRENT_TRASIER_CONTEXT.set(parent);
             }
         }
     }
 
-    static void push(Span span, boolean autoClose) {
+    static void push(Span span) {
         if (isCurrent(span)) {
             return;
         }
-        CURRENT_TRASIER_CONTEXT.set(new TrasierContext(span, autoClose));
+        CURRENT_TRASIER_CONTEXT.set(new TrasierContext(span));
     }
 
     private static boolean isCurrent(Span span) {
@@ -49,12 +46,10 @@ public class TrasierContextHolder {
 
     private static class TrasierContext {
         Span span;
-        boolean autoClose;
         TrasierContext parent;
 
-        TrasierContext(Span span, boolean autoClose) {
+        TrasierContext(Span span) {
             this.span = span;
-            this.autoClose = autoClose;
             this.parent = CURRENT_TRASIER_CONTEXT.get();
         }
     }

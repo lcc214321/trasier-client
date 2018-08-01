@@ -8,22 +8,22 @@ import org.springframework.ws.soap.SoapBody;
 import org.springframework.ws.soap.SoapMessage;
 import org.w3c.dom.Node;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 
+// TODO: Pull out into extractors
 public abstract class TrasierAbstractInterceptor {
-    protected String extractOutgoingEndpointName(MessageContext messageContext, Object endpoint) {
+
+    protected String extractOutgoingEndpointName(MessageContext messageContext) {
         if (messageContext.getRequest() instanceof SoapMessage) {
             SoapMessage soapMessage = (SoapMessage) messageContext.getRequest();
             SoapBody body = soapMessage.getSoapBody();
             if (body.getPayloadSource() instanceof DOMSource) {
                 Node node = ((DOMSource) body.getPayloadSource()).getNode();
-                if(!StringUtils.isEmpty(node.getPrefix())) {
+                if (!StringUtils.isEmpty(node.getPrefix())) {
                     return node.getPrefix();
                 }
                 String namespace = node.getNamespaceURI();
-                if(namespace != null) {
+                if (!StringUtils.isEmpty(namespace)) {
                     String[] soapActionArray = namespace.split("/");
                     return soapActionArray[soapActionArray.length - 1];
                 }
@@ -42,7 +42,7 @@ public abstract class TrasierAbstractInterceptor {
             if (body.getPayloadSource() instanceof DOMSource) {
                 Node node = ((DOMSource) body.getPayloadSource()).getNode();
                 return node.getLocalName();
-            } else if(!StringUtils.isEmpty(soapAction)) {
+            } else if (!StringUtils.isEmpty(soapAction)) {
                 soapAction = soapAction.replaceAll("\"", "");
                 String[] soapActionArray = soapAction.split("/");
                 return soapActionArray[soapActionArray.length - 1];
@@ -57,6 +57,6 @@ public abstract class TrasierAbstractInterceptor {
             return ((MethodEndpoint) endpoint).getMethod().getName();
         }
 
-        return null;
+        return TrasierConstants.UNKNOWN;
     }
 }

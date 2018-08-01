@@ -4,7 +4,6 @@ import com.trasier.client.Client;
 import com.trasier.client.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.interceptor.context.TrasierSpringAccessor;
-import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 
 @Component
 public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor implements EndpointInterceptor {
+
     private final Client client;
     private final TrasierClientConfiguration configuration;
     private final TrasierSpringAccessor trasierSpringAccessor;
@@ -29,7 +29,7 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
 
     @Override
     public boolean handleRequest(MessageContext messageContext, Object endpoint) throws Exception {
-        if(trasierSpringAccessor.isTracing()) {
+        if (trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
             String operationName = extractOperationName(messageContext, endpoint);
@@ -42,7 +42,7 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
 
     @Override
     public boolean handleResponse(MessageContext messageContext, Object endpoint) throws Exception {
-        if(trasierSpringAccessor.isTracing()) {
+        if (trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -55,7 +55,6 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
     }
 
     //TODO handle fault usw
-
     @Override
     public boolean handleFault(MessageContext messageContext, Object endpoint) throws Exception {
         return false;

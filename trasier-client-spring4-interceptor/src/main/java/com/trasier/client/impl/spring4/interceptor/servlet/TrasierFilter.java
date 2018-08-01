@@ -5,8 +5,6 @@ import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.interceptor.context.TrasierSpringAccessor;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -25,7 +23,7 @@ import java.io.IOException;
 @Component
 @Order(TrasierFilter.ORDER)
 public class TrasierFilter extends AbstractTrasierFilter {
-    private static final Logger LOG = LoggerFactory.getLogger(TrasierFilter.class);
+
     static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 6;
 
     @Autowired
@@ -37,7 +35,7 @@ public class TrasierFilter extends AbstractTrasierFilter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        if(needsInitialization()) {
+        if (needsInitialization()) {
             initialize();
         }
 
@@ -93,7 +91,7 @@ public class TrasierFilter extends AbstractTrasierFilter {
     }
 
     private synchronized void initialize() {
-        if(needsInitialization()) { //TODO optimize this shit
+        if (needsInitialization()) { // TODO optimize this
             WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
             client = webApplicationContext.getBean(Client.class);
             configuration = webApplicationContext.getBean(TrasierClientConfiguration.class);

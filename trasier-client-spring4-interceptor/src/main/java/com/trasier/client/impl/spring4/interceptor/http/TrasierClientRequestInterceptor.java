@@ -13,6 +13,7 @@ import java.io.IOException;
 
 @Component
 public class TrasierClientRequestInterceptor implements ClientHttpRequestInterceptor {
+
     private final Client client;
     private final TrasierClientConfiguration configuration;
 

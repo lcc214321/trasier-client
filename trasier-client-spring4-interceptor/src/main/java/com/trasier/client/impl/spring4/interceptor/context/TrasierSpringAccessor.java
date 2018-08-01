@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @Component
 public class TrasierSpringAccessor {
+
     public Span createChildSpan(String operationName) {
         if(isTracing()) {
             Span currentSpan = TrasierContextHolder.getCurrentSpan();
@@ -19,26 +20,20 @@ public class TrasierSpringAccessor {
     }
 
     public Span createSpan(String operationName, String conversationId, String traceId, String spanId) {
-        if(traceId == null) {
-            traceId = UUID.randomUUID().toString();
-        }
-        if(spanId == null) {
-            spanId = UUID.randomUUID().toString();
-        }
-
-        Span.Builder spanBuilder = Span.newSpan(operationName, conversationId, traceId, spanId);
+        String traceIdNotNull = traceId != null ? traceId : UUID.randomUUID().toString();
+        String spanIdNotNull = spanId != null ? spanId : UUID.randomUUID().toString();
+        Span.Builder spanBuilder = Span.newSpan(operationName, conversationId, traceIdNotNull, spanIdNotNull);
         spanBuilder.startTimestamp(System.currentTimeMillis());
         Span span = spanBuilder.build();
         TrasierContextHolder.setCurrentSpan(span);
         return span;
     }
 
-
     public void closeSpan(Span span) {
         if (span != null) {
             Span currentSpan = TrasierContextHolder.getCurrentSpan();
             currentSpan.setEndTimestamp(System.currentTimeMillis());
-            if (!span.equals(currentSpan)) {
+            if (!isValidSpan(span, currentSpan)) {
                 throw new IllegalArgumentException("Tried to close wrong span.");
             } else {
                 TrasierContextHolder.close();
@@ -46,30 +41,9 @@ public class TrasierSpringAccessor {
         }
     }
 
-//    protected Span createChild(Span parent, String name) {
-//        long id = createId();
-//        if (parent == null) {
-//            Span span = Span.builder().name(name)
-//                    .traceIdHigh(this.traceId128 ? createId() : 0L)
-//                    .traceId(id)
-//                    .spanId(id).build();
-//            span = sampledSpan(span, this.defaultSampler);
-//            this.spanLogger.logStartedSpan(null, span);
-//            return span;
-//        }
-//        else {
-//            if (!isTracing()) {
-//                SpanContextHolder.push(parent, true);
-//            }
-//            Span span = Span.builder().name(name)
-//                    .traceIdHigh(parent.getTraceIdHigh())
-//                    .traceId(parent.getTraceId()).parent(parent.getSpanId()).spanId(id)
-//                    .processId(parent.getProcessId()).savedSpan(parent)
-//                    .exportable(parent.isExportable()).build();
-//            this.spanLogger.logStartedSpan(parent, span);
-//            return span;
-//        }
-//    }
+    private boolean isValidSpan(Span span, Span currentSpan) {
+        return span.getId().equals(currentSpan.getId()) && span.getTraceId().equals(currentSpan.getTraceId()) && span.getConversationId().equals(currentSpan.getConversationId());
+    }
 
     public Span getCurrentSpan() {
         return TrasierContextHolder.getCurrentSpan();

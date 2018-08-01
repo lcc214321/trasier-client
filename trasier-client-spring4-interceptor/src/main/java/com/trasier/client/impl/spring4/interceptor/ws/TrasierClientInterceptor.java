@@ -39,13 +39,12 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
     @Override
     public boolean handleRequest(MessageContext messageContext) {
         if (trasierSpringAccessor.isTracing()) {
-//            TransportContext transportContext = TransportContextHolder.getTransportContext();
             String operationName = extractOperationName(messageContext, null);
             Span currentSpan = trasierSpringAccessor.createChildSpan(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN : operationName);
             currentSpan.setStartTimestamp(System.currentTimeMillis());
             currentSpan.setIncomingContentType(ContentType.XML);
             currentSpan.setIncomingEndpoint(new Endpoint(configuration.getSystemName()));
-            String endpointName = extractOutgoingEndpointName(messageContext, null);
+            String endpointName = extractOutgoingEndpointName(messageContext);
             currentSpan.setOutgoingEndpoint(new Endpoint(StringUtils.isEmpty(endpointName) ? TrasierConstants.UNKNOWN : endpointName));
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
