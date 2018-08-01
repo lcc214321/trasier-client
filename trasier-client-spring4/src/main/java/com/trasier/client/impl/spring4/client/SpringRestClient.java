@@ -49,6 +49,9 @@ public class SpringRestClient implements SpringClient {
 
     @Override
     public boolean sendSpans(String accountId, String spaceKey, List<Span> spans) {
+        if (clientConfiguration.isDeactivated()) {
+            return false;
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + tokenSafe.getAuthHeader());

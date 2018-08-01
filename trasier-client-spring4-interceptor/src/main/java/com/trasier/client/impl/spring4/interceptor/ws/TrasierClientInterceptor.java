@@ -38,7 +38,7 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
 
     @Override
     public boolean handleRequest(MessageContext messageContext) {
-        if (trasierSpringAccessor.isTracing()) {
+        if (!configuration.isDeactivated() && trasierSpringAccessor.isTracing()) {
             String operationName = extractOperationName(messageContext, null);
             Span currentSpan = trasierSpringAccessor.createChildSpan(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN : operationName);
             currentSpan.setStartTimestamp(System.currentTimeMillis());
@@ -63,7 +63,7 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
 
     @Override
     public boolean handleResponse(MessageContext messageContext) {
-        if (trasierSpringAccessor.isTracing()) {
+        if (!configuration.isDeactivated() && trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -81,7 +81,7 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
 
     @Override
     public boolean handleFault(MessageContext messageContext) throws WebServiceClientException {
-        if (trasierSpringAccessor.isTracing()) {
+        if (!configuration.isDeactivated() && trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {
@@ -99,7 +99,7 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
 
     @Override
     public void afterCompletion(MessageContext messageContext, Exception e) throws WebServiceClientException {
-        if (trasierSpringAccessor.isTracing()) {
+        if (!configuration.isDeactivated() && trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
             currentSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
             currentSpan.setOutgoingContentType(ContentType.XML);

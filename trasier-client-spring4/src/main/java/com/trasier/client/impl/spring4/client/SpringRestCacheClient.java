@@ -1,5 +1,6 @@
 package com.trasier.client.impl.spring4.client;
 
+import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.TrasierSpringConfiguration;
 import com.trasier.client.model.Span;
 import org.slf4j.Logger;
@@ -22,26 +23,31 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SpringRestCacheClient implements SpringClient, Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(SpringRestCacheClient.class);
 
+    private final TrasierClientConfiguration clientConfig;
     private final TrasierSpringConfiguration springConfiguration;
     private final SpringRestClient springRestClient;
-    private final LinkedBlockingDeque<Span> spanQueue;
     private final AtomicInteger countFullQueueErrors = new AtomicInteger();
-    private final int countFullQueueErrorsThreshold;
-    private final ScheduledThreadPoolExecutor scheduler;
-    private final ThreadPoolExecutor executor;
+
+    private LinkedBlockingDeque<Span> spanQueue;
+    private int countFullQueueErrorsThreshold;
+    private ScheduledThreadPoolExecutor scheduler;
+    private ThreadPoolExecutor executor;
 
     @Autowired
-    public SpringRestCacheClient(TrasierSpringConfiguration springConfiguration, SpringRestClient springRestClient) {
+    public SpringRestCacheClient(TrasierClientConfiguration clientConfig, TrasierSpringConfiguration springConfiguration, SpringRestClient springRestClient) {
+        this.clientConfig = clientConfig;
         this.springConfiguration = springConfiguration;
         this.springRestClient = springRestClient;
 
-        this.spanQueue = new LinkedBlockingDeque<>(springConfiguration.getQueueSize());
-        this.countFullQueueErrorsThreshold = springConfiguration.getQueueSize() * springConfiguration.getQueueSizeErrorThresholdMultiplicator();
+        if (!clientConfig.isDeactivated()) {
+            this.spanQueue = new LinkedBlockingDeque<>(springConfiguration.getQueueSize());
+            this.countFullQueueErrorsThreshold = springConfiguration.getQueueSize() * springConfiguration.getQueueSizeErrorThresholdMultiplicator();
 
-        this.scheduler = new ScheduledThreadPoolExecutor(1);
-        this.scheduler.scheduleWithFixedDelay(this, springConfiguration.getQueueDelay(), springConfiguration.getQueueDelay(), TimeUnit.MILLISECONDS);
+            this.scheduler = new ScheduledThreadPoolExecutor(1);
+            this.scheduler.scheduleWithFixedDelay(this, springConfiguration.getQueueDelay(), springConfiguration.getQueueDelay(), TimeUnit.MILLISECONDS);
 
-        this.executor = new ThreadPoolExecutor(1, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+            this.executor = new ThreadPoolExecutor(1, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+        }
     }
 
     @Override
@@ -56,6 +62,9 @@ public class SpringRestCacheClient implements SpringClient, Runnable {
 
     @Override
     public boolean sendSpan(Span span) {
+        if (clientConfig.isDeactivated()) {
+            return false;
+        }
         try {
             spanQueue.addLast(span);
             return true;
