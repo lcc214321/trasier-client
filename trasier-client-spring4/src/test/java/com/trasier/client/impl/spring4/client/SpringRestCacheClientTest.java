@@ -1,5 +1,6 @@
 package com.trasier.client.impl.spring4.client;
 
+import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring4.TrasierSpringConfiguration;
 import com.trasier.client.model.Span;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import static org.junit.Assert.*;
 public class SpringRestCacheClientTest {
     private SpringRestClient client = Mockito.mock(SpringRestClient.class);
     private TrasierSpringConfiguration springConfiguration = new TrasierSpringConfiguration();
+    private TrasierClientConfiguration clientConfig = new TrasierClientConfiguration();
 
     public SpringRestCacheClientTest() {
         springConfiguration.setQueueSize(1);
@@ -20,7 +22,7 @@ public class SpringRestCacheClientTest {
 
     @Test
     public void sendSpanFullQueue() throws InterruptedException {
-        SpringRestCacheClient sut = new SpringRestCacheClient(springConfiguration, client);
+        SpringRestCacheClient sut = new SpringRestCacheClient(clientConfig, springConfiguration, client);
 
         Span span1 = Span.newSpan("op", "con", "tra", "spa").build();
         boolean result1 = sut.sendSpan(span1);
@@ -43,7 +45,7 @@ public class SpringRestCacheClientTest {
 
     @Test
     public void sendSpanNotYet() throws InterruptedException {
-        SpringRestCacheClient sut = new SpringRestCacheClient(springConfiguration, client);
+        SpringRestCacheClient sut = new SpringRestCacheClient(clientConfig, springConfiguration, client);
 
         Span span = Span.newSpan("op", "con", "tra", "spa").build();
 
@@ -58,7 +60,7 @@ public class SpringRestCacheClientTest {
 
     @Test
     public void sendSpan() throws InterruptedException {
-        SpringRestCacheClient sut = new SpringRestCacheClient(springConfiguration, client);
+        SpringRestCacheClient sut = new SpringRestCacheClient(clientConfig, springConfiguration, client);
 
         Span span = Span.newSpan("op", "con", "tra", "spa").build();
 
@@ -73,7 +75,7 @@ public class SpringRestCacheClientTest {
 
     @Test
     public void sendSpans() throws InterruptedException {
-        SpringRestCacheClient sut = new SpringRestCacheClient(springConfiguration, client);
+        SpringRestCacheClient sut = new SpringRestCacheClient(clientConfig, springConfiguration, client);
 
         Span span = Span.newSpan("op", "con", "tra", "spa").build();
 
@@ -88,7 +90,7 @@ public class SpringRestCacheClientTest {
 
     @Test
     public void sendSpanAll() throws InterruptedException {
-        SpringRestCacheClient sut = new SpringRestCacheClient(springConfiguration, client);
+        SpringRestCacheClient sut = new SpringRestCacheClient(clientConfig, springConfiguration, client);
 
         Span span = Span.newSpan("op", "con", "tra", "spa").build();
 
@@ -103,7 +105,7 @@ public class SpringRestCacheClientTest {
 
     @Test
     public void sendSpansAll() throws InterruptedException {
-        SpringRestCacheClient sut = new SpringRestCacheClient(springConfiguration, client);
+        SpringRestCacheClient sut = new SpringRestCacheClient(clientConfig, springConfiguration, client);
 
         Span span = Span.newSpan("op", "con", "tra", "spa").build();
 
