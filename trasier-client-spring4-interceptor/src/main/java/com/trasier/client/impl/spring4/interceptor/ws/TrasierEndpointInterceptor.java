@@ -29,7 +29,7 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
 
     @Override
     public boolean handleRequest(MessageContext messageContext, Object endpoint) throws Exception {
-        if (trasierSpringAccessor.isTracing()) {
+        if (!configuration.isDeactivated() && trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
             String operationName = extractOperationName(messageContext, endpoint);
@@ -41,7 +41,7 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
 
     @Override
     public boolean handleResponse(MessageContext messageContext, Object endpoint) throws Exception {
-        if (trasierSpringAccessor.isTracing()) {
+        if (!configuration.isDeactivated() && trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -53,9 +53,12 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
         return true;
     }
 
-    //TODO handle fault usw
     @Override
     public boolean handleFault(MessageContext messageContext, Object endpoint) throws Exception {
+        if (!configuration.isDeactivated() && trasierSpringAccessor.isTracing()) {
+            Span currentSpan = trasierSpringAccessor.getCurrentSpan();
+            currentSpan.setError(true);
+        }
         return false;
     }
 

@@ -35,6 +35,12 @@ public class TrasierFilter extends AbstractTrasierFilter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+
+        if (configuration.isDeactivated()) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
         if (needsInitialization()) {
             initialize();
         }
