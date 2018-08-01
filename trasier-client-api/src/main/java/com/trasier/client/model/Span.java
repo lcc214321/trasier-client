@@ -2,8 +2,6 @@ package com.trasier.client.model;
 
 import com.trasier.client.utils.Precondition;
 
-import java.util.UUID;
-
 public class Span {
     private String id;
     private String parentId;

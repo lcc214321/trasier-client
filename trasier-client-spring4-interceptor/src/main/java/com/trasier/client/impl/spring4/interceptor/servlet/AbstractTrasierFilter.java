@@ -8,12 +8,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public abstract class AbstractTrasierFilter extends GenericFilterBean {
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";

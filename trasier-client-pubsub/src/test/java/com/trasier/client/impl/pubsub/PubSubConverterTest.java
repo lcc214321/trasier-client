@@ -1,6 +1,5 @@
 package com.trasier.client.impl.pubsub;
 
-import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.junit.Test;
 
