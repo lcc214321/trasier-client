@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Import(TrasierSleuthConfiguration.class)
+@Import({TrasierSleuthConfiguration.class})
 @Documented
 public @interface EnableTrasierSleuth {
 }

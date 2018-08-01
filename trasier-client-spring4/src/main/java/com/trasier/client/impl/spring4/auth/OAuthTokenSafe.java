@@ -1,7 +1,9 @@
-package com.trasier.client.impl.spring4;
+package com.trasier.client.impl.spring4.auth;
 
-import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -15,6 +17,8 @@ import java.util.Base64;
 
 @Component
 public class OAuthTokenSafe {
+    private static final int EXPIRES_IN_TOLERANCE = 60;
+
     private final TrasierEndpointConfiguration appConfig;
     private final TrasierClientConfiguration springConfig;
     private final RestTemplate restTemplate;
@@ -23,7 +27,8 @@ public class OAuthTokenSafe {
     private long tokenIssued;
     private long tokenExpiresAt;
 
-    public OAuthTokenSafe(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig, RestTemplate restTemplate) {
+    @Autowired
+    public OAuthTokenSafe(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig, @Qualifier("trasierRestTemplate") RestTemplate restTemplate) {
         this.appConfig = appConfig;
         this.springConfig = springConfig;
         this.restTemplate = restTemplate;
@@ -42,6 +47,7 @@ public class OAuthTokenSafe {
 
     private synchronized void refreshToken() {
         if(!isTokenValid()) {
+            //TODO Hackergarten? -> Use refresh_token
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             String basicAuth = Base64.getEncoder().encodeToString((springConfig.getClientId() + ":" + springConfig.getClientSecret()).getBytes());
@@ -58,7 +64,7 @@ public class OAuthTokenSafe {
             ResponseEntity<OAuthToken> exchange = restTemplate.postForEntity(appConfig.getAuthEndpoint(), requestEntity, OAuthToken.class);
             this.token = exchange.getBody();
 
-            this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - 60) * 1000);
+            this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
         }
     }
 }

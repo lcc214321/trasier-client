@@ -3,7 +3,6 @@ package com.trasier.client.impl.pubsub;
 import com.spotify.google.cloud.pubsub.client.Message;
 import com.spotify.google.cloud.pubsub.client.Publisher;
 import com.spotify.google.cloud.pubsub.client.Pubsub;
-import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.junit.Test;
 
@@ -23,17 +22,19 @@ public class PubSubSenderTest {
         // given
         Publisher publisher = mock(Publisher.class);
         Pubsub pubsub = mock(Pubsub.class);
-        PubSubSender sender = new PubSubSender("topic", "client", pubsub, publisher);
-        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP").startTimestamp(1L).build();
+        PubSubSender sut = new PubSubSender("topic", "client", pubsub, publisher);
+        Span span = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "OP").startTimestamp(1L).build();
 
         // when
-        Message message = sender.sendSpan(span);
+        Message message = sut.sendSpan(span);
 
         // then
         assertNotNull(message);
         assertNotNull(message.data());
         assertEquals(CompressionMimeType.NONE, message.attributes().get("mime-type"));
         verify(publisher).publish("topic", message);
+
+        sut.close();
     }
 
     @Test
@@ -41,18 +42,20 @@ public class PubSubSenderTest {
         // given
         Publisher publisher = mock(Publisher.class);
         Pubsub pubsub = mock(Pubsub.class);
-        PubSubSender sender = new PubSubSender("topic", "client", pubsub, publisher);
-        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP")
+        PubSubSender sut = new PubSubSender("topic", "client", pubsub, publisher);
+        Span span = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "OP")
                 .startTimestamp(1L).incomingData("hello").build();
 
         // when
-        Message message = sender.sendSpan(span);
+        Message message = sut.sendSpan(span);
 
         // then
         assertNotNull(message);
         assertNotNull(message.data());
         assertEquals(CompressionMimeType.NONE, message.attributes().get("mime-type"));
         verify(publisher).publish("topic", message);
+
+        sut.close();
     }
 
     @Test
@@ -60,18 +63,20 @@ public class PubSubSenderTest {
         // given
         Publisher publisher = mock(Publisher.class);
         Pubsub pubsub = mock(Pubsub.class);
-        PubSubSender sender = new PubSubSender("topic", "client", pubsub, publisher);
-        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP").startTimestamp(1L)
+        PubSubSender sut = new PubSubSender("topic", "client", pubsub, publisher);
+        Span span = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "OP").startTimestamp(1L)
                 .incomingData(generateBigPayload(PubSubSender.MAX_ALLOWED_UNCOMPRESSED_PAYLOAD_SIZE_BYTES)).build();
 
         // when
-        Message message = sender.sendSpan(span);
+        Message message = sut.sendSpan(span);
 
         // then
         assertNotNull(message);
         assertNotNull(message.data());
         assertEquals(CompressionMimeType.SNAPPY, message.attributes().get("mime-type"));
         verify(publisher).publish("topic", message);
+
+        sut.close();
     }
 
     @Test
@@ -79,16 +84,18 @@ public class PubSubSenderTest {
         // given
         Publisher publisher = mock(Publisher.class);
         Pubsub pubsub = mock(Pubsub.class);
-        PubSubSender sender = new PubSubSender("topic", "client", pubsub, publisher);
-        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("A"), "OP").startTimestamp(1L)
+        PubSubSender sut = new PubSubSender("topic", "client", pubsub, publisher);
+        Span span = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "OP").startTimestamp(1L)
                 .incomingData(generateBigPayload(PubSubSender.MAX_ALLOWED_PAYLOAD_SIZE_BYTES)).build();
 
         // when
-        Message message = sender.sendSpan(span);
+        Message message = sut.sendSpan(span);
 
         // then
         assertNull(message);
         verifyZeroInteractions(publisher);
+
+        sut.close();
     }
 
     private String generateBigPayload(int byteLengthLimit) {

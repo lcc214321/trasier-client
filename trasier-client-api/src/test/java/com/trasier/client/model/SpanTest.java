@@ -11,8 +11,8 @@ public class SpanTest {
 //        assertTrue(isThrowingException(Span.newSpan("1", null, null, null)));
 //        assertTrue(isThrowingException(Span.newSpan("1", "2", new Endpoint("Test"), null)));
 
-        assertFalse(isThrowingException(Span.newSpan("1", "2", new Endpoint("Test"), "TestOp").startTimestamp(1L)));
-        assertFalse(isThrowingException(Span.newSpan("1", "2", new Endpoint("Test"), "TestOp")
+        assertFalse(isThrowingException(Span.newSpan("TestOp", "1", "2", "3").startTimestamp(1L)));
+        assertFalse(isThrowingException(Span.newSpan("TestOp", "1", "2", "3")
                 .outgoingEndpoint(new Endpoint("Consumer")).endTimestamp(2L)
         ));
     }

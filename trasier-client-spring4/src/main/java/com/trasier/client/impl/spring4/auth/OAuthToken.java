@@ -1,7 +1,9 @@
-package com.trasier.client.impl.spring4;
+package com.trasier.client.impl.spring4.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OAuthToken {
     @JsonProperty("access_token")
     private String accessToken;

@@ -1,12 +1,12 @@
 package com.trasier.client.configuration;
 
-import com.trasier.client.configuration.ClientConfiguration;
-
 public class TrasierClientConfiguration implements ClientConfiguration {
+
     private String accountId;
     private String spaceKey;
     private String clientId;
     private String clientSecret;
+    private String systemName;
 
     @Override
     public String getAccountId() {
@@ -42,5 +42,14 @@ public class TrasierClientConfiguration implements ClientConfiguration {
 
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
+    }
+
+    @Override
+    public String getSystemName() {
+        return systemName;
+    }
+
+    public void setSystemName(String systemName) {
+        this.systemName = systemName;
     }
 }

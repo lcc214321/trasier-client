@@ -1,48 +1,44 @@
-/*
- * Copyright (C) Schweizerische Bundesbahnen SBB, 2018.
- */
+package com.trasier.client.impl.spring4.interceptor.context;
 
 import com.trasier.client.model.Span;
 import org.springframework.core.NamedThreadLocal;
 
 public class TrasierContextHolder {
+
     private static final ThreadLocal<TrasierContext> CURRENT_TRASIER_CONTEXT = new NamedThreadLocal<>("TrasierContext");
 
-    static Span getCurrentSpan() {
+    static Span getSpan() {
         return isTracing() ? CURRENT_TRASIER_CONTEXT.get().span : null;
     }
 
-    static void setCurrentSpan(Span span) {
-        push(span, false);
-    }
-
-    static void removeCurrentSpan() {
-        CURRENT_TRASIER_CONTEXT.remove();
+    static void setSpan(Span span) {
+        push(span);
     }
 
     static boolean isTracing() {
         return CURRENT_TRASIER_CONTEXT.get() != null;
     }
 
-    static void close() {
+    static void closeSpan() {
         TrasierContext current = CURRENT_TRASIER_CONTEXT.get();
         CURRENT_TRASIER_CONTEXT.remove();
-        while (current != null) {
-            current = current.parent;
-            if (current != null) {
-                if (!current.autoClose) {
-                    CURRENT_TRASIER_CONTEXT.set(current);
-                    current = null;
-                }
+        if (current != null) {
+            TrasierContext parent = current.parent;
+            if (parent != null) {
+                CURRENT_TRASIER_CONTEXT.set(parent);
             }
         }
     }
 
-    static void push(Span span, boolean autoClose) {
+    static void clear() {
+        CURRENT_TRASIER_CONTEXT.remove();
+    }
+
+    private static void push(Span span) {
         if (isCurrent(span)) {
             return;
         }
-        CURRENT_TRASIER_CONTEXT.set(new TrasierContext(span, autoClose));
+        CURRENT_TRASIER_CONTEXT.set(new TrasierContext(span));
     }
 
     private static boolean isCurrent(Span span) {
@@ -54,12 +50,10 @@ public class TrasierContextHolder {
 
     private static class TrasierContext {
         Span span;
-        boolean autoClose;
         TrasierContext parent;
 
-        public TrasierContext(Span span, boolean autoClose) {
+        TrasierContext(Span span) {
             this.span = span;
-            this.autoClose = autoClose;
             this.parent = CURRENT_TRASIER_CONTEXT.get();
         }
     }

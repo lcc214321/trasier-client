@@ -1,8 +1,8 @@
-package com.trasier.client.impl.spring4;
+package com.trasier.client.impl.spring4.client;
 
-import com.trasier.client.Client;
-import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.impl.spring4.auth.OAuthTokenSafe;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,8 +19,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Collections;
 import java.util.List;
 
-@Component
-public class SpringRestClient implements Client {
+@Component("trasierSpringClient")
+public class SpringRestClient implements SpringClient {
     private final TrasierEndpointConfiguration applicationConfiguration;
     private final TrasierClientConfiguration clientConfiguration;
     private final RestTemplate restTemplate;

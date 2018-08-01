@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring4;
+package com.trasier.client.impl.spring4.interceptor.servlet;
 
 import org.apache.commons.io.IOUtils;
 
