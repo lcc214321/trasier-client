@@ -99,7 +99,7 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
 
     @Override
     public void afterCompletion(MessageContext messageContext, Exception e) throws WebServiceClientException {
-        if (trasierSpringAccessor.isTracing()) {
+        if (!configuration.isDeactivated() && trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
             currentSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
             currentSpan.setOutgoingContentType(ContentType.XML);
