@@ -35,10 +35,12 @@ public class TrasierSleuthReporter implements SpanReporter {
             if (!span.getParents().isEmpty()) {
                 builder.parentId(Span.idToHex(span.getParents().iterator().next()));
             }
+
             builder.startTimestamp(span.getBegin());
             builder.endTimestamp(span.getEnd());
             builder.incomingData(tags.get(TrasierSleuthConstants.TAG_REQUEST_MESSAGE));
             builder.outgoingData(tags.get(TrasierSleuthConstants.TAG_RESPONSE_MESSAGE));
+            builder.error(Boolean.valueOf(tags.get(TrasierSleuthConstants.TAG_RESPONSE_IS_ERROR)));
 //            builder.outgoingEndpoint(new Endpoint(tags.get("empfaenger")));
             client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), builder.build());
         }

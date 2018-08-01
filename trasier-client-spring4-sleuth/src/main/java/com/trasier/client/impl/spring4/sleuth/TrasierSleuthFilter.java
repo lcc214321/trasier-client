@@ -16,7 +16,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +50,11 @@ public class TrasierSleuthFilter extends AbstractTrasierFilter {
 
             try {
                 filterChain.doFilter(request, response);
+                String responseBody = new String(response.getContentAsByteArray());
+                currentSpan.tag(TrasierSleuthConstants.TAG_RESPONSE_MESSAGE, responseBody);
             } catch (Exception e) {
+                currentSpan.tag(TrasierSleuthConstants.TAG_RESPONSE_MESSAGE, Boolean.toString(true));
+                currentSpan.tag(TrasierSleuthConstants.TAG_RESPONSE_MESSAGE, extractStackTrace(e));
                 //handle exception to log and rethrow
             }
 
@@ -57,10 +63,17 @@ public class TrasierSleuthFilter extends AbstractTrasierFilter {
 //            Map<String, String> responseHeaders = getResponseHeaders(response);
 //            String responseMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(statusMap, responseHeaders, responseBody));
 
-            String responseBody = new String(response.getContentAsByteArray());
-            currentSpan.tag(TrasierSleuthConstants.TAG_RESPONSE_MESSAGE, responseBody);
+
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
+    }
+
+    private String extractStackTrace(Exception e) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(outputStream);
+        e.printStackTrace(ps);
+        ps.close();
+        return outputStream.toString();
     }
 }
