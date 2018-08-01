@@ -2,6 +2,8 @@ package com.trasier.client.impl.spring4;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.impl.spring4.auth.OAuthTokenSafe;
+import com.trasier.client.impl.spring4.client.SpringRestClient;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.junit.Before;
@@ -40,7 +42,7 @@ public class SpringRestClientTest {
         SpringRestClient sut = new SpringRestClient(new TrasierEndpointConfiguration(), clientConfiguration, restTemplate,  oAuthTokenSafe);
 
         // when
-        Span span = Span.newSpan(UUID.randomUUID().toString(), UUID.randomUUID().toString(), new Endpoint("Test1"), "TEST")
+        Span span = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "TEST")
                 .outgoingEndpoint(new Endpoint("Test2")).startTimestamp(1L).build();
 
         boolean result = sut.sendSpans(Collections.singletonList(span));

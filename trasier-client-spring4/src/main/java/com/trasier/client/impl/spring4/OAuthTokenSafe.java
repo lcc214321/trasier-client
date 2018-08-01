@@ -2,6 +2,7 @@ package com.trasier.client.impl.spring4;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.impl.spring4.auth.OAuthToken;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

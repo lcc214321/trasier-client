@@ -5,4 +5,6 @@ public interface ClientConfiguration {
     String getSpaceKey();
     String getClientId();
     String getClientSecret();
+    String getSystemName();
+    boolean isDeactivated();
 }

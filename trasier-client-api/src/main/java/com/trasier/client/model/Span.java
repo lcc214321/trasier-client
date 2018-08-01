@@ -2,8 +2,6 @@ package com.trasier.client.model;
 
 import com.trasier.client.utils.Precondition;
 
-import java.util.UUID;
-
 public class Span {
     private String id;
     private String parentId;
@@ -26,10 +24,8 @@ public class Span {
         Precondition.notNull(builder.id, "id");
         Precondition.notNull(builder.traceId, "traceId");
         Precondition.notNull(builder.conversationId, "conversationId");
-        Precondition.notNull(builder.incomingEndpoint, "incomingEndpoint");
         Precondition.notNull(builder.operationName, "operationName");
         Precondition.notNull(builder.error, "error");
-        Precondition.notNull(builder.startTimestamp != null ? builder.startTimestamp : builder.endTimestamp, "startTimestamp or endTimestamp");
 
         this.id = builder.id;
         this.parentId = builder.parentId;
@@ -49,12 +45,11 @@ public class Span {
         this.outgoingData = builder.outgoingData;
     }
 
-    public static Builder newSpan(String conversationId, String traceId, Endpoint incomingEndpoint, String operationName) {
+    public static Builder newSpan(String operationName, String conversationId, String traceId, String spanId) {
         Builder builder = new Builder();
-        builder.id(UUID.randomUUID().toString());
+        builder.id(spanId);
         builder.conversationId(conversationId);
         builder.traceId(traceId);
-        builder.incomingEndpoint(incomingEndpoint);
         builder.operationName(operationName);
         builder.error(false);
         return builder;
@@ -80,6 +75,11 @@ public class Span {
         return operationName;
     }
 
+    public void setOperationName(String operationName) {
+        Precondition.notNull(operationName, "operationName");
+        this.operationName = operationName;
+    }
+
     public Boolean getError() {
         return error;
     }
@@ -94,6 +94,10 @@ public class Span {
 
     public Endpoint getIncomingEndpoint() {
         return incomingEndpoint;
+    }
+
+    public void setIncomingEndpoint(Endpoint incomingEndpoint) {
+        this.incomingEndpoint = incomingEndpoint;
     }
 
     public ContentType getIncomingContentType() {
@@ -122,6 +126,50 @@ public class Span {
 
     public String getOutgoingData() {
         return outgoingData;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public void setError(Boolean error) {
+        this.error = error;
+    }
+
+    public void setStartTimestamp(Long startTimestamp) {
+        this.startTimestamp = startTimestamp;
+    }
+
+    public void setBeginProcessingTimestamp(Long beginProcessingTimestamp) {
+        this.beginProcessingTimestamp = beginProcessingTimestamp;
+    }
+
+    public void setIncomingContentType(ContentType incomingContentType) {
+        this.incomingContentType = incomingContentType;
+    }
+
+    public void setIncomingData(String incomingData) {
+        this.incomingData = incomingData;
+    }
+
+    public void setFinishProcessingTimestamp(Long finishProcessingTimestamp) {
+        this.finishProcessingTimestamp = finishProcessingTimestamp;
+    }
+
+    public void setEndTimestamp(Long endTimestamp) {
+        this.endTimestamp = endTimestamp;
+    }
+
+    public void setOutgoingEndpoint(Endpoint outgoingEndpoint) {
+        this.outgoingEndpoint = outgoingEndpoint;
+    }
+
+    public void setOutgoingContentType(ContentType outgoingContentType) {
+        this.outgoingContentType = outgoingContentType;
+    }
+
+    public void setOutgoingData(String outgoingData) {
+        this.outgoingData = outgoingData;
     }
 
     @Override
