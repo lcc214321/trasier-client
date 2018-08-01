@@ -62,6 +62,16 @@ public class SpringRestCacheClient implements SpringClient, Runnable {
     }
 
     @Override
+    public ConversationInfo readConversation(String conversationId) {
+        return springRestClient.readConversation(conversationId);
+    }
+
+    @Override
+    public Span readSpan(String conversationId, String traceId, String spanId) {
+        return springRestClient.readSpan(conversationId, traceId, spanId);
+    }
+
+    @Override
     public boolean sendSpan(Span span) {
         try {
             spanQueue.addLast(span);

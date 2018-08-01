@@ -45,6 +45,16 @@ public class SpringRestClient implements SpringClient {
     }
 
     @Override
+    public ConversationInfo readConversation(String conversationId) {
+        return this.readConversation(clientConfiguration.getAccountId(), clientConfiguration.getSpaceKey(), conversationId);
+    }
+
+    @Override
+    public Span readSpan(String conversationId, String traceId, String spanId) {
+        return this.readSpan(clientConfiguration.getAccountId(), clientConfiguration.getSpaceKey(), conversationId, traceId, spanId);
+    }
+
+    @Override
     public boolean sendSpans(String accountId, String spaceKey, List<Span> spans) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
