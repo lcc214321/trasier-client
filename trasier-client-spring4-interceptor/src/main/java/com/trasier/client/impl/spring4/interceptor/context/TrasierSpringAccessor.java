@@ -10,10 +10,10 @@ public class TrasierSpringAccessor {
 
     public Span createChildSpan(String operationName) {
         if(isTracing()) {
-            Span currentSpan = TrasierContextHolder.getCurrentSpan();
+            Span currentSpan = TrasierContextHolder.getSpan();
             Span.Builder spanBuilder = Span.newSpan(operationName, currentSpan.getConversationId(), currentSpan.getTraceId(), UUID.randomUUID().toString());
             Span newSpan = spanBuilder.build();
-            TrasierContextHolder.setCurrentSpan(newSpan);
+            TrasierContextHolder.setSpan(newSpan);
             return newSpan;
         }
         return null;
@@ -25,18 +25,18 @@ public class TrasierSpringAccessor {
         Span.Builder spanBuilder = Span.newSpan(operationName, conversationId, traceIdNotNull, spanIdNotNull);
         spanBuilder.startTimestamp(System.currentTimeMillis());
         Span span = spanBuilder.build();
-        TrasierContextHolder.setCurrentSpan(span);
+        TrasierContextHolder.setSpan(span);
         return span;
     }
 
     public void closeSpan(Span span) {
         if (span != null) {
-            Span currentSpan = TrasierContextHolder.getCurrentSpan();
+            Span currentSpan = TrasierContextHolder.getSpan();
             currentSpan.setEndTimestamp(System.currentTimeMillis());
             if (!isValidSpan(span, currentSpan)) {
                 throw new IllegalArgumentException("Tried to close wrong span.");
             } else {
-                TrasierContextHolder.close();
+                TrasierContextHolder.closeSpan();
             }
         }
     }
@@ -46,7 +46,7 @@ public class TrasierSpringAccessor {
     }
 
     public Span getCurrentSpan() {
-        return TrasierContextHolder.getCurrentSpan();
+        return TrasierContextHolder.getSpan();
     }
 
     public boolean isTracing() {

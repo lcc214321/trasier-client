@@ -7,11 +7,11 @@ public class TrasierContextHolder {
 
     private static final ThreadLocal<TrasierContext> CURRENT_TRASIER_CONTEXT = new NamedThreadLocal<>("TrasierContext");
 
-    static Span getCurrentSpan() {
+    static Span getSpan() {
         return isTracing() ? CURRENT_TRASIER_CONTEXT.get().span : null;
     }
 
-    static void setCurrentSpan(Span span) {
+    static void setSpan(Span span) {
         push(span);
     }
 
@@ -19,7 +19,7 @@ public class TrasierContextHolder {
         return CURRENT_TRASIER_CONTEXT.get() != null;
     }
 
-    static void close() {
+    static void closeSpan() {
         TrasierContext current = CURRENT_TRASIER_CONTEXT.get();
         CURRENT_TRASIER_CONTEXT.remove();
         if (current != null) {
@@ -30,7 +30,11 @@ public class TrasierContextHolder {
         }
     }
 
-    static void push(Span span) {
+    static void clear() {
+        CURRENT_TRASIER_CONTEXT.remove();
+    }
+
+    private static void push(Span span) {
         if (isCurrent(span)) {
             return;
         }
