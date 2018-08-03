@@ -27,22 +27,21 @@ public class TrasierFilter extends AbstractTrasierFilter {
     static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 6;
 
     @Autowired
-    private Client client;
+    private volatile Client client;
     @Autowired
-    private TrasierClientConfiguration configuration;
+    private volatile TrasierClientConfiguration configuration;
     @Autowired
-    private TrasierSpringAccessor trasierSpringAccessor;
+    private volatile TrasierSpringAccessor trasierSpringAccessor;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        if (needsInitialization()) {
+            initialize();
+        }
 
         if (configuration.isDeactivated()) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
-        }
-
-        if (needsInitialization()) {
-            initialize();
         }
 
         if (isEnabled(servletRequest)) {

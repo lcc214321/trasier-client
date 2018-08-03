@@ -22,7 +22,24 @@ under the License.
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
+    <localRepository>/cache/maven-repo</localRepository>
+
     <servers>
+        <server>
+            <id>nexus-releases</id>
+            <username>deployment</username>
+            <password>${NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>nexus-snapshots</id>
+            <username>deployment</username>
+            <password>${NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>gitlab</id>
+            <username>release</username>
+            <password>${GITLAB_PASSWORD}</password>
+        </server>
         <server>
             <id>ossrh</id>
             <username>trasier</username>
