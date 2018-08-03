@@ -43,7 +43,7 @@ under the License.
         <server>
             <id>ossrh</id>
             <username>trasier</username>
-            <password>${env.OSSRH_JIRA_PASSWORD}</password>
+            <password>${OSSRH_JIRA_PASSWORD}</password>
         </server>
     </servers>
 
@@ -55,8 +55,8 @@ under the License.
             </activation>
             <properties>
                 <gpg.executable>gpg</gpg.executable>
-                <gpg.keyname>${env.GPG_KEY_NAME}</gpg.keyname>
-                <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+                <gpg.keyname>${GPG_KEY_NAME}</gpg.keyname>
+                <gpg.passphrase>${GPG_PASSPHRASE}</gpg.passphrase>
             </properties>
         </profile>
     </profiles>
