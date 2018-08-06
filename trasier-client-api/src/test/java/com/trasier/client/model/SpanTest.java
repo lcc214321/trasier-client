@@ -7,17 +7,13 @@ import static org.junit.Assert.assertFalse;
 public class SpanTest {
     @Test
     public void shoudlCheckMandatoryFields() {
-//        assertTrue(isThrowingException(Span.newSpan(null, null, null, null)));
-//        assertTrue(isThrowingException(Span.newSpan("1", null, null, null)));
-//        assertTrue(isThrowingException(Span.newSpan("1", "2", new Endpoint("Test"), null)));
-
         assertFalse(isThrowingException(Span.newSpan("TestOp", "1", "2", "3").startTimestamp(1L)));
         assertFalse(isThrowingException(Span.newSpan("TestOp", "1", "2", "3")
                 .outgoingEndpoint(new Endpoint("Consumer")).endTimestamp(2L)
         ));
     }
 
-    private boolean isThrowingException(Span.Builder builder) {
+    private boolean isThrowingException(Span.SpanBuilder builder) {
         try {
             builder.build();
             return false;

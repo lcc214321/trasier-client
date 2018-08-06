@@ -1,5 +1,14 @@
 package com.trasier.client.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class Endpoint {
     private String name;
     private String ipAddress;
