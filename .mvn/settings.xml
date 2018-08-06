@@ -22,11 +22,28 @@ under the License.
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
+    <localRepository>/cache/maven-repo</localRepository>
+
     <servers>
+        <server>
+            <id>nexus-releases</id>
+            <username>deployment</username>
+            <password>${NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>nexus-snapshots</id>
+            <username>deployment</username>
+            <password>${NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>gitlab</id>
+            <username>release</username>
+            <password>${GITLAB_PASSWORD}</password>
+        </server>
         <server>
             <id>ossrh</id>
             <username>trasier</username>
-            <password>${env.OSSRH_JIRA_PASSWORD}</password>
+            <password>${OSSRH_JIRA_PASSWORD}</password>
         </server>
     </servers>
 
@@ -38,8 +55,8 @@ under the License.
             </activation>
             <properties>
                 <gpg.executable>gpg</gpg.executable>
-                <gpg.keyname>${env.GPG_KEY_NAME}</gpg.keyname>
-                <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+                <gpg.keyname>${GPG_KEY_NAME}</gpg.keyname>
+                <gpg.passphrase>${GPG_PASSPHRASE}</gpg.passphrase>
             </properties>
         </profile>
     </profiles>
