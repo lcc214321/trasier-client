@@ -67,7 +67,7 @@ public void shutdown() {
 }
 
 public String sendBookingRequest(Context context, String request) {
-  Span.Builder span = Span.newSpan(context.getConversationId(), context.getTraceId(), new Endpoint("Sendername"), "Booking");
+  Span.SpanBuilder span = Span.newSpan(context.getConversationId(), context.getTraceId(), new Endpoint("Sendername"), "Booking");
   
   span.startTimestamo(System.currentTimeMillis());
   span.incomingData(request);
