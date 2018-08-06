@@ -11,7 +11,7 @@ public class TrasierSpringAccessor {
     public Span createChildSpan(String operationName) {
         if (isTracing()) {
             Span currentSpan = TrasierContextHolder.getSpan();
-            Span.Builder spanBuilder = Span.newSpan(operationName, currentSpan.getConversationId(), currentSpan.getTraceId(), UUID.randomUUID().toString());
+            Span.SpanBuilder spanBuilder = Span.newSpan(operationName, currentSpan.getConversationId(), currentSpan.getTraceId(), UUID.randomUUID().toString());
             Span newSpan = spanBuilder.build();
             TrasierContextHolder.setSpan(newSpan);
             return newSpan;
@@ -22,7 +22,7 @@ public class TrasierSpringAccessor {
     public Span createSpan(String operationName, String conversationId, String traceId, String spanId) {
         String traceIdNotNull = traceId != null ? traceId : UUID.randomUUID().toString();
         String spanIdNotNull = spanId != null ? spanId : UUID.randomUUID().toString();
-        Span.Builder spanBuilder = Span.newSpan(operationName, conversationId, traceIdNotNull, spanIdNotNull);
+        Span.SpanBuilder spanBuilder = Span.newSpan(operationName, conversationId, traceIdNotNull, spanIdNotNull);
         spanBuilder.startTimestamp(System.currentTimeMillis());
         Span span = spanBuilder.build();
         TrasierContextHolder.setSpan(span);
