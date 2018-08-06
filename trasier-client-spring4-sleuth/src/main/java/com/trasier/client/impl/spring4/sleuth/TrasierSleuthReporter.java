@@ -31,7 +31,7 @@ public class TrasierSleuthReporter implements SpanReporter {
             String operationName = tags.get(TrasierSleuthConstants.TAG_OPERATION_NAME);
             String traceId = span.traceIdString();
 
-            com.trasier.client.model.Span.Builder builder = com.trasier.client.model.Span.newSpan(operationName, conversationId, traceId, Span.idToHex(span.getSpanId()));
+            com.trasier.client.model.Span.SpanBuilder builder = com.trasier.client.model.Span.newSpan(operationName, conversationId, traceId, Span.idToHex(span.getSpanId()));
             if (!span.getParents().isEmpty()) {
                 builder.parentId(Span.idToHex(span.getParents().iterator().next()));
             }

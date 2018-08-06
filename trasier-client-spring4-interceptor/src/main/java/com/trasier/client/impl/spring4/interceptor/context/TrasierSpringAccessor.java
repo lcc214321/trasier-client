@@ -9,9 +9,9 @@ import java.util.UUID;
 public class TrasierSpringAccessor {
 
     public Span createChildSpan(String operationName) {
-        if(isTracing()) {
+        if (isTracing()) {
             Span currentSpan = TrasierContextHolder.getSpan();
-            Span.Builder spanBuilder = Span.newSpan(operationName, currentSpan.getConversationId(), currentSpan.getTraceId(), UUID.randomUUID().toString());
+            Span.SpanBuilder spanBuilder = Span.newSpan(operationName, currentSpan.getConversationId(), currentSpan.getTraceId(), UUID.randomUUID().toString());
             Span newSpan = spanBuilder.build();
             TrasierContextHolder.setSpan(newSpan);
             return newSpan;
@@ -22,7 +22,7 @@ public class TrasierSpringAccessor {
     public Span createSpan(String operationName, String conversationId, String traceId, String spanId) {
         String traceIdNotNull = traceId != null ? traceId : UUID.randomUUID().toString();
         String spanIdNotNull = spanId != null ? spanId : UUID.randomUUID().toString();
-        Span.Builder spanBuilder = Span.newSpan(operationName, conversationId, traceIdNotNull, spanIdNotNull);
+        Span.SpanBuilder spanBuilder = Span.newSpan(operationName, conversationId, traceIdNotNull, spanIdNotNull);
         spanBuilder.startTimestamp(System.currentTimeMillis());
         Span span = spanBuilder.build();
         TrasierContextHolder.setSpan(span);
@@ -30,12 +30,12 @@ public class TrasierSpringAccessor {
     }
 
     public void closeSpan(Span span) {
-        if (span != null) {
+        if (isTracing() && span != null) {
             Span currentSpan = TrasierContextHolder.getSpan();
-            currentSpan.setEndTimestamp(System.currentTimeMillis());
             if (!isValidSpan(span, currentSpan)) {
                 throw new IllegalArgumentException("Tried to close wrong span.");
             } else {
+                currentSpan.setEndTimestamp(System.currentTimeMillis());
                 TrasierContextHolder.closeSpan();
             }
         }
