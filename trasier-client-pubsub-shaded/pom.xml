@@ -4,12 +4,12 @@
     <parent>
         <artifactId>trasier-client</artifactId>
         <groupId>com.trasier</groupId>
-        <version>0.9.5</version>
+        <version>0.9.6-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
-    <version>0.9.5</version>
+    <version>0.9.6-SNAPSHOT</version>
     <artifactId>trasier-client-pubsub-shaded</artifactId>
     <packaging>jar</packaging>
 
