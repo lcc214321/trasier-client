@@ -4,6 +4,9 @@ dist: trusty
 
 jdk:
   - openjdk8
+  
+before_install:
+  - chmod +x mvnw
 
 after_success:
   - mvn jacoco:report coveralls:report
