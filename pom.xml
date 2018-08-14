@@ -41,7 +41,9 @@
 		<module>trasier-client-spring4-sleuth</module>
 		<module>trasier-client-spring4-interceptor</module>
 		<module>trasier-client-spring4-shaded</module>
-	</modules>
+        <module>trasier-client-spring5</module>
+        <module>trasier-client-spring5-interceptor</module>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
