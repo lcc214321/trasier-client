@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring5.client;
+package com.trasier.client.impl.spring.client;
 
 import com.trasier.client.Client;
 import com.trasier.client.model.Span;

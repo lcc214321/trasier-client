@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring5.auth;
+package com.trasier.client.impl.spring.auth;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;

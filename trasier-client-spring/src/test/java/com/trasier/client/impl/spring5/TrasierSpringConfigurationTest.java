@@ -1,5 +1,6 @@
 package com.trasier.client.impl.spring5;
 
+import com.trasier.client.impl.spring.TrasierSpringConfiguration;
 import org.junit.Test;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.client.RestTemplate;

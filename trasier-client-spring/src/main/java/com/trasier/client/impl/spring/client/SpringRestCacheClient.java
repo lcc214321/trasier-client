@@ -1,7 +1,7 @@
-package com.trasier.client.impl.spring5.client;
+package com.trasier.client.impl.spring.client;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.impl.spring5.TrasierSpringConfiguration;
+import com.trasier.client.impl.spring.TrasierSpringConfiguration;
 import com.trasier.client.model.Span;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Primary

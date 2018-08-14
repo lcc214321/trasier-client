@@ -2,8 +2,8 @@ package com.trasier.client.impl.spring5;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
-import com.trasier.client.impl.spring5.auth.OAuthToken;
-import com.trasier.client.impl.spring5.auth.OAuthTokenSafe;
+import com.trasier.client.impl.spring.auth.OAuthToken;
+import com.trasier.client.impl.spring.auth.OAuthTokenSafe;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;

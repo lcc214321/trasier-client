@@ -2,7 +2,8 @@
 package com.trasier.client.impl.spring5;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.impl.spring5.client.SpringRestClient;
+import com.trasier.client.impl.spring.TrasierSpringConfiguration;
+import com.trasier.client.impl.spring.client.SpringRestClient;
 import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
