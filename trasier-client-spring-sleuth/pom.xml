@@ -7,7 +7,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>trasier-client-spring4-sleuth</artifactId>
+	<artifactId>trasier-client-spring-sleuth</artifactId>
 
 	<properties>
 		<spring.version>5.0.8.RELEASE</spring.version>
@@ -22,7 +22,7 @@
         </dependency>
 		<dependency>
 			<groupId>com.trasier</groupId>
-			<artifactId>trasier-client-spring4-interceptor</artifactId>
+			<artifactId>trasier-client-spring-interceptor</artifactId>
 		</dependency>
 
 		<dependency>

@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <version>0.9.6-SNAPSHOT</version>
-    <artifactId>trasier-client-spring4</artifactId>
+    <artifactId>trasier-client-spring</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -29,6 +29,12 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
