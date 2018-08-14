@@ -1,10 +1,10 @@
-package com.trasier.client.impl.spring5.sleuth;
+package com.trasier.client.impl.spring.sleuth;
 
 import com.google.gson.GsonBuilder;
 import com.trasier.client.TrasierConstants;
-import com.trasier.client.impl.spring5.interceptor.servlet.AbstractTrasierFilter;
-import com.trasier.client.impl.spring5.sleuth.servlet.CachedServletRequestWrapper;
-import com.trasier.client.impl.spring5.sleuth.servlet.CachedServletResponseWrapper;
+import com.trasier.client.impl.spring.interceptor.servlet.AbstractTrasierFilter;
+import com.trasier.client.impl.spring.sleuth.servlet.CachedServletRequestWrapper;
+import com.trasier.client.impl.spring.sleuth.servlet.CachedServletResponseWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.SpanAccessor;

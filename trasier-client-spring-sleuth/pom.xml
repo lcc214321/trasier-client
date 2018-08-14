@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>trasier-client</artifactId>
 		<groupId>com.trasier</groupId>
-		<version>0.9.6-SNAPSHOT</version>
+		<version>0.9.7-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -22,7 +22,15 @@
         </dependency>
 		<dependency>
 			<groupId>com.trasier</groupId>
-			<artifactId>trasier-client-spring-interceptor</artifactId>
+			<artifactId>trasier-client-spring-interceptor-rest</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.trasier</groupId>
+			<artifactId>trasier-client-spring-interceptor-servlet</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.trasier</groupId>
+			<artifactId>trasier-client-spring-interceptor-ws</artifactId>
 		</dependency>
 
 		<dependency>

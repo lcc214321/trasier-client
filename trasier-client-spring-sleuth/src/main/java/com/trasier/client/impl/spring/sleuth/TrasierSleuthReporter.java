@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring5.sleuth;
+package com.trasier.client.impl.spring.sleuth;
 
 import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;

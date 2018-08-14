@@ -1,9 +1,7 @@
-package com.trasier.client.impl.spring5.client;
+package com.trasier.client.impl.spring.client;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring.TrasierSpringConfiguration;
-import com.trasier.client.impl.spring.client.SpringRestCacheClient;
-import com.trasier.client.impl.spring.client.SpringRestClient;
 import com.trasier.client.model.Span;
 import org.junit.Test;
 import org.mockito.Mockito;

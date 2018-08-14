@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring5.interceptor.context;
+package com.trasier.client.impl.spring.context;
 
 import com.trasier.client.model.Span;
 import org.springframework.stereotype.Component;

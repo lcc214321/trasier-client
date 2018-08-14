@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring5;
+package com.trasier.client.impl.spring;
 
 import com.trasier.client.impl.spring.auth.OAuthToken;
 import org.junit.Test;
