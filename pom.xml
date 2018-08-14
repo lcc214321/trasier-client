@@ -4,7 +4,7 @@
 
     <groupId>com.trasier</groupId>
     <artifactId>trasier-client</artifactId>
-    <version>0.9.6-SNAPSHOT</version>
+    <version>0.9.7-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>trasier-client</name>
@@ -37,11 +37,13 @@
         <module>trasier-client-api</module>
         <module>trasier-client-pubsub</module>
         <module>trasier-client-pubsub-shaded</module>
-        <module>trasier-client-spring4</module>
-		<module>trasier-client-spring4-sleuth</module>
-		<module>trasier-client-spring4-interceptor</module>
-		<module>trasier-client-spring4-shaded</module>
-	</modules>
+        <module>trasier-client-spring</module>
+		<module>trasier-client-spring-sleuth</module>
+		<module>trasier-client-spring-interceptor-rest</module>
+		<module>trasier-client-spring-interceptor-servlet</module>
+		<module>trasier-client-spring-interceptor-ws</module>
+		<module>trasier-client-spring-shaded</module>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
@@ -57,17 +59,27 @@
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-spring4</artifactId>
+                <artifactId>trasier-client-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-spring4-interceptor</artifactId>
+                <artifactId>trasier-client-spring-interceptor-servlet</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-spring4-sleuth</artifactId>
+                <artifactId>trasier-client-spring-interceptor-rest</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trasier</groupId>
+                <artifactId>trasier-client-spring-interceptor-ws</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trasier</groupId>
+                <artifactId>trasier-client-spring-sleuth</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
