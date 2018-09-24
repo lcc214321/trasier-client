@@ -7,8 +7,6 @@ import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -20,8 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Component
-@Order(TrasierFilter.ORDER)
 public class TrasierFilter extends AbstractTrasierFilter {
 
     static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 6;
