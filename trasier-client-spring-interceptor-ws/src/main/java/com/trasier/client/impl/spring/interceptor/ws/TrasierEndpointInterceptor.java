@@ -33,7 +33,7 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
             String operationName = extractOperationName(messageContext, endpoint);
-            currentSpan.setOperationName(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN : operationName);
+            currentSpan.setName(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN : operationName);
         }
 
         return true;
