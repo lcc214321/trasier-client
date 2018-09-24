@@ -47,6 +47,11 @@ public class OAuthTokenSafe {
 
     private synchronized void refreshToken() {
         if(!isTokenValid()) {
+            //TODO Hackergarten -> prevent OpenTracing init
+            if(!restTemplate.getInterceptors().isEmpty()) {
+                restTemplate.getInterceptors().clear();
+            }
+
             //TODO Hackergarten? -> Use refresh_token
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);

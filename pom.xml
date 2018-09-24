@@ -43,6 +43,7 @@
 		<module>trasier-client-spring-interceptor-servlet</module>
 		<module>trasier-client-spring-interceptor-ws</module>
 		<module>trasier-client-spring-shaded</module>
+        <module>trasier-client-spring-boot</module>
     </modules>
 
     <dependencyManagement>
