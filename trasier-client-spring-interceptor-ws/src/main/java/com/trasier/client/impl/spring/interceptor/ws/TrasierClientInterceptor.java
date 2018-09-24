@@ -91,7 +91,7 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
             }
             String outgoingData = out.toString();
             currentSpan.setOutgoingData(outgoingData);
-            currentSpan.setError(true);
+            currentSpan.setStatus("OK");
         }
 
         return false;
@@ -107,7 +107,7 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
             if (e != null) {
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
-                currentSpan.setError(true);
+                currentSpan.setStatus("OK");
                 currentSpan.setOutgoingContentType(ContentType.TEXT);
                 currentSpan.setOutgoingData(sw.toString());
             }

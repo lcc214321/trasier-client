@@ -40,7 +40,7 @@ public class TrasierSleuthReporter implements SpanReporter {
             builder.endTimestamp(span.getEnd());
             builder.incomingData(tags.get(TrasierSleuthConstants.TAG_REQUEST_MESSAGE));
             builder.outgoingData(tags.get(TrasierSleuthConstants.TAG_RESPONSE_MESSAGE));
-            builder.error(Boolean.valueOf(tags.get(TrasierSleuthConstants.TAG_RESPONSE_IS_ERROR)));
+            builder.status(Boolean.valueOf(tags.get(TrasierSleuthConstants.TAG_RESPONSE_IS_ERROR)) ? "ERROR" : "OK");
 //            builder.outgoingEndpoint(new Endpoint(tags.get("empfaenger")));
             client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), builder.build());
         }
