@@ -22,7 +22,7 @@ public class Span {
     @NonNull
     private String conversationId;
     @NonNull
-    private String operationName;
+    private String name;
 
     private String parentId;
     private String status;
@@ -42,8 +42,8 @@ public class Span {
     private String outgoingData;
     private Map<String, String> outgoingHeader;
 
-    public static SpanBuilder newSpan(String operationName, String conversationId, String traceId, String spanId) {
-        return hiddenBuilder().operationName(operationName).conversationId(conversationId).traceId(traceId).id(spanId).status(Boolean.FALSE.toString());
+    public static SpanBuilder newSpan(String name, String conversationId, String traceId, String spanId) {
+        return hiddenBuilder().name(name).conversationId(conversationId).traceId(traceId).id(spanId).status(Boolean.FALSE.toString());
     }
 
     private static SpanBuilder hiddenBuilder() {
