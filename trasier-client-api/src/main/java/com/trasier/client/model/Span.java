@@ -43,7 +43,7 @@ public class Span {
     private Map<String, String> outgoingHeader;
 
     public static SpanBuilder newSpan(String name, String conversationId, String traceId, String spanId) {
-        return hiddenBuilder().name(name).conversationId(conversationId).traceId(traceId).id(spanId).status(Boolean.FALSE.toString());
+        return hiddenBuilder().name(name).conversationId(conversationId).traceId(traceId).id(spanId).status("OK");
     }
 
     private static SpanBuilder hiddenBuilder() {
