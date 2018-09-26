@@ -1,6 +1,5 @@
 package com.trasier.client.impl.spring;
 
-import com.trasier.client.impl.spring.client.SpringRestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +8,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@ComponentScan(basePackageClasses = SpringRestClient.class)
+@ComponentScan(basePackageClasses = TrasierSpringConfiguration.class)
 public class TrasierSpringConfiguration {
     private int queueSize = 100;
     private int queueSizeErrorThresholdMultiplicator = 10;

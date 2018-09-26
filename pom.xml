@@ -4,7 +4,7 @@
 
     <groupId>com.trasier</groupId>
     <artifactId>trasier-client</artifactId>
-    <version>0.9.8</version>
+    <version>0.9.12</version>
     <packaging>pom</packaging>
 
     <name>trasier-client</name>
@@ -43,6 +43,8 @@
 		<module>trasier-client-spring-interceptor-servlet</module>
 		<module>trasier-client-spring-interceptor-ws</module>
 		<module>trasier-client-spring-shaded</module>
+        <module>trasier-client-spring-boot</module>
+        <module>trasier-client-spring-opentracing</module>
     </modules>
 
     <dependencyManagement>
@@ -232,6 +234,12 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

@@ -22,27 +22,28 @@ public class Span {
     @NonNull
     private String conversationId;
     @NonNull
-    private String operationName;
+    private String name;
 
     private String parentId;
-    private Boolean error;
+    private String status;
+    private Map<String, String> tags;
 
     private Long startTimestamp;
     private Long beginProcessingTimestamp;
     private Endpoint incomingEndpoint;
     private ContentType incomingContentType;
     private String incomingData;
-    private Map<String, ?> incomingTags;
+    private Map<String, String> incomingHeader;
 
     private Long finishProcessingTimestamp;
     private Long endTimestamp;
     private Endpoint outgoingEndpoint;
     private ContentType outgoingContentType;
     private String outgoingData;
-    private Map<String, ?> outgoingTags;
+    private Map<String, String> outgoingHeader;
 
-    public static SpanBuilder newSpan(String operationName, String conversationId, String traceId, String spanId) {
-        return hiddenBuilder().operationName(operationName).conversationId(conversationId).traceId(traceId).id(spanId).error(false);
+    public static SpanBuilder newSpan(String name, String conversationId, String traceId, String spanId) {
+        return hiddenBuilder().name(name).conversationId(conversationId).traceId(traceId).id(spanId).status("OK");
     }
 
     private static SpanBuilder hiddenBuilder() {

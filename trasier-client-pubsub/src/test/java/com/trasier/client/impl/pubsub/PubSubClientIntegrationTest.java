@@ -43,7 +43,7 @@ public class PubSubClientIntegrationTest {
         TimeUnit.SECONDS.sleep(2);
 
         spanBuilder.outgoingContentType(ContentType.XML);
-        spanBuilder.error(false);
+        spanBuilder.status("ERROR");
         spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
         client.sendSpans("170520", "test-1", Collections.singletonList(spanBuilder.build()));

@@ -1,12 +1,15 @@
-package com.trasier.client.impl.spring.interceptor.servlet;
+package com.trasier.client.impl.spring.opentracing.opentracing.interceptor;
 
-import com.trasier.client.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.impl.spring.context.TrasierSpringAccessor;
+import com.trasier.client.impl.spring.opentracing.opentracing.api.TrasierSpan;
+import com.trasier.client.impl.spring.opentracing.opentracing.api.TrasierTracer;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -17,17 +20,18 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
+@Component
+@Primary
+@Order(TrasierFilter.ORDER)
 public class TrasierFilter extends AbstractTrasierFilter {
-
     static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 6;
 
     @Autowired
-    private volatile Client client;
-    @Autowired
     private volatile TrasierClientConfiguration configuration;
     @Autowired
-    private volatile TrasierSpringAccessor trasierSpringAccessor;
+    private volatile TrasierTracer tracer;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -40,52 +44,61 @@ public class TrasierFilter extends AbstractTrasierFilter {
             return;
         }
 
-        if (isEnabled(servletRequest)) {
+        TrasierSpan activeSpan = (TrasierSpan) tracer.activeSpan();
+
+        if (activeSpan != null) {
+            Span trasierSpan = activeSpan.unwrap();
             CachedServletRequestWrapper request = CachedServletRequestWrapper.create((HttpServletRequest) servletRequest);
             CachedServletResponseWrapper response = CachedServletResponseWrapper.create((HttpServletResponse) servletResponse);
 
-            String conversationId = extractConversationId(request);
-            String traceId = extractTraceId(request);
-            String spanId = extractSpanId(request);
+            trasierSpan.setIncomingContentType(extractContentType(request));
+            trasierSpan.setIncomingEndpoint(extractIncomingEndpoint(request));
+            trasierSpan.setOutgoingContentType(extractContentType(request));
+            trasierSpan.setOutgoingEndpoint(extractOutgoingEndpoint(request));
 
-            Span currentSpan = trasierSpringAccessor.createSpan(extractOperationName(request), conversationId, traceId, spanId);
-            currentSpan.setIncomingContentType(extractContentType(request));
-            currentSpan.setIncomingEndpoint(new Endpoint(extractIncomingEndpointName(request)));
-            currentSpan.setOutgoingContentType(extractContentType(request));
-            currentSpan.setOutgoingEndpoint(new Endpoint(configuration.getSystemName()));
-
-            handleRequest(request, currentSpan);
+            handleRequest(request, trasierSpan);
 
             try {
                 filterChain.doFilter(request, response);
             } finally {
-                handleResponse(response, currentSpan);
-                client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), currentSpan);
-                trasierSpringAccessor.closeSpan(currentSpan);
+                handleResponse(response, trasierSpan);
             }
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
     }
 
+    private Endpoint extractIncomingEndpoint(CachedServletRequestWrapper request) {
+        Endpoint endpoint = new Endpoint(extractIncomingEndpointName(request));
+        endpoint.setHostname(request.getRemoteHost());
+        endpoint.setIpAddress(request.getRemoteAddr());
+        endpoint.setPort("" + request.getRemotePort());
+        return endpoint;
+    }
+
+    private Endpoint extractOutgoingEndpoint(CachedServletRequestWrapper request) {
+        Endpoint endpoint = new Endpoint(configuration.getSystemName());
+        endpoint.setHostname(request.getLocalName());
+        endpoint.setIpAddress(request.getLocalAddr());
+        endpoint.setPort("" + request.getLocalPort());
+        return endpoint;
+    }
+
     private void handleResponse(CachedServletResponseWrapper response, Span currentSpan) {
+        //TODO use Clock everywhere
         currentSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
 
         //TODO handle headers und status
-//        Map<String, Integer> statusMap = Collections.singletonMap("status", response.getStatus());
-//        Map<String, String> responseHeaders = getResponseHeaders(response);
-//        String responseMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(statusMap, responseHeaders, responseBody));
-
+        Map<String, String> responseHeaders = getResponseHeaders(response);
+        currentSpan.setOutgoingHeader(responseHeaders);
         String responseBody = new String(response.getContentAsByteArray());
         currentSpan.setOutgoingData(responseBody);
     }
 
     private void handleRequest(CachedServletRequestWrapper request, Span currentSpan) {
         //TODO handle headers und parameters
-//        Map<String, String> requestHeaders = getRequestHeaders(request);
-//        Map<String, List<String>> parameters = getRequestParameters(request);
-//        String requestMessage = new GsonBuilder().setPrettyPrinting().create().toJson(Arrays.asList(requestHeaders, parameters));
-
+        Map<String, String> requestHeaders = getRequestHeaders(request);
+        currentSpan.setIncomingHeader(requestHeaders);
         String requestBody = new String(request.getContentAsByteArray());
         currentSpan.setIncomingData(requestBody);
         currentSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
@@ -94,13 +107,12 @@ public class TrasierFilter extends AbstractTrasierFilter {
     private synchronized void initialize() {
         if (needsInitialization()) { // TODO optimize this
             WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-            client = webApplicationContext.getBean(Client.class);
             configuration = webApplicationContext.getBean(TrasierClientConfiguration.class);
-            trasierSpringAccessor = webApplicationContext.getBean(TrasierSpringAccessor.class);
+            tracer = webApplicationContext.getBean(TrasierTracer.class);
         }
     }
 
     private boolean needsInitialization() {
-        return client == null;
+        return tracer == null;
     }
 }

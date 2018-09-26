@@ -41,11 +41,11 @@ public class SpringRestClientIntegrationTest {
         Thread.sleep(500);
 
         spanBuilder.outgoingContentType(ContentType.XML);
-        spanBuilder.error(false);
+        spanBuilder.status("ERROR");
         spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
         client.sendSpan("170520", "test-1", spanBuilder.build());
-        client.sendSpan("170520", "test-1", spanBuilder.error(true).build());
+        client.sendSpan("170520", "test-1", spanBuilder.status(Boolean.TRUE.toString()).build());
         java.lang.System.out.println("RS: " + spanBuilder.build());
     }
 
@@ -66,7 +66,7 @@ public class SpringRestClientIntegrationTest {
         Thread.sleep(500);
 
         spanBuilder.outgoingContentType(ContentType.XML);
-        spanBuilder.error(false);
+        spanBuilder.status("ERROR");
         spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
         List<Span> spans = new ArrayList<>();

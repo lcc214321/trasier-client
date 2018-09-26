@@ -33,7 +33,7 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
 
             String operationName = extractOperationName(messageContext, endpoint);
-            currentSpan.setOperationName(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN : operationName);
+            currentSpan.setName(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN : operationName);
         }
 
         return true;
@@ -47,7 +47,7 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             messageContext.getResponse().writeTo(out);
             String outgoingData = out.toString();
-            currentSpan.setError(outgoingData.toLowerCase().contains(":fault>"));
+            currentSpan.setStatus(outgoingData.toLowerCase().contains(":fault>") ? "ERROR" : "OK");
         }
 
         return true;
@@ -57,7 +57,7 @@ public class TrasierEndpointInterceptor extends TrasierAbstractInterceptor imple
     public boolean handleFault(MessageContext messageContext, Object endpoint) throws Exception {
         if (!configuration.isDeactivated() && trasierSpringAccessor.isTracing()) {
             Span currentSpan = trasierSpringAccessor.getCurrentSpan();
-            currentSpan.setError(true);
+            currentSpan.setStatus("OK");
         }
         return false;
     }
