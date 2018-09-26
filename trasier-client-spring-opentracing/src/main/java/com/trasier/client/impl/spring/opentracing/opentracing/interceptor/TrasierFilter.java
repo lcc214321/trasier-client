@@ -62,7 +62,6 @@ public class TrasierFilter extends AbstractTrasierFilter {
                 filterChain.doFilter(request, response);
             } finally {
                 handleResponse(response, trasierSpan);
-                System.out.println("IN" + trasierSpan);
             }
         } else {
             filterChain.doFilter(servletRequest, servletResponse);

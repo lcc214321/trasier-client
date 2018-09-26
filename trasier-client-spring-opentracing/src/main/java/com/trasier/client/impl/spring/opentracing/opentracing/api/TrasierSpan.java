@@ -88,7 +88,6 @@ public class TrasierSpan implements Span {
     public void finish(long endTimestamp) {
         wrapped.setEndTimestamp(endTimestamp);
         client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), unwrap());
-        System.out.println("OUT" + unwrap());
     }
 
     public com.trasier.client.model.Span unwrap() {
