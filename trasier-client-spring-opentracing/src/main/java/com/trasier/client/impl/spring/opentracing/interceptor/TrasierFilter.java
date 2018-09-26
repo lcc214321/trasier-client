@@ -1,8 +1,12 @@
-package com.trasier.client.impl.spring.opentracing.opentracing.interceptor;
+/*
+ * Copyright (C) Schweizerische Bundesbahnen SBB, 2018.
+ */
+
+package com.trasier.client.impl.spring.opentracing.interceptor;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.impl.spring.opentracing.opentracing.api.TrasierSpan;
-import com.trasier.client.impl.spring.opentracing.opentracing.api.TrasierTracer;
+import com.trasier.client.impl.spring.opentracing.api.TrasierSpan;
+import com.trasier.client.impl.spring.opentracing.api.TrasierTracer;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
