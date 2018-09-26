@@ -1,6 +1,4 @@
 [![Build Status](https://travis-ci.org/trasiercom/trasier-client.svg?branch=develop)](https://travis-ci.org/trasiercom/trasier-client)
-[![Coverage Status](https://coveralls.io/repos/github/trasiercom/trasier-client/badge.svg?branch=develop&g=4)](https://coveralls.io/github/trasiercom/trasier-client?branch=develop)
-
 
 Trasier Client ingests tracing data into the Trasier system.
 
