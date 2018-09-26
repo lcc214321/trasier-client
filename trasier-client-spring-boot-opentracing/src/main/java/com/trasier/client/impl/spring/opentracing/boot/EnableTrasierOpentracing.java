@@ -1,7 +1,3 @@
-/*
- * Copyright (C) Schweizerische Bundesbahnen SBB, 2018.
- */
-
 package com.trasier.client.impl.spring.opentracing.boot;
 
 import org.springframework.context.annotation.Import;
