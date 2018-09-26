@@ -1,6 +1,7 @@
 package com.trasier.client.impl.spring.opentracing.opentracing.api;
 
 import com.trasier.client.Client;
+import com.trasier.client.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import io.opentracing.Scope;
 import io.opentracing.ScopeManager;
@@ -44,9 +45,9 @@ public class TrasierTracer implements Tracer {
     public <C> void inject(SpanContext spanContext, Format<C> format, C context) {
         if (context instanceof TextMap) {
             TrasierSpanContext trasierSpanContext = (TrasierSpanContext) spanContext;
-            ((TextMap) context).put("X-Conversation-Id", trasierSpanContext.getConversationId());
-            ((TextMap) context).put("X-Trace-Id", trasierSpanContext.getTraceId());
-            ((TextMap) context).put("X-Span-Id", trasierSpanContext.getSpanId());
+            ((TextMap) context).put(TrasierConstants.HEADER_CONVERSATION_ID, trasierSpanContext.getConversationId());
+            ((TextMap) context).put(TrasierConstants.HEADER_TRACE_ID, trasierSpanContext.getTraceId());
+            ((TextMap) context).put(TrasierConstants.HEADER_SPAN_ID, trasierSpanContext.getSpanId());
         }
     }
 
@@ -58,11 +59,11 @@ public class TrasierTracer implements Tracer {
             String spanId = null;
 
             for (Map.Entry<String, String> c : ((TextMap) context)) {
-                if ("X-Conversation-Id".equalsIgnoreCase(c.getKey())) {
+                if (TrasierConstants.HEADER_CONVERSATION_ID.equalsIgnoreCase(c.getKey())) {
                     conversationId = c.getValue();
-                } else if ("X-Trace-Id".equalsIgnoreCase(c.getKey())) {
+                } else if (TrasierConstants.HEADER_TRACE_ID.equalsIgnoreCase(c.getKey())) {
                     traceId = c.getValue();
-                } else if ("X-Span-Id".equalsIgnoreCase(c.getKey())) {
+                } else if (TrasierConstants.HEADER_SPAN_ID.equalsIgnoreCase(c.getKey())) {
                     spanId = c.getValue();
                 }
             }
