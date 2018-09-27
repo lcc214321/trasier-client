@@ -6,6 +6,7 @@ public interface TrasierConstants {
     String HEADER_SPAN_ID = "X-Span-Id";
     String HEADER_INCOMING_ENDPOINT_NAME = "X-Incoming-Endpoint-Name";
 
+    String UNKNOWN_OPERATION = "UNKNOWN_OPERATION";
     String UNKNOWN_IN = "UNKNOWN_IN";
     String UNKNOWN_OUT = "UNKNOWN_OUT";
 }
