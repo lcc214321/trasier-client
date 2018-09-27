@@ -27,12 +27,15 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
     private boolean ignoreActiveSpan;
     private TrasierSpanContext reference;
     private Map<String, String> tags;
+    private Map<String, String> baggageItems;
 
     public TrasierSpanBuilder(Client client, TrasierClientConfiguration configuration, TrasierTracer tracer, String operationName) {
         this.client = client;
         this.configuration = configuration;
         this.tracer = tracer;
         this.operationName = operationName;
+        this.baggageItems = new HashMap<>();
+
         this.startTimestamp = System.currentTimeMillis();
         this.tags = new HashMap<>();
 
@@ -43,10 +46,6 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
 
     @Override
     public TrasierSpanBuilder asChildOf(SpanContext parent) {
-        if(parent != null) {
-            conversationId = ((TrasierSpanContext)parent).getConversationId();
-            traceId = ((TrasierSpanContext)parent).getTraceId();
-        }
         return addReference(References.CHILD_OF, parent);
     }
 
@@ -60,9 +59,14 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
         if (reference != null || context == null) {
             return this;
         }
+
         if (References.CHILD_OF.equals(type) || References.FOLLOWS_FROM.equals(type)) {
-            this.reference = (TrasierSpanContext) context;
+            reference = (TrasierSpanContext) context;
+            conversationId = reference.getConversationId();
+            traceId = reference.getTraceId();
+            baggageItems = reference.getBaggageItems();
         }
+
         return this;
     }
 
@@ -141,7 +145,7 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
         com.trasier.client.model.Span wrapped = wrappedBuilder.build();
         wrapped.setTags(tags);
 
-        TrasierSpan span = new TrasierSpan(client, configuration, wrapped);
+        TrasierSpan span = new TrasierSpan(client, configuration, wrapped, baggageItems);
         return span;
     }
 }

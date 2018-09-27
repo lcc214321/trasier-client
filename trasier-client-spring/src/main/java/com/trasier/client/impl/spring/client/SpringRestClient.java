@@ -5,12 +5,12 @@ import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.impl.spring.auth.OAuthTokenSafe;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
@@ -27,11 +27,16 @@ public class SpringRestClient implements SpringClient {
     private final OAuthTokenSafe tokenSafe;
 
     @Autowired
-    public SpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, @Qualifier("trasierRestTemplate") RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
+    public SpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, OAuthTokenSafe tokenSafe) {
+        this(applicationConfiguration, clientConfiguration, new RestTemplate(), tokenSafe);
+    }
+
+    SpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
         this.applicationConfiguration = applicationConfiguration;
         this.clientConfiguration = clientConfiguration;
-        this.restTemplate = restTemplate;
         this.tokenSafe = tokenSafe;
+        this.restTemplate = restTemplate;
+        this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
     public boolean sendSpan(Span span) {

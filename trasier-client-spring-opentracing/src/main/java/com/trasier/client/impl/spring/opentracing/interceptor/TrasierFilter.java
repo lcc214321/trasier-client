@@ -52,9 +52,9 @@ public class TrasierFilter extends AbstractTrasierFilter {
             CachedServletResponseWrapper response = CachedServletResponseWrapper.create((HttpServletResponse) servletResponse);
 
             trasierSpan.setIncomingContentType(extractContentType(request));
-            trasierSpan.setIncomingEndpoint(extractIncomingEndpoint(request));
+            enhanceIncomingEndpoint(trasierSpan.getIncomingEndpoint(), request);
             trasierSpan.setOutgoingContentType(extractContentType(request));
-            trasierSpan.setOutgoingEndpoint(extractOutgoingEndpoint(request));
+            enhanceOutgoingEndpoint(trasierSpan.getOutgoingEndpoint(), request);
 
             handleRequest(request, trasierSpan);
 
@@ -68,20 +68,18 @@ public class TrasierFilter extends AbstractTrasierFilter {
         }
     }
 
-    private Endpoint extractIncomingEndpoint(CachedServletRequestWrapper request) {
-        Endpoint endpoint = new Endpoint(extractIncomingEndpointName(request));
-        endpoint.setHostname(request.getRemoteHost());
-        endpoint.setIpAddress(request.getRemoteAddr());
-        endpoint.setPort("" + request.getRemotePort());
-        return endpoint;
+    private void enhanceIncomingEndpoint(Endpoint incomingEndpoint, CachedServletRequestWrapper request) {
+        incomingEndpoint.setName(extractIncomingEndpointName(request));
+        incomingEndpoint.setHostname(request.getRemoteHost());
+        incomingEndpoint.setIpAddress(request.getRemoteAddr());
+        incomingEndpoint.setPort("" + request.getRemotePort());
     }
 
-    private Endpoint extractOutgoingEndpoint(CachedServletRequestWrapper request) {
-        Endpoint endpoint = new Endpoint(configuration.getSystemName());
-        endpoint.setHostname(request.getLocalName());
-        endpoint.setIpAddress(request.getLocalAddr());
-        endpoint.setPort("" + request.getLocalPort());
-        return endpoint;
+    private void enhanceOutgoingEndpoint(Endpoint outgoingEndpoint, CachedServletRequestWrapper request) {
+        outgoingEndpoint.setName(configuration.getSystemName());
+        outgoingEndpoint.setHostname(request.getLocalName());
+        outgoingEndpoint.setIpAddress(request.getLocalAddr());
+        outgoingEndpoint.setPort("" + request.getLocalPort());
     }
 
     private void handleResponse(CachedServletResponseWrapper response, Span currentSpan) {
