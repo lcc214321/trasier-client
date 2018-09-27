@@ -37,7 +37,7 @@ public abstract class AbstractTrasierFilter extends GenericFilterBean {
 
     protected String extractIncomingEndpointName(HttpServletRequest servletRequest) {
         String incomingEndpointName = servletRequest.getHeader(TrasierConstants.HEADER_INCOMING_ENDPOINT_NAME);
-        return StringUtils.isEmpty(incomingEndpointName) ? TrasierConstants.UNKNOWN : incomingEndpointName;
+        return StringUtils.isEmpty(incomingEndpointName) ? TrasierConstants.UNKNOWN_IN : incomingEndpointName;
     }
 
     protected ContentType extractContentType(HttpServletRequest servletRequest) {

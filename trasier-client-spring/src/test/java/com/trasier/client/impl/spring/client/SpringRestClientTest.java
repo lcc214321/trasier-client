@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring;
+package com.trasier.client.impl.spring.client;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
@@ -39,7 +39,7 @@ public class SpringRestClientTest {
         when(restTemplate.exchange(anyString(), any(), any(), eq(Void.class))).thenReturn(responseEntity);
 
         // given
-        SpringRestClient sut = new SpringRestClient(new TrasierEndpointConfiguration(), clientConfiguration, restTemplate,  oAuthTokenSafe);
+        SpringRestClient sut = new SpringRestClient(new TrasierEndpointConfiguration(), clientConfiguration, restTemplate, oAuthTokenSafe);
 
         // when
         Span span = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "TEST")

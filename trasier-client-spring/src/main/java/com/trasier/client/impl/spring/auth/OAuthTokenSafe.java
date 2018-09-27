@@ -3,11 +3,11 @@ package com.trasier.client.impl.spring.auth;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -28,10 +28,15 @@ public class OAuthTokenSafe {
     private long tokenExpiresAt;
 
     @Autowired
-    public OAuthTokenSafe(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig, @Qualifier("trasierRestTemplate") RestTemplate restTemplate) {
+    public OAuthTokenSafe(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig) {
+        this(appConfig, springConfig, new RestTemplate());
+    }
+
+    OAuthTokenSafe(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig, RestTemplate restTemplate) {
         this.appConfig = appConfig;
         this.springConfig = springConfig;
         this.restTemplate = restTemplate;
+        this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
     public String getAuthHeader() {
@@ -46,12 +51,7 @@ public class OAuthTokenSafe {
     }
 
     private synchronized void refreshToken() {
-        if(!isTokenValid()) {
-            //TODO Hackergarten -> prevent OpenTracing init
-            if(!restTemplate.getInterceptors().isEmpty()) {
-                restTemplate.getInterceptors().clear();
-            }
-
+        if (!isTokenValid()) {
             //TODO Hackergarten? -> Use refresh_token
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);

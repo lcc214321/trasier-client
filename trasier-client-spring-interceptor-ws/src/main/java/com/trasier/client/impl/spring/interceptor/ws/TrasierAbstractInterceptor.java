@@ -57,6 +57,6 @@ public abstract class TrasierAbstractInterceptor {
             return ((MethodEndpoint) endpoint).getMethod().getName();
         }
 
-        return TrasierConstants.UNKNOWN;
+        return TrasierConstants.UNKNOWN_OPERATION;
     }
 }
