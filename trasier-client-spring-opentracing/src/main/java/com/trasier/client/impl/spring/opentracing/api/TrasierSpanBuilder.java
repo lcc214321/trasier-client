@@ -8,6 +8,7 @@ import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
+import io.opentracing.tag.Tags;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -116,6 +117,19 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
 
     @Override
     public Span start() {
+        boolean server = Tags.SPAN_KIND_SERVER.equals(tags.get(Tags.SPAN_KIND.getKey()));
+
+        if (reference == null && !ignoreActiveSpan) {
+            Scope parent = tracer.scopeManager().active();
+            if (parent != null) {
+                asChildOf(parent.span());
+            }
+        }
+
+        if(server && reference != null) {
+            spanId = reference.getSpanId();
+        }
+
         com.trasier.client.model.Span.SpanBuilder wrappedBuilder = com.trasier.client.model.Span.newSpan(operationName, conversationId, traceId, spanId);
         wrappedBuilder.incomingEndpoint(new Endpoint("UNKNOWN_IN"));
         wrappedBuilder.outgoingEndpoint(new Endpoint("UNKNOWN_OUT"));
