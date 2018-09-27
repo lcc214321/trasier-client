@@ -40,12 +40,12 @@ public class TrasierClientInterceptor extends TrasierAbstractInterceptor impleme
     public boolean handleRequest(MessageContext messageContext) {
         if (!configuration.isDeactivated() && trasierSpringAccessor.isTracing()) {
             String operationName = extractOperationName(messageContext, null);
-            Span currentSpan = trasierSpringAccessor.createChildSpan(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN : operationName);
+            Span currentSpan = trasierSpringAccessor.createChildSpan(StringUtils.isEmpty(operationName) ? TrasierConstants.UNKNOWN_OPERATION : operationName);
             currentSpan.setStartTimestamp(System.currentTimeMillis());
             currentSpan.setIncomingContentType(ContentType.XML);
             currentSpan.setIncomingEndpoint(new Endpoint(configuration.getSystemName()));
             String endpointName = extractOutgoingEndpointName(messageContext);
-            currentSpan.setOutgoingEndpoint(new Endpoint(StringUtils.isEmpty(endpointName) ? TrasierConstants.UNKNOWN : endpointName));
+            currentSpan.setOutgoingEndpoint(new Endpoint(StringUtils.isEmpty(endpointName) ? TrasierConstants.UNKNOWN_OUT : endpointName));
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {

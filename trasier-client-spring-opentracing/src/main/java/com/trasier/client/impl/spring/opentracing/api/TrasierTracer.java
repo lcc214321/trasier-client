@@ -11,6 +11,7 @@ import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -48,6 +49,10 @@ public class TrasierTracer implements Tracer {
             ((TextMap) context).put(TrasierConstants.HEADER_CONVERSATION_ID, trasierSpanContext.getConversationId());
             ((TextMap) context).put(TrasierConstants.HEADER_TRACE_ID, trasierSpanContext.getTraceId());
             ((TextMap) context).put(TrasierConstants.HEADER_SPAN_ID, trasierSpanContext.getSpanId());
+            trasierSpanContext.baggageItems().forEach(entry -> {
+                ((TextMap) context).put(entry.getKey(), entry.getValue());
+            });
+            ((TextMap) context).put(TrasierConstants.HEADER_INCOMING_ENDPOINT_NAME, configuration.getSystemName());
         }
     }
 
@@ -58,13 +63,16 @@ public class TrasierTracer implements Tracer {
             String traceId = null;
             String spanId = null;
 
-            for (Map.Entry<String, String> c : ((TextMap) context)) {
-                if (TrasierConstants.HEADER_CONVERSATION_ID.equalsIgnoreCase(c.getKey())) {
-                    conversationId = c.getValue();
-                } else if (TrasierConstants.HEADER_TRACE_ID.equalsIgnoreCase(c.getKey())) {
-                    traceId = c.getValue();
-                } else if (TrasierConstants.HEADER_SPAN_ID.equalsIgnoreCase(c.getKey())) {
-                    spanId = c.getValue();
+            Map<String, String> baggageItems = new HashMap<>();
+            for (Map.Entry<String, String> entry : ((TextMap) context)) {
+                if (TrasierConstants.HEADER_CONVERSATION_ID.equalsIgnoreCase(entry.getKey())) {
+                    conversationId = entry.getValue();
+                } else if (TrasierConstants.HEADER_TRACE_ID.equalsIgnoreCase(entry.getKey())) {
+                    traceId = entry.getValue();
+                } else if (TrasierConstants.HEADER_SPAN_ID.equalsIgnoreCase(entry.getKey())) {
+                    spanId = entry.getValue();
+                } else {
+                    baggageItems.put(entry.getKey(), entry.getValue());
                 }
             }
 
@@ -75,7 +83,8 @@ public class TrasierTracer implements Tracer {
                 if (spanId == null) {
                     spanId = UUID.randomUUID().toString();
                 }
-                return new TrasierSpanContext(conversationId, traceId, spanId);
+                TrasierSpanContext spanContext = new TrasierSpanContext(conversationId, traceId, spanId, baggageItems);
+                return spanContext;
             }
         }
 
