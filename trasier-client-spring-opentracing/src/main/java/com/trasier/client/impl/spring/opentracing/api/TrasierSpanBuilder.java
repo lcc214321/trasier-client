@@ -1,6 +1,7 @@
 package com.trasier.client.impl.spring.opentracing.api;
 
 import com.trasier.client.Client;
+import com.trasier.client.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.model.Endpoint;
 import io.opentracing.References;
@@ -131,8 +132,8 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
         }
 
         com.trasier.client.model.Span.SpanBuilder wrappedBuilder = com.trasier.client.model.Span.newSpan(operationName, conversationId, traceId, spanId);
-        wrappedBuilder.incomingEndpoint(new Endpoint("UNKNOWN_IN"));
-        wrappedBuilder.outgoingEndpoint(new Endpoint("UNKNOWN_OUT"));
+        wrappedBuilder.incomingEndpoint(new Endpoint(TrasierConstants.UNKNOWN_IN));
+        wrappedBuilder.outgoingEndpoint(new Endpoint(TrasierConstants.UNKNOWN_OUT));
         wrappedBuilder.startTimestamp(startTimestamp);
         if(reference != null) {
             wrappedBuilder.parentId(reference.getSpanId());
