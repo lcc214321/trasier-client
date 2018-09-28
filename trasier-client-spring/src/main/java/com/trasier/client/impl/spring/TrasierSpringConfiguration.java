@@ -1,12 +1,15 @@
 package com.trasier.client.impl.spring;
 
+import com.trasier.client.impl.spring.auth.OAuthToken;
+import com.trasier.client.impl.spring.client.SpringClient;
+import com.trasier.client.impl.spring.context.TrasierSpringAccessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
-@ComponentScan(basePackageClasses = TrasierSpringConfiguration.class)
+@ComponentScan(basePackageClasses = { OAuthToken.class, SpringClient.class, TrasierSpringAccessor.class })
 public class TrasierSpringConfiguration {
     private int queueSize = 100;
     private int queueSizeErrorThresholdMultiplicator = 10;
