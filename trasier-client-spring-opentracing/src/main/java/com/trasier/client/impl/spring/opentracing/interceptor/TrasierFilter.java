@@ -113,4 +113,5 @@ public class TrasierFilter extends AbstractTrasierFilter {
     private boolean needsInitialization() {
         return tracer == null;
     }
+
 }
