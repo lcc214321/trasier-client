@@ -3,17 +3,14 @@
     <parent>
         <artifactId>trasier-client</artifactId>
         <groupId>com.trasier</groupId>
-        <version>0.9.18-SNAPSHOT</version>
+        <version>0.9.20-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>trasier-client-spring-opentracing</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
-        <spring-version>5.0.8.RELEASE</spring-version>
-        <spring-ws-version>2.4.2.RELEASE</spring-ws-version>
-        <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
-        <opentracing.version>0.31.0</opentracing.version>
         <junit.version>4.12</junit.version>
     </properties>
 
@@ -26,42 +23,17 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-
         <dependency>
             <groupId>io.opentracing</groupId>
             <artifactId>opentracing-api</artifactId>
-            <version>${opentracing.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.ws</groupId>
-            <artifactId>spring-ws-core</artifactId>
-            <version>${spring-ws-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${javax.servlet-api.version}</version>
-            <scope>provided</scope>
-        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
