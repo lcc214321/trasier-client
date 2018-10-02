@@ -11,6 +11,7 @@
 
 	<artifactId>trasier-client-pubsub</artifactId>
 	<packaging>jar</packaging>
+    <version>0.9.20-SNAPSHOT</version>
 
 	<properties>
 		<snappy.version>0.4</snappy.version>

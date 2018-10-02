@@ -11,6 +11,7 @@
 
 	<artifactId>trasier-client-opentracing-interceptor-spring-web</artifactId>
 	<packaging>jar</packaging>
+	<version>0.9.20-SNAPSHOT</version>
 
 	<properties>
 		<commons-httpclient.version>3.1</commons-httpclient.version>
