@@ -17,10 +17,6 @@
         <lombok.version>1.16.16</lombok.version>
     </properties>
 
-    <properties>
-        <lombok.version>1.16.16</lombok.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
