@@ -91,8 +91,10 @@ public class TrasierFilter extends AbstractTrasierFilter {
             currentSpan.setOutgoingContentType(ContentType.XML);
         } else if(responseBody.startsWith("{") || responseBody.startsWith("[")) {
             currentSpan.setOutgoingContentType(ContentType.JSON);
-        } else {
+        } else if (!responseBody.isEmpty()) {
             currentSpan.setOutgoingContentType(ContentType.TEXT);
+        } else {
+            currentSpan.setOutgoingContentType(null);
         }
     }
 
@@ -107,8 +109,10 @@ public class TrasierFilter extends AbstractTrasierFilter {
            currentSpan.setIncomingContentType(ContentType.XML);
         } else if(requestBody.startsWith("{") || requestBody.startsWith("[")) {
             currentSpan.setIncomingContentType(ContentType.JSON);
-        } else {
+        } else if (!requestBody.isEmpty()) {
             currentSpan.setIncomingContentType(ContentType.TEXT);
+        } else {
+            currentSpan.setIncomingContentType(null);
         }
     }
 
