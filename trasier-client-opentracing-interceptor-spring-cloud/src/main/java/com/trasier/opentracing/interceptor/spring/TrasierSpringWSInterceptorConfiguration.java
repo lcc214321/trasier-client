@@ -83,5 +83,4 @@ public class TrasierSpringWSInterceptorConfiguration {
     private boolean notYetRegistered(Stream<?> interceptors, Class<?> clazz) {
         return (interceptors).noneMatch(interceptor -> clazz.isAssignableFrom(interceptor.getClass()));
     }
-
 }
