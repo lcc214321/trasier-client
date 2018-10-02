@@ -9,6 +9,7 @@
 
     <artifactId>trasier-client-spring-opentracing</artifactId>
     <packaging>jar</packaging>
+    <version>0.9.20-SNAPSHOT</version>
 
     <properties>
         <junit.version>4.12</junit.version>
