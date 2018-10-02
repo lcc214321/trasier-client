@@ -49,9 +49,6 @@ public class TrasierTracer implements Tracer {
             ((TextMap) context).put(TrasierConstants.HEADER_CONVERSATION_ID, trasierSpanContext.getConversationId());
             ((TextMap) context).put(TrasierConstants.HEADER_TRACE_ID, trasierSpanContext.getTraceId());
             ((TextMap) context).put(TrasierConstants.HEADER_SPAN_ID, trasierSpanContext.getSpanId());
-            trasierSpanContext.baggageItems().forEach(entry -> {
-                ((TextMap) context).put(entry.getKey(), entry.getValue());
-            });
             ((TextMap) context).put(TrasierConstants.HEADER_INCOMING_ENDPOINT_NAME, configuration.getSystemName());
         }
     }
@@ -71,8 +68,6 @@ public class TrasierTracer implements Tracer {
                     traceId = entry.getValue();
                 } else if (TrasierConstants.HEADER_SPAN_ID.equalsIgnoreCase(entry.getKey())) {
                     spanId = entry.getValue();
-                } else {
-                    baggageItems.put(entry.getKey(), entry.getValue());
                 }
             }
 

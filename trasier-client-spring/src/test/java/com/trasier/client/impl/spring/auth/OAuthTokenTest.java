@@ -1,10 +1,5 @@
-/*
- * Copyright (C) Schweizerische Bundesbahnen SBB, 2018.
- */
-
 package com.trasier.client.impl.spring.auth;
 
-import com.trasier.client.impl.spring.auth.OAuthToken;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
