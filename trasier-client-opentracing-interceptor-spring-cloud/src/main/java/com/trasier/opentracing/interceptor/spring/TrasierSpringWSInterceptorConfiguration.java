@@ -4,7 +4,6 @@
 
 package com.trasier.opentracing.interceptor.spring;
 
-import com.trasier.opentracing.interceptor.spring.servlet.TrasierFilter;
 import com.trasier.opentracing.interceptor.spring.ws.TracingClientInterceptor;
 import com.trasier.opentracing.interceptor.spring.ws.TrasierClientInterceptor;
 import io.opentracing.Tracer;
@@ -13,12 +12,12 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ import java.util.stream.Stream;
 
 @Configuration
 @ConditionalOnBean({Tracer.class})
-@ConditionalOnClass({WebServiceTemplate.class})
+@ConditionalOnClass({WebServiceTemplate.class, ClientInterceptorAdapter.class})
 @ConditionalOnProperty(
         prefix = "opentracing.spring.web.client",
         name = {"enabled"},
@@ -45,14 +44,6 @@ public class TrasierSpringWSInterceptorConfiguration {
 
     @Autowired(required = false)
     private Set<WebServiceGatewaySupport> webServiceGatewaySupports;
-
-    @Bean
-    public FilterRegistrationBean trasierFilter() {
-        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        registrationBean.setFilter(new TrasierFilter());
-        registrationBean.addUrlPatterns("/*");
-        return registrationBean;
-    }
 
     @Bean
     public TrasierClientInterceptor trasierClientInterceptor(Tracer tracer) {

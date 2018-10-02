@@ -2,7 +2,6 @@ package com.trasier.opentracing.interceptor.spring;
 
 import com.trasier.opentracing.interceptor.spring.rest.TrasierClientRequestInterceptor;
 import com.trasier.opentracing.interceptor.spring.servlet.TrasierFilter;
-import com.trasier.opentracing.interceptor.spring.ws.TrasierClientInterceptor;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.spring.web.starter.RestTemplateTracingAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +45,6 @@ public class TrasierSpringWebInterceptorConfiguration {
         registrationBean.setFilter(new TrasierFilter());
         registrationBean.addUrlPatterns("/*");
         return registrationBean;
-    }
-
-    @Bean
-    public TrasierClientInterceptor trasierClientInterceptor(Tracer tracer) {
-        return new TrasierClientInterceptor(tracer);
     }
 
     @PostConstruct()

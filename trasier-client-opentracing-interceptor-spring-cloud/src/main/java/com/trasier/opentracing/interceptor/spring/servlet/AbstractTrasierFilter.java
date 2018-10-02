@@ -41,7 +41,7 @@ public abstract class AbstractTrasierFilter extends GenericFilterBean {
     }
 
     protected ContentType extractContentType(HttpServletRequest servletRequest) {
-        return ContentType.XML;
+        return ContentType.TEXT;
     }
 
     protected Map<String, String> getRequestHeaders(HttpServletRequest request) {
