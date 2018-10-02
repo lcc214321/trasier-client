@@ -1,10 +1,12 @@
 package com.trasier.opentracing.interceptor.spring.servlet;
 
+import com.trasier.client.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring.opentracing.api.TrasierSpan;
 import com.trasier.client.impl.spring.opentracing.api.TrasierTracer;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -39,6 +41,10 @@ public class TrasierFilter extends AbstractTrasierFilter {
 
         if (activeSpan != null) {
             Span trasierSpan = activeSpan.unwrap();
+
+            String conversationId = trasierSpan.getConversationId();
+            MDC.put(TrasierConstants.HEADER_CONVERSATION_ID, conversationId);
+
             CachedServletRequestWrapper request = CachedServletRequestWrapper.create((HttpServletRequest) servletRequest);
             CachedServletResponseWrapper response = CachedServletResponseWrapper.create((HttpServletResponse) servletResponse);
 
