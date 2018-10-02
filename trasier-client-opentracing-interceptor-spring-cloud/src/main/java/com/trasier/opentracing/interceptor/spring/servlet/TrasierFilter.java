@@ -4,6 +4,7 @@ import com.trasier.client.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.impl.spring.opentracing.api.TrasierSpan;
 import com.trasier.client.impl.spring.opentracing.api.TrasierTracer;
+import com.trasier.client.model.ContentType;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.slf4j.MDC;
@@ -48,9 +49,7 @@ public class TrasierFilter extends AbstractTrasierFilter {
             CachedServletRequestWrapper request = CachedServletRequestWrapper.create((HttpServletRequest) servletRequest);
             CachedServletResponseWrapper response = CachedServletResponseWrapper.create((HttpServletResponse) servletResponse);
 
-            trasierSpan.setIncomingContentType(extractContentType(request));
             enhanceIncomingEndpoint(trasierSpan.getIncomingEndpoint(), request);
-            trasierSpan.setOutgoingContentType(extractContentType(request));
             enhanceOutgoingEndpoint(trasierSpan.getOutgoingEndpoint(), request);
 
             handleRequest(request, trasierSpan);
@@ -88,6 +87,13 @@ public class TrasierFilter extends AbstractTrasierFilter {
         currentSpan.setOutgoingHeader(responseHeaders);
         String responseBody = new String(response.getContentAsByteArray());
         currentSpan.setOutgoingData(responseBody);
+        if(responseBody.startsWith("<")) {
+            currentSpan.setOutgoingContentType(ContentType.XML);
+        } else if(responseBody.startsWith("{") || responseBody.startsWith("[")) {
+            currentSpan.setOutgoingContentType(ContentType.JSON);
+        } else {
+            currentSpan.setOutgoingContentType(ContentType.TEXT);
+        }
     }
 
     private void handleRequest(CachedServletRequestWrapper request, Span currentSpan) {
@@ -97,6 +103,13 @@ public class TrasierFilter extends AbstractTrasierFilter {
         String requestBody = new String(request.getContentAsByteArray());
         currentSpan.setIncomingData(requestBody);
         currentSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
+        if(requestBody.startsWith("<")) {
+           currentSpan.setIncomingContentType(ContentType.XML);
+        } else if(requestBody.startsWith("{") || requestBody.startsWith("[")) {
+            currentSpan.setIncomingContentType(ContentType.JSON);
+        } else {
+            currentSpan.setIncomingContentType(ContentType.TEXT);
+        }
     }
 
     private synchronized void initialize() {

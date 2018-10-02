@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.support.InterceptingHttpAccessor;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
@@ -27,7 +28,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 @Configuration
-@ConditionalOnBean({Tracer.class})
+@ConditionalOnBean({Tracer.class, InterceptingHttpAccessor.class})
 @ConditionalOnClass({WebServiceTemplate.class, ClientInterceptorAdapter.class})
 @ConditionalOnProperty(
         prefix = "opentracing.spring.web.client",
@@ -69,8 +70,12 @@ public class TrasierSpringWSInterceptorConfiguration {
             if (existingInterceptors != null) {
                 interceptors.addAll(Arrays.asList(existingInterceptors));
             }
-            interceptors.add(new TracingClientInterceptor(tracer));
-            interceptors.add(new TrasierClientInterceptor(tracer));
+            if (interceptors.stream().noneMatch(i -> i instanceof TracingClientInterceptor)) {
+                interceptors.add(new TracingClientInterceptor(tracer));
+            }
+            if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientInterceptor)) {
+                interceptors.add(new TrasierClientInterceptor(tracer));
+            }
             webServiceTemplate.setInterceptors(interceptors.toArray(new ClientInterceptor[interceptors.size()]));
         }
     }
