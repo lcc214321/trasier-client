@@ -7,6 +7,11 @@ import com.trasier.opentracing.interceptor.spring.ws.TrasierClientInterceptor;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.spring.web.starter.RestTemplateTracingAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +32,14 @@ import java.util.stream.Stream;
 
 @Configuration
 @ComponentScan(basePackageClasses = {TrasierFilter.class})
+@ConditionalOnBean({Tracer.class})
+@ConditionalOnClass({RestTemplate.class})
+@ConditionalOnProperty(
+        prefix = "opentracing.spring.web.client",
+        name = {"enabled"},
+        matchIfMissing = true
+)
+@AutoConfigureAfter({RestTemplateTracingAutoConfiguration.RestTemplatePostProcessingConfiguration.class})
 public class TrasierSpringWebInterceptorConfiguration {
     @Autowired
     private Tracer tracer;
@@ -40,8 +53,12 @@ public class TrasierSpringWebInterceptorConfiguration {
     @Autowired(required = false)
     private Set<RestTemplate> restTemplates;
 
-    public TrasierSpringWebInterceptorConfiguration(RestTemplateTracingAutoConfiguration.RestTemplatePostProcessingConfiguration opentracingConfiguration) {
-        //Needed for order
+    @Bean
+    public FilterRegistrationBean trasierFilter() {
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+        registrationBean.setFilter(new TrasierFilter());
+        registrationBean.addUrlPatterns("/*");
+        return registrationBean;
     }
 
     @Bean

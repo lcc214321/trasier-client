@@ -6,10 +6,6 @@ import com.trasier.client.impl.spring.opentracing.api.TrasierTracer;
 import com.trasier.client.model.Endpoint;
 import com.trasier.client.model.Span;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -22,12 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-@Component
-@Primary
-@Order(TrasierFilter.ORDER)
 public class TrasierFilter extends AbstractTrasierFilter {
-    static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 6;
-
     @Autowired
     private volatile TrasierClientConfiguration configuration;
     @Autowired
