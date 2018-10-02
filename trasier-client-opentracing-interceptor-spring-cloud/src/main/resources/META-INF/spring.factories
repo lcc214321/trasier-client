@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.trasier.opentracing.interceptor.spring.TrasierSpringWebInterceptorConfiguration
+com.trasier.opentracing.interceptor.spring.TrasierSpringWebInterceptorConfiguration,\
+com.trasier.opentracing.interceptor.spring.TrasierSpringWSInterceptorConfiguration
