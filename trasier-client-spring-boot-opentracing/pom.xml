@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>trasier-client</artifactId>
 		<groupId>com.trasier</groupId>
-		<version>0.9.20</version>
+		<version>0.9.22</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -13,11 +13,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.trasier</groupId>
-			<artifactId>trasier-client-opentracing-interceptor-spring-web</artifactId>
+			<artifactId>trasier-client-opentracing-interceptor-spring-cloud</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>io.opentracing.contrib</groupId>
-			<artifactId>opentracing-spring-web-autoconfigure</artifactId>
+			<artifactId>opentracing-spring-cloud-starter</artifactId>
 			<scope>provided</scope>
 		</dependency>
 
