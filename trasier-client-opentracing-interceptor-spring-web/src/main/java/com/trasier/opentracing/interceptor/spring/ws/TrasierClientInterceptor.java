@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.ws.client.WebServiceClientException;
+import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapBody;
 import org.springframework.ws.soap.SoapMessage;
@@ -21,11 +22,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class TrasierClientInterceptor extends TracingClientInterceptor {
+public class TrasierClientInterceptor extends ClientInterceptorAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(TrasierClientInterceptor.class);
 
+    private final Tracer tracer;
+
     public TrasierClientInterceptor(Tracer tracer) {
-        super(tracer);
+        this.tracer = tracer;
     }
 
     @Override

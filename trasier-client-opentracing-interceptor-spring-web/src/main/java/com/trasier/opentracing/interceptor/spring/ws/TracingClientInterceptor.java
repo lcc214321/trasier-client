@@ -14,16 +14,17 @@ import org.springframework.ws.soap.SoapBody;
 import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpUrlConnection;
 import org.w3c.dom.Node;
 
 import javax.xml.transform.dom.DOMSource;
+import java.io.IOException;
 import java.net.URLConnection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class TracingClientInterceptor extends ClientInterceptorAdapter {
-    protected final Tracer tracer;
+    private final Tracer tracer;
 
     public TracingClientInterceptor(Tracer tracer) {
         this.tracer = tracer;
@@ -36,21 +37,22 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
                 .startActive(true);
 
         TransportContext context = TransportContextHolder.getTransportContext();
-        if (context.getConnection() instanceof URLConnection) {
-            URLConnection connection = (URLConnection) context.getConnection();
+        if (context.getConnection() instanceof HttpUrlConnection) {
+            HttpUrlConnection httpConnection = (HttpUrlConnection) context.getConnection();
+            URLConnection connection = httpConnection.getConnection();
             tracer.inject(scope.span().context(), Format.Builtin.HTTP_HEADERS, new TextMap() {
                 @Override
                 public Iterator<Map.Entry<String, String>> iterator() {
-                    Map<String, String> headers = new HashMap<>();
-                    connection.getRequestProperties().entrySet().stream()
-                            .filter(entry -> !entry.getValue().isEmpty())
-                            .forEach(entry -> headers.put(entry.getKey(), entry.getValue().get(0)));
-                    return headers.entrySet().iterator();
+                    return null;
                 }
 
                 @Override
                 public void put(String key, String value) {
-                    connection.addRequestProperty(key, value);
+                    try {
+                        httpConnection.addRequestHeader(key, value);
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
                 }
             });
         }

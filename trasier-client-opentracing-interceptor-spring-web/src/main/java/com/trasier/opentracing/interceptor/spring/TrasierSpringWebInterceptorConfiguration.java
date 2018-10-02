@@ -2,15 +2,20 @@ package com.trasier.opentracing.interceptor.spring;
 
 import com.trasier.opentracing.interceptor.spring.rest.TrasierClientRequestInterceptor;
 import com.trasier.opentracing.interceptor.spring.servlet.TrasierFilter;
+import com.trasier.opentracing.interceptor.spring.ws.TracingClientInterceptor;
 import com.trasier.opentracing.interceptor.spring.ws.TrasierClientInterceptor;
 import io.opentracing.Tracer;
+import io.opentracing.contrib.spring.web.autoconfig.RestTemplateTracingAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Configuration
 @ComponentScan(basePackageClasses = {TrasierFilter.class})
@@ -27,38 +33,69 @@ public class TrasierSpringWebInterceptorConfiguration {
 
     @Autowired(required = false)
     private Set<WebServiceTemplate> webServiceTemplates;
+
+    @Autowired(required = false)
+    private Set<WebServiceGatewaySupport> webServiceGatewaySupports;
+
     @Autowired(required = false)
     private Set<RestTemplate> restTemplates;
+
+    public TrasierSpringWebInterceptorConfiguration(RestTemplateTracingAutoConfiguration.RestTemplatePostProcessingConfiguration temp) {
+        //Needed for order
+    }
 
     @Bean
     public TrasierClientInterceptor trasierClientInterceptor(Tracer tracer) {
         return new TrasierClientInterceptor(tracer);
     }
 
-    @PostConstruct
+    @PostConstruct()
     public void init() {
-        if (this.webServiceTemplates != null) {
+        if (webServiceTemplates != null) {
             webServiceTemplates.forEach(this::registerTracingInterceptor);
         }
-        if (this.restTemplates != null) {
+        if (webServiceGatewaySupports != null) {
+            webServiceGatewaySupports.stream()
+                    .map(WebServiceGatewaySupport::getWebServiceTemplate)
+                    .forEach(this::registerTracingInterceptor);
+        }
+        if (restTemplates != null) {
             restTemplates.forEach(this::registerTracingInterceptor);
         }
     }
 
     private void registerTracingInterceptor(WebServiceTemplate webServiceTemplate) {
         ClientInterceptor[] existingInterceptors = webServiceTemplate.getInterceptors();
-        List<ClientInterceptor> interceptors = new ArrayList<>();
-        interceptors.add(new TrasierClientInterceptor(tracer));
-        interceptors.addAll(Arrays.asList(existingInterceptors));
-        webServiceTemplate.setInterceptors(interceptors.toArray(new ClientInterceptor[interceptors.size()]));
+        if (existingInterceptors == null || notYetRegistered(Arrays.stream(existingInterceptors), TrasierClientInterceptor.class)) {
+            List<ClientInterceptor> interceptors = new ArrayList<>();
+            if (existingInterceptors != null) {
+                interceptors.addAll(Arrays.asList(existingInterceptors));
+            }
+            interceptors.add(new TracingClientInterceptor(tracer));
+            interceptors.add(new TrasierClientInterceptor(tracer));
+            webServiceTemplate.setInterceptors(interceptors.toArray(new ClientInterceptor[interceptors.size()]));
+        }
     }
 
     private void registerTracingInterceptor(RestTemplate restTemplate) {
         List<ClientHttpRequestInterceptor> existingInterceptors = restTemplate.getInterceptors();
-        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-        interceptors.addAll(existingInterceptors);
-        interceptors.add(new TrasierClientRequestInterceptor(tracer));
-        restTemplate.setInterceptors(interceptors);
+        if (existingInterceptors == null || notYetRegistered(existingInterceptors.stream(), TrasierClientRequestInterceptor.class)) {
+            List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+            if (existingInterceptors != null) {
+                interceptors.addAll(existingInterceptors);
+            }
+            interceptors.add(new TrasierClientRequestInterceptor(tracer));
+            restTemplate.setInterceptors(interceptors);
+
+            if (!(restTemplate.getRequestFactory() instanceof BufferingClientHttpRequestFactory)) {
+                restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
+            }
+        }
 
     }
+
+    private boolean notYetRegistered(Stream<?> interceptors, Class<?> clazz) {
+        return (interceptors).noneMatch(interceptor -> clazz.isAssignableFrom(interceptor.getClass()));
+    }
+
 }

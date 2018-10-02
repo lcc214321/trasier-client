@@ -8,8 +8,10 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 public class TrasierClientRequestInterceptor implements ClientHttpRequestInterceptor {
 
@@ -27,14 +29,18 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
             Span trasierSpan = span.unwrap();
             trasierSpan.setIncomingContentType(ContentType.JSON);
             trasierSpan.setIncomingData(new String(data));
+            trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
         }
 
         ClientHttpResponse response = execution.execute(request, data);
 
         if (span != null) {
             Span trasierSpan = span.unwrap();
+            trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
             if(response != null) {
-                //TODO
+                String responseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
+                trasierSpan.setOutgoingContentType(ContentType.JSON);
+                trasierSpan.setOutgoingData(responseBody);
             }
         }
 
