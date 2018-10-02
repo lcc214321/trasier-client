@@ -5,7 +5,7 @@ import com.trasier.opentracing.interceptor.spring.servlet.TrasierFilter;
 import com.trasier.opentracing.interceptor.spring.ws.TracingClientInterceptor;
 import com.trasier.opentracing.interceptor.spring.ws.TrasierClientInterceptor;
 import io.opentracing.Tracer;
-import io.opentracing.contrib.spring.web.autoconfig.RestTemplateTracingAutoConfiguration;
+import io.opentracing.contrib.spring.web.starter.RestTemplateTracingAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -40,7 +40,7 @@ public class TrasierSpringWebInterceptorConfiguration {
     @Autowired(required = false)
     private Set<RestTemplate> restTemplates;
 
-    public TrasierSpringWebInterceptorConfiguration(RestTemplateTracingAutoConfiguration.RestTemplatePostProcessingConfiguration temp) {
+    public TrasierSpringWebInterceptorConfiguration(RestTemplateTracingAutoConfiguration.RestTemplatePostProcessingConfiguration opentracingConfiguration) {
         //Needed for order
     }
 
