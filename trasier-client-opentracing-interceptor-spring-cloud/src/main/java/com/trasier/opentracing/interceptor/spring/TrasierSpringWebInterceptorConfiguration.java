@@ -7,7 +7,6 @@ import com.trasier.opentracing.interceptor.spring.ws.TrasierClientInterceptor;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.spring.web.starter.RestTemplateTracingAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,7 +38,6 @@ import java.util.stream.Stream;
         name = {"enabled"},
         matchIfMissing = true
 )
-@AutoConfigureAfter({RestTemplateTracingAutoConfiguration.RestTemplatePostProcessingConfiguration.class})
 public class TrasierSpringWebInterceptorConfiguration {
     @Autowired
     private Tracer tracer;
@@ -52,6 +50,11 @@ public class TrasierSpringWebInterceptorConfiguration {
 
     @Autowired(required = false)
     private Set<RestTemplate> restTemplates;
+
+
+    public TrasierSpringWebInterceptorConfiguration(RestTemplateTracingAutoConfiguration.RestTemplatePostProcessingConfiguration temp) {
+
+    }
 
     @Bean
     public FilterRegistrationBean trasierFilter() {
