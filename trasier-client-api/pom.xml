@@ -11,7 +11,6 @@
 
     <artifactId>trasier-client-api</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.20-SNAPSHOT</version>
 
     <properties>
         <lombok.version>1.16.16</lombok.version>

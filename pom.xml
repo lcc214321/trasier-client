@@ -74,31 +74,6 @@
 			</dependency>
 			<dependency>
 				<groupId>com.trasier</groupId>
-				<artifactId>trasier-client-spring-boot</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.trasier</groupId>
-				<artifactId>trasier-client-spring-interceptor-servlet</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.trasier</groupId>
-				<artifactId>trasier-client-spring-interceptor-rest</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.trasier</groupId>
-				<artifactId>trasier-client-spring-interceptor-ws</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.trasier</groupId>
-				<artifactId>trasier-client-spring-sleuth</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.trasier</groupId>
 				<artifactId>trasier-client-spring-opentracing</artifactId>
 				<version>${project.version}</version>
 			</dependency>

@@ -9,7 +9,6 @@
 
 	<artifactId>trasier-client-spring-shaded</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9.20-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
