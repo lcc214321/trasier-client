@@ -12,7 +12,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
@@ -21,6 +20,7 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -85,11 +85,12 @@ public class TrasierSpringWebInterceptorConfiguration {
                 interceptors.addAll(existingInterceptors);
             }
             interceptors.add(new TrasierClientRequestInterceptor(tracer));
+            if (!(restTemplate.getRequestFactory() instanceof BufferingClientHttpRequestFactory)) {
+                restTemplate.setInterceptors(Collections.emptyList());
+                restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(restTemplate.getRequestFactory()));
+            }
             restTemplate.setInterceptors(interceptors);
 
-            if (!(restTemplate.getRequestFactory() instanceof BufferingClientHttpRequestFactory)) {
-                restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
-            }
         }
 
     }
