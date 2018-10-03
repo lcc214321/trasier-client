@@ -24,12 +24,10 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     @Override
     public void onError(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Throwable exception, Span span) {
-
     }
 
     @Override
     public void onTimeout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, long timeout, Span span) {
-
     }
 
     private void handleResponse(CachedServletResponseWrapper response, com.trasier.client.model.Span currentSpan) {
