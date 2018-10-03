@@ -2,6 +2,7 @@ package com.trasier.opentracing.interceptor.spring;
 
 import com.trasier.opentracing.interceptor.spring.rest.TrasierClientRequestInterceptor;
 import com.trasier.opentracing.interceptor.spring.servlet.TrasierFilter;
+import com.trasier.opentracing.interceptor.spring.servlet.TrasierServletFilterSpanDecorator;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.spring.web.client.RestTemplateSpanDecorator;
 import io.opentracing.contrib.spring.web.client.TracingRestTemplateInterceptor;
@@ -45,6 +46,11 @@ public class TrasierSpringWebInterceptorConfiguration {
         registrationBean.setFilter(new TrasierFilter());
         registrationBean.addUrlPatterns("/*");
         return registrationBean;
+    }
+
+    @Bean
+    public TrasierServletFilterSpanDecorator trasierServletFilterSpanDecorator() {
+        return new TrasierServletFilterSpanDecorator();
     }
 
     @PostConstruct()
