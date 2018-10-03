@@ -27,6 +27,7 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
 
         if (span != null) {
             Span trasierSpan = span.unwrap();
+            trasierSpan.setIncomingHeader(request.getHeaders().toSingleValueMap());
             trasierSpan.setIncomingContentType(ContentType.JSON);
             trasierSpan.setIncomingData(new String(data));
             trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
@@ -39,6 +40,7 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
             if(response != null) {
                 String responseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
+                trasierSpan.setOutgoingHeader(response.getHeaders().toSingleValueMap());
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 trasierSpan.setOutgoingData(responseBody);
             }
