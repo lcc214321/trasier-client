@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.Map;
 
 public class TrasierFilter extends AbstractTrasierFilter {
+    private static final String SERVER_SPAN_CONTEXT = TrasierFilter.class.getName() + ".activeSpanContext";
+
     @Autowired
     private volatile TrasierClientConfiguration configuration;
     @Autowired
@@ -33,32 +35,28 @@ public class TrasierFilter extends AbstractTrasierFilter {
             initialize();
         }
 
-        if (configuration.isDeactivated()) {
+        if (configuration.isDeactivated() || servletRequest.getAttribute(SERVER_SPAN_CONTEXT) != null) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
 
-        TrasierSpan activeSpan = (TrasierSpan) tracer.activeSpan();
+        final TrasierSpan activeSpan = (TrasierSpan) tracer.activeSpan();
 
         if (activeSpan != null) {
-            Span trasierSpan = activeSpan.unwrap();
+            servletRequest.setAttribute(SERVER_SPAN_CONTEXT, activeSpan.context());
 
+            Span trasierSpan = activeSpan.unwrap();
             String conversationId = trasierSpan.getConversationId();
             MDC.put(TrasierConstants.HEADER_CONVERSATION_ID, conversationId);
 
-            CachedServletRequestWrapper request = CachedServletRequestWrapper.create((HttpServletRequest) servletRequest);
-            CachedServletResponseWrapper response = CachedServletResponseWrapper.create((HttpServletResponse) servletResponse);
+            CachedServletRequestWrapper request = createCachedRequest((HttpServletRequest) servletRequest);
+            CachedServletResponseWrapper response = createCachedResponse((HttpServletResponse) servletResponse);
 
             enhanceIncomingEndpoint(trasierSpan.getIncomingEndpoint(), request);
             enhanceOutgoingEndpoint(trasierSpan.getOutgoingEndpoint(), request);
-
             handleRequest(request, trasierSpan);
 
-            try {
-                filterChain.doFilter(request, response);
-            } finally {
-                handleResponse(response, trasierSpan);
-            }
+            filterChain.doFilter(request, response);
         } else {
             filterChain.doFilter(servletRequest, servletResponse);
         }
@@ -76,26 +74,6 @@ public class TrasierFilter extends AbstractTrasierFilter {
         outgoingEndpoint.setHostname(request.getLocalName());
         outgoingEndpoint.setIpAddress(request.getLocalAddr());
         outgoingEndpoint.setPort("" + request.getLocalPort());
-    }
-
-    private void handleResponse(CachedServletResponseWrapper response, Span currentSpan) {
-        //TODO use Clock everywhere
-        currentSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
-
-        //TODO handle headers und status
-        Map<String, String> responseHeaders = getResponseHeaders(response);
-        currentSpan.setOutgoingHeader(responseHeaders);
-        String responseBody = new String(response.getContentAsByteArray());
-        currentSpan.setOutgoingData(responseBody);
-        if(responseBody.startsWith("<")) {
-            currentSpan.setOutgoingContentType(ContentType.XML);
-        } else if(responseBody.startsWith("{") || responseBody.startsWith("[")) {
-            currentSpan.setOutgoingContentType(ContentType.JSON);
-        } else if (!responseBody.isEmpty()) {
-            currentSpan.setOutgoingContentType(ContentType.TEXT);
-        } else {
-            currentSpan.setOutgoingContentType(null);
-        }
     }
 
     private void handleRequest(CachedServletRequestWrapper request, Span currentSpan) {
