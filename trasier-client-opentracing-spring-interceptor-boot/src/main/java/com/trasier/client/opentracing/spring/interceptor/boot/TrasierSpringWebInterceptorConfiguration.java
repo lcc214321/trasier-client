@@ -25,9 +25,9 @@ import org.springframework.web.client.RestTemplate;
 @Import(InterceptorWebConfiguration.class)
 public class TrasierSpringWebInterceptorConfiguration {
     @Bean
-    public FilterRegistrationBean trasierBufferFilter(TrasierClientConfiguration configuration, TrasierTracer tracer, WebTracingProperties tracingConfiguration) {
+    public FilterRegistrationBean trasierBufferFilter(TrasierClientConfiguration configuration, WebTracingProperties tracingConfiguration) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        registrationBean.setOrder(tracingConfiguration.getOrder());
+        registrationBean.setOrder(tracingConfiguration.getOrder() + 2);
         registrationBean.setFilter(new TrasierBufferFilter(configuration));
         registrationBean.setUrlPatterns(tracingConfiguration.getUrlPatterns());
         registrationBean.setAsyncSupported(true);
@@ -37,8 +37,8 @@ public class TrasierSpringWebInterceptorConfiguration {
     @Bean
     public FilterRegistrationBean trasierFilter(TrasierClientConfiguration configuration, TrasierTracer tracer, WebTracingProperties tracingConfiguration) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        registrationBean.setOrder(tracingConfiguration.getOrder());
-        registrationBean.setFilter(new TrasierFilter(configuration, tracer));
+        registrationBean.setOrder(tracingConfiguration.getOrder() + 1);
+        registrationBean.setFilter(new TrasierFilter(configuration, tracer, tracingConfiguration.getSkipPattern()));
         registrationBean.setUrlPatterns(tracingConfiguration.getUrlPatterns());
         registrationBean.setAsyncSupported(true);
         return registrationBean;
