@@ -1,11 +1,11 @@
-package com.trasier.client.impl.spring.opentracing.boot;
+package com.trasier.client.opentracing.spring.boot;
 
-import com.trasier.client.Client;
+import com.trasier.client.api.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
-import com.trasier.client.impl.spring.TrasierSpringConfiguration;
-import com.trasier.client.impl.spring.opentracing.api.TrasierScopeManager;
-import com.trasier.client.impl.spring.opentracing.api.TrasierTracer;
+import com.trasier.client.opentracing.TrasierScopeManager;
+import com.trasier.client.opentracing.TrasierTracer;
+import com.trasier.client.spring.TrasierSpringConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring;
+package com.trasier.client.spring;
 
 import org.junit.Test;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;

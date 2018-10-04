@@ -1,7 +1,7 @@
-package com.trasier.client.impl.spring.client;
+package com.trasier.client.spring.client;
 
-import com.trasier.client.Client;
-import com.trasier.client.model.Span;
+import com.trasier.client.api.Client;
+import com.trasier.client.api.Span;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package com.trasier.client.opentracing;
 
 import com.trasier.client.api.Client;
-import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.api.Endpoint;
+import com.trasier.client.configuration.TrasierClientConfiguration;
 import io.opentracing.References;
 import io.opentracing.Scope;
 import io.opentracing.Span;

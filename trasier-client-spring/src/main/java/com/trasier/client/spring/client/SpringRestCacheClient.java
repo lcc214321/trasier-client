@@ -1,8 +1,8 @@
-package com.trasier.client.impl.spring.client;
+package com.trasier.client.spring.client;
 
+import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.impl.spring.TrasierSpringConfiguration;
-import com.trasier.client.model.Span;
+import com.trasier.client.spring.TrasierSpringConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

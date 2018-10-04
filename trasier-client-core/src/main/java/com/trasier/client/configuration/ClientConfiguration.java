@@ -6,5 +6,5 @@ public interface ClientConfiguration {
     String getClientId();
     String getClientSecret();
     String getSystemName();
-    boolean isDeactivated();
+    boolean isActivated();
 }

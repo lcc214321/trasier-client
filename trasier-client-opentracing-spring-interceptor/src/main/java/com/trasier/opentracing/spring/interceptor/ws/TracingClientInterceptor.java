@@ -1,4 +1,4 @@
-package com.trasier.opentracing.interceptor.spring.ws;
+package com.trasier.opentracing.spring.interceptor.ws;
 
 import io.opentracing.Scope;
 import io.opentracing.Tracer;

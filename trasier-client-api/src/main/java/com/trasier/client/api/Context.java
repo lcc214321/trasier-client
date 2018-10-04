@@ -1,6 +1,11 @@
-package com.trasier.client.model;
+package com.trasier.client.api;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Map;
 

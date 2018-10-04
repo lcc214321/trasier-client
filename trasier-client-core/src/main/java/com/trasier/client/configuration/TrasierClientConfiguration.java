@@ -1,13 +1,12 @@
 package com.trasier.client.configuration;
 
 public class TrasierClientConfiguration implements ClientConfiguration {
-
     private String accountId;
     private String spaceKey;
     private String clientId;
     private String clientSecret;
     private String systemName;
-    private boolean deactivated;
+    private boolean activated = true;
 
     @Override
     public String getAccountId() {
@@ -55,11 +54,11 @@ public class TrasierClientConfiguration implements ClientConfiguration {
     }
 
     @Override
-    public boolean isDeactivated() {
-        return deactivated;
+    public boolean isActivated() {
+        return activated;
     }
 
-    public void setDeactivated(boolean deactivated) {
-        this.deactivated = deactivated;
+    public void setActivated(boolean activated) {
+        this.activated = activated;
     }
 }

@@ -1,6 +1,6 @@
-package com.trasier.client.impl.spring.context;
+package com.trasier.client.spring.context;
 
-import com.trasier.client.model.Span;
+import com.trasier.client.api.Span;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;

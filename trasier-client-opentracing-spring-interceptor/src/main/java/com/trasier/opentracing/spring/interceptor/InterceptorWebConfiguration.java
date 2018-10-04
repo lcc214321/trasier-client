@@ -1,22 +1,15 @@
-package com.trasier.client.opentracing.spring.interceptor.boot;
+package com.trasier.opentracing.spring.interceptor;
 
 import com.trasier.opentracing.spring.interceptor.rest.TrasierClientRequestInterceptor;
-import com.trasier.opentracing.spring.interceptor.servlet.TrasierFilter;
 import com.trasier.opentracing.spring.interceptor.servlet.TrasierServletFilterSpanDecorator;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.spring.web.client.RestTemplateSpanDecorator;
 import io.opentracing.contrib.spring.web.client.TracingRestTemplateInterceptor;
-import io.opentracing.contrib.spring.web.starter.WebClientTracingProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.support.InterceptingHttpAccessor;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
@@ -27,10 +20,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 @Configuration
-@ConditionalOnBean({Tracer.class, InterceptingHttpAccessor.class})
-@ConditionalOnClass({RestTemplate.class})
-@ConditionalOnProperty(prefix = WebClientTracingProperties.CONFIGURATION_PREFIX, name = "enabled", matchIfMissing = true)
-public class TrasierSpringWebInterceptorConfiguration {
+public class InterceptorWebConfiguration {
     @Autowired
     private Tracer tracer;
 
@@ -39,14 +29,6 @@ public class TrasierSpringWebInterceptorConfiguration {
 
     @Autowired(required = false)
     private List<RestTemplateSpanDecorator> spanDecorators;
-
-    @Bean
-    public FilterRegistrationBean trasierFilter() {
-        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        registrationBean.setFilter(new TrasierFilter());
-        registrationBean.addUrlPatterns("/*");
-        return registrationBean;
-    }
 
     @Bean
     public TrasierServletFilterSpanDecorator trasierServletFilterSpanDecorator() {

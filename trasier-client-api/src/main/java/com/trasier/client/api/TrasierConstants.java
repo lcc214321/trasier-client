@@ -1,4 +1,4 @@
-package com.trasier.client;
+package com.trasier.client.api;
 
 public interface TrasierConstants {
     String HEADER_CONVERSATION_ID = "X-Conversation-Id";

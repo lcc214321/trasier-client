@@ -1,6 +1,4 @@
-package com.trasier.client;
-
-import com.trasier.client.model.Span;
+package com.trasier.client.api;
 
 import java.util.List;
 

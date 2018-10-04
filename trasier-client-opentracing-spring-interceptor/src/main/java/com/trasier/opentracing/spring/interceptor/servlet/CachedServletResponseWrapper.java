@@ -1,4 +1,4 @@
-package com.trasier.opentracing.interceptor.spring.servlet;
+package com.trasier.opentracing.spring.interceptor.servlet;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;

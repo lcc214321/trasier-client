@@ -1,4 +1,4 @@
-package com.trasier.opentracing.interceptor.spring.servlet;
+package com.trasier.opentracing.spring.interceptor.servlet;
 
 import org.apache.commons.io.IOUtils;
 

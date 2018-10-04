@@ -1,22 +1,14 @@
-package com.trasier.client.opentracing.spring.interceptor.boot;/*
- * Copyright (C) Schweizerische Bundesbahnen SBB, 2018.
- */
+package com.trasier.opentracing.spring.interceptor;
 
 import com.trasier.opentracing.spring.interceptor.ws.TracingClientInterceptor;
 import com.trasier.opentracing.spring.interceptor.ws.TrasierClientInterceptor;
 import io.opentracing.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.support.InterceptingHttpAccessor;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
-import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -26,15 +18,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 @Configuration
-@ConditionalOnBean({Tracer.class, InterceptingHttpAccessor.class})
-@ConditionalOnClass({WebServiceTemplate.class, ClientInterceptorAdapter.class})
-@ConditionalOnProperty(
-        prefix = "opentracing.spring.web.client",
-        name = {"enabled"},
-        matchIfMissing = true
-)
-@AutoConfigureAfter({TrasierSpringWebInterceptorConfiguration.class})
-public class TrasierSpringWSInterceptorConfiguration {
+public class InterceptorWSConfiguration {
     @Autowired
     private Tracer tracer;
 

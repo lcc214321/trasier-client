@@ -1,10 +1,10 @@
-package com.trasier.opentracing.interceptor.spring.ws;
+package com.trasier.opentracing.spring.interceptor.ws;
 
-import com.trasier.client.api.TrasierConstants;
-import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.api.ContentType;
 import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.Span;
+import com.trasier.client.api.TrasierConstants;
+import com.trasier.client.opentracing.TrasierSpan;
 import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

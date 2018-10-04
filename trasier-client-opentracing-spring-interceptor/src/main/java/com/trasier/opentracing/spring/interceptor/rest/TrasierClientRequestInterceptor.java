@@ -1,8 +1,8 @@
-package com.trasier.opentracing.interceptor.spring.rest;
+package com.trasier.opentracing.spring.interceptor.rest;
 
-import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.api.ContentType;
 import com.trasier.client.api.Span;
+import com.trasier.client.opentracing.TrasierSpan;
 import io.opentracing.Tracer;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;

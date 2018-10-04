@@ -1,4 +1,4 @@
-package com.trasier.client.impl.spring.auth;
+package com.trasier.client.spring.auth;
 
 import org.junit.Test;
 

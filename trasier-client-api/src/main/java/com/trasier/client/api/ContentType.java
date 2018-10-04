@@ -1,4 +1,4 @@
-package com.trasier.client.model;
+package com.trasier.client.api;
 
 public enum ContentType {
 

@@ -1,7 +1,7 @@
-package com.trasier.opentracing.interceptor.spring.servlet;
+package com.trasier.opentracing.spring.interceptor.servlet;
 
-import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.api.ContentType;
+import com.trasier.client.opentracing.TrasierSpan;
 import io.opentracing.Span;
 import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
 
@@ -19,7 +19,9 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     @Override
     public void onResponse(HttpServletRequest httpServletRequest, HttpServletResponse response, Span span) {
-        handleResponse((CachedServletResponseWrapper) response, ((TrasierSpan) span).unwrap());
+        if(response instanceof CachedServletResponseWrapper) {
+            handleResponse((CachedServletResponseWrapper) response, ((TrasierSpan) span).unwrap());
+        }
     }
 
     @Override

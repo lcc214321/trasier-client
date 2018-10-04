@@ -1,8 +1,8 @@
-package com.trasier.client.impl.spring;
+package com.trasier.client.spring;
 
-import com.trasier.client.impl.spring.auth.OAuthToken;
-import com.trasier.client.impl.spring.client.SpringClient;
-import com.trasier.client.impl.spring.context.TrasierSpringAccessor;
+import com.trasier.client.spring.auth.OAuthToken;
+import com.trasier.client.spring.client.SpringClient;
+import com.trasier.client.spring.context.TrasierSpringAccessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
