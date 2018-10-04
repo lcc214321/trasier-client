@@ -1,5 +1,7 @@
 package com.trasier.client.model;
 
+import com.trasier.client.api.Endpoint;
+import com.trasier.client.api.Span;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

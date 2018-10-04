@@ -4,7 +4,7 @@
 
 	<groupId>com.trasier</groupId>
 	<artifactId>trasier-client</artifactId>
-	<version>0.10.1</version>
+	<version>0.11.0</version>
 	<packaging>pom</packaging>
 
 	<name>trasier-client</name>
@@ -44,13 +44,15 @@
 	</properties>
 
 	<modules>
-		<module>trasier-client-core</module>
 		<module>trasier-client-api</module>
+		<module>trasier-client-core</module>
 		<module>trasier-client-spring</module>
 		<module>trasier-client-spring-shaded</module>
-		<module>trasier-client-spring-opentracing</module>
-		<module>trasier-client-spring-boot-opentracing</module>
-		<module>trasier-client-opentracing-interceptor-spring-cloud</module>
+		<module>trasier-client-opentracing</module>
+		<module>trasier-client-opentracing-spring-boot</module>
+		<module>trasier-client-opentracing-spring-interceptor</module>
+		<module>trasier-client-opentracing-spring-interceptor-boot</module>
+		<module>trasier-client-opentracing-spring-interceptor-boot-legacy</module>
 	</modules>
 
 	<dependencyManagement>
@@ -72,17 +74,17 @@
 			</dependency>
 			<dependency>
 				<groupId>com.trasier</groupId>
-				<artifactId>trasier-client-spring-opentracing</artifactId>
+				<artifactId>trasier-client-opentracing</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.trasier</groupId>
-				<artifactId>trasier-client-spring-boot-opentracing</artifactId>
+				<artifactId>trasier-client-opentracing-spring-interceptor</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.trasier</groupId>
-				<artifactId>trasier-client-opentracing-interceptor-spring-cloud</artifactId>
+				<artifactId>trasier-client-opentracing-spring-boot</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
