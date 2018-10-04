@@ -8,6 +8,7 @@ import com.trasier.opentracing.spring.interceptor.servlet.TrasierFilter;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.spring.web.starter.WebClientTracingProperties;
 import io.opentracing.contrib.spring.web.starter.WebTracingProperties;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,7 +36,7 @@ public class TrasierSpringWebInterceptorConfiguration {
         return new TrasierFilter(configuration, tracer, tracingConfiguration.getSkipPattern());
     }
 
-    @Bean
+    @Bean("trasierBufferFilterRegistrationBean")
     public FilterRegistrationBean trasierBufferFilter(TrasierBufferFilter trasierBufferFilter, WebTracingProperties tracingConfiguration) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
         registrationBean.setOrder(tracingConfiguration.getOrder());
@@ -46,7 +47,7 @@ public class TrasierSpringWebInterceptorConfiguration {
     }
 
     @Bean
-    public FilterRegistrationBean trasierFilter(TrasierBufferFilter trasierBufferFilter, TrasierFilter trasierFilter, WebTracingProperties tracingConfiguration) {
+    public FilterRegistrationBean trasierFilter(@Qualifier("trasierBufferFilterRegistrationBean") FilterRegistrationBean trasierBufferFilterRegistrationBean /* Important for order */, TrasierFilter trasierFilter, WebTracingProperties tracingConfiguration) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
         registrationBean.setOrder(tracingConfiguration.getOrder());
         registrationBean.setFilter(trasierFilter);
