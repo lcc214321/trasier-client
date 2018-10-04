@@ -24,23 +24,35 @@ import org.springframework.web.client.RestTemplate;
 @ConditionalOnProperty(prefix = WebClientTracingProperties.CONFIGURATION_PREFIX, name = "enabled", matchIfMissing = true)
 @Import(InterceptorWebConfiguration.class)
 public class TrasierSpringWebInterceptorConfiguration {
+
     @Bean
-    public FilterRegistrationBean trasierBufferFilter(TrasierClientConfiguration configuration, WebTracingProperties tracingConfiguration) {
+    public TrasierBufferFilter trasierBufferFilter(TrasierClientConfiguration configuration) {
+        return new TrasierBufferFilter(configuration);
+    }
+
+    @Bean
+    public TrasierFilter trasierFilter(TrasierClientConfiguration configuration, TrasierTracer tracer, WebTracingProperties tracingConfiguration) {
+        return new TrasierFilter(configuration, tracer, tracingConfiguration.getSkipPattern());
+    }
+
+    @Bean
+    public FilterRegistrationBean trasierBufferFilter(TrasierBufferFilter trasierBufferFilter, WebTracingProperties tracingConfiguration) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        registrationBean.setOrder(tracingConfiguration.getOrder() + 2);
-        registrationBean.setFilter(new TrasierBufferFilter(configuration));
+        registrationBean.setOrder(tracingConfiguration.getOrder());
+        registrationBean.setFilter(trasierBufferFilter);
         registrationBean.setUrlPatterns(tracingConfiguration.getUrlPatterns());
         registrationBean.setAsyncSupported(true);
         return registrationBean;
     }
 
     @Bean
-    public FilterRegistrationBean trasierFilter(TrasierClientConfiguration configuration, TrasierTracer tracer, WebTracingProperties tracingConfiguration) {
+    public FilterRegistrationBean trasierFilter(TrasierBufferFilter trasierBufferFilter, TrasierFilter trasierFilter, WebTracingProperties tracingConfiguration) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        registrationBean.setOrder(tracingConfiguration.getOrder() + 1);
-        registrationBean.setFilter(new TrasierFilter(configuration, tracer, tracingConfiguration.getSkipPattern()));
+        registrationBean.setOrder(tracingConfiguration.getOrder());
+        registrationBean.setFilter(trasierFilter);
         registrationBean.setUrlPatterns(tracingConfiguration.getUrlPatterns());
         registrationBean.setAsyncSupported(true);
         return registrationBean;
     }
+
 }
