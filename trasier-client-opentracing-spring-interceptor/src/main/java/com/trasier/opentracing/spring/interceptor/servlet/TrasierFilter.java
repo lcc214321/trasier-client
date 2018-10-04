@@ -49,11 +49,12 @@ public class TrasierFilter extends GenericFilterBean {
 
     @Override
     protected void initFilterBean() {
-        ServletContext servletContext = getFilterConfig().getServletContext();
-
-        Object contextAttribute = servletContext.getAttribute(SKIP_PATTERN);
-        if (contextAttribute instanceof Pattern) {
-            skipPattern = (Pattern) contextAttribute;
+        if(getFilterConfig() != null) {
+            ServletContext servletContext = getFilterConfig().getServletContext();
+            Object contextAttribute = servletContext.getAttribute(SKIP_PATTERN);
+            if (contextAttribute instanceof Pattern) {
+                skipPattern = (Pattern) contextAttribute;
+            }
         }
     }
 
