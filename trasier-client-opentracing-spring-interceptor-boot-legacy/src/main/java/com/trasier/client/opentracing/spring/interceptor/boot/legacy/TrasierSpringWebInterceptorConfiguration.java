@@ -25,7 +25,6 @@ import org.springframework.web.client.RestTemplate;
 @Import(InterceptorWebConfiguration.class)
 public class TrasierSpringWebInterceptorConfiguration {
 
-
     @Bean("trasierBufferFilterRegistrationBean")
     public FilterRegistrationBean trasierBufferFilter(TrasierClientConfiguration configuration, WebTracingProperties tracingConfiguration) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
