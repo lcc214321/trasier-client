@@ -8,12 +8,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.client.support.InterceptingHttpAccessor;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 
 @Configuration
-@ConditionalOnBean({Tracer.class, InterceptingHttpAccessor.class})
+@ConditionalOnBean({Tracer.class})
 @ConditionalOnClass({WebServiceTemplate.class, ClientInterceptorAdapter.class})
 @ConditionalOnProperty(
         prefix = "opentracing.spring.web.client",

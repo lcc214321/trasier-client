@@ -16,11 +16,10 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.client.support.InterceptingHttpAccessor;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@ConditionalOnBean({Tracer.class, InterceptingHttpAccessor.class})
+@ConditionalOnBean({Tracer.class})
 @ConditionalOnClass({RestTemplate.class})
 @ConditionalOnProperty(prefix = WebClientTracingProperties.CONFIGURATION_PREFIX, name = "enabled", matchIfMissing = true)
 @Import(InterceptorWebConfiguration.class)
