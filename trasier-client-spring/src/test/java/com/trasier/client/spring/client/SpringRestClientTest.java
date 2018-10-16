@@ -4,6 +4,7 @@ import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.interceptor.TrasierInterceptorRegistry;
 import com.trasier.client.spring.auth.OAuthTokenSafe;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class SpringRestClientTest {
         when(restTemplate.exchange(anyString(), any(), any(), eq(Void.class))).thenReturn(responseEntity);
 
         // given
-        SpringRestClient sut = new SpringRestClient(new TrasierEndpointConfiguration(), clientConfiguration, restTemplate, oAuthTokenSafe);
+        TrasierSpringRestClient sut = new TrasierSpringRestClient(new TrasierEndpointConfiguration(), clientConfiguration, restTemplate, oAuthTokenSafe, new TrasierInterceptorRegistry());
 
         // when
         Span span = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "TEST")

@@ -4,6 +4,8 @@ import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.spring.auth.OAuthTokenSafe;
+import com.trasier.client.interceptor.TrasierInterceptorRegistry;
+import com.trasier.client.interceptor.TrasierSpanInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,22 +22,24 @@ import java.util.Collections;
 import java.util.List;
 
 @Component("trasierSpringClient")
-public class SpringRestClient implements SpringClient {
+public class TrasierSpringRestClient implements TrasierSpringClient {
     private final TrasierEndpointConfiguration applicationConfiguration;
     private final TrasierClientConfiguration clientConfiguration;
     private final RestTemplate restTemplate;
     private final OAuthTokenSafe tokenSafe;
+    private final TrasierInterceptorRegistry interceptorRegistry;
 
     @Autowired
-    public SpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, OAuthTokenSafe tokenSafe) {
-        this(applicationConfiguration, clientConfiguration, new RestTemplate(), tokenSafe);
+    public TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, OAuthTokenSafe tokenSafe, TrasierInterceptorRegistry interceptorRegistry) {
+        this(applicationConfiguration, clientConfiguration, new RestTemplate(), tokenSafe, interceptorRegistry);
     }
 
-    SpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
+    TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe, TrasierInterceptorRegistry interceptorRegistry) {
         this.applicationConfiguration = applicationConfiguration;
         this.clientConfiguration = clientConfiguration;
         this.tokenSafe = tokenSafe;
         this.restTemplate = restTemplate;
+        this.interceptorRegistry = interceptorRegistry;
         this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
@@ -57,6 +61,13 @@ public class SpringRestClient implements SpringClient {
         if (!clientConfiguration.isActivated()) {
             return false;
         }
+
+        applyInterceptors(spans);
+
+        if (spans.isEmpty()) {
+            return false;
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + tokenSafe.getAuthHeader());
@@ -65,6 +76,21 @@ public class SpringRestClient implements SpringClient {
         HttpEntity<List<Span>> requestEntity = new HttpEntity<>(spans, headers);
         ResponseEntity<Void> exchange = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, requestEntity, Void.class);
         return !exchange.getStatusCode().is4xxClientError() && !exchange.getStatusCode().is5xxServerError();
+    }
+
+    private void applyInterceptors(List<Span> spans) {
+        spans.removeIf(span -> !applyInterceptors(span));
+    }
+
+    private boolean applyInterceptors(Span next) {
+        for (TrasierSpanInterceptor spanInterceptor : interceptorRegistry.getSpanInterceptors()) {
+            if (spanInterceptor.cancel(next)) {
+                return false;
+            } else {
+                spanInterceptor.intercept(next);
+            }
+        }
+        return true;
     }
 
     @Override
