@@ -10,6 +10,7 @@ import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
+import io.opentracing.util.GlobalTracer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +25,7 @@ public class TrasierTracer implements Tracer {
         this.client = client;
         this.configuration = configuration;
         this.trasierScopeManager = trasierScopeManager;
+        GlobalTracer.register(this);
     }
 
     @Override
