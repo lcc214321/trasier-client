@@ -4,6 +4,8 @@ import com.trasier.client.api.ContentType;
 import com.trasier.client.api.Span;
 import com.trasier.client.opentracing.TrasierSpan;
 import io.opentracing.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 public class TrasierClientRequestInterceptor implements ClientHttpRequestInterceptor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrasierClientRequestInterceptor.class);
 
     private final Tracer tracer;
 
@@ -27,10 +30,14 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
 
         if (span != null) {
             Span trasierSpan = span.unwrap();
-            trasierSpan.setIncomingHeader(request.getHeaders().toSingleValueMap());
             trasierSpan.setIncomingContentType(ContentType.JSON);
-            trasierSpan.setIncomingData(new String(data));
             trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
+            try {
+                trasierSpan.setIncomingHeader(request.getHeaders().toSingleValueMap());
+                trasierSpan.setIncomingData(new String(data));
+            } catch (Exception e) {
+                LOGGER.error("Error while logging request", e);
+            }
         }
 
         ClientHttpResponse response = execution.execute(request, data);
@@ -38,11 +45,15 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
         if (span != null) {
             Span trasierSpan = span.unwrap();
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
-            if(response != null) {
-                String responseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
-                trasierSpan.setOutgoingHeader(response.getHeaders().toSingleValueMap());
+            if (response != null) {
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
-                trasierSpan.setOutgoingData(responseBody);
+                try {
+                    trasierSpan.setOutgoingHeader(response.getHeaders().toSingleValueMap());
+                    String responseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
+                    trasierSpan.setOutgoingData(responseBody);
+                } catch (Exception e) {
+                    LOGGER.error("Error while logging response", e);
+                }
             }
         }
 
