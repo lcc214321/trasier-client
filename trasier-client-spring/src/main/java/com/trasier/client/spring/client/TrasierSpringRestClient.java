@@ -1,11 +1,9 @@
 package com.trasier.client.spring.client;
 
-import com.trasier.client.api.Span;
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.configuration.TrasierEndpointConfiguration;
-import com.trasier.client.spring.auth.OAuthTokenSafe;
-import com.trasier.client.interceptor.TrasierInterceptorRegistry;
-import com.trasier.client.interceptor.TrasierSpanInterceptor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,9 +16,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import com.trasier.client.api.Span;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.interceptor.TrasierSpanInterceptor;
+import com.trasier.client.spring.auth.OAuthTokenSafe;
 
 @Component("trasierSpringClient")
 public class TrasierSpringRestClient implements TrasierSpringClient {
@@ -28,19 +28,19 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
     private final TrasierClientConfiguration clientConfiguration;
     private final RestTemplate restTemplate;
     private final OAuthTokenSafe tokenSafe;
-    private final TrasierInterceptorRegistry interceptorRegistry;
+    @Autowired(required = false)
+    private final List<TrasierSpanInterceptor> spanInterceptors = new ArrayList<>();
 
     @Autowired
-    public TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, OAuthTokenSafe tokenSafe, TrasierInterceptorRegistry interceptorRegistry) {
-        this(applicationConfiguration, clientConfiguration, new RestTemplate(), tokenSafe, interceptorRegistry);
+    public TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, OAuthTokenSafe tokenSafe) {
+        this(applicationConfiguration, clientConfiguration, new RestTemplate(), tokenSafe);
     }
 
-    TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe, TrasierInterceptorRegistry interceptorRegistry) {
+    TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
         this.applicationConfiguration = applicationConfiguration;
         this.clientConfiguration = clientConfiguration;
         this.tokenSafe = tokenSafe;
         this.restTemplate = restTemplate;
-        this.interceptorRegistry = interceptorRegistry;
         this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
@@ -84,7 +84,7 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
     }
 
     private boolean applyInterceptors(Span next) {
-        for (TrasierSpanInterceptor spanInterceptor : interceptorRegistry.getSpanInterceptors()) {
+        for (TrasierSpanInterceptor spanInterceptor : this.spanInterceptors) {
             if (spanInterceptor.cancel(next)) {
                 return false;
             } else {
