@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -50,7 +51,7 @@ public class SpringRestClientTest {
         Span span = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "TEST")
                 .outgoingEndpoint(new Endpoint("Test2")).startTimestamp(1L).build();
 
-        boolean result = sut.sendSpans(Collections.singletonList(span));
+        boolean result = sut.sendSpans(Arrays.asList(span));
 
         // then
         assertTrue(result);

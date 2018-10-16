@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
 
     @Override
     public boolean sendSpan(String accountId, String spaceKey, Span span) {
-        return this.sendSpans(accountId, spaceKey, Collections.singletonList(span));
+        return this.sendSpans(accountId, spaceKey, Arrays.asList(span));
     }
 
     public boolean sendSpans(List<Span> spans) {
