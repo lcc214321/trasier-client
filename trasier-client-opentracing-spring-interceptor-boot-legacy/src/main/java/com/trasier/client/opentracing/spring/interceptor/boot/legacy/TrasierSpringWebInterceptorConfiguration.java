@@ -1,14 +1,13 @@
 package com.trasier.client.opentracing.spring.interceptor.boot.legacy;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.opentracing.TrasierTracer;
 import com.trasier.opentracing.spring.interceptor.InterceptorWebConfiguration;
 import com.trasier.opentracing.spring.interceptor.servlet.TrasierBufferFilter;
-import com.trasier.opentracing.spring.interceptor.servlet.TrasierFilter;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.spring.web.starter.WebClientTracingProperties;
 import io.opentracing.contrib.spring.web.starter.WebTracingProperties;
-import org.springframework.beans.factory.annotation.Qualifier;
+import io.opentracing.contrib.web.servlet.filter.TracingFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,31 +17,41 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Configuration
 @ConditionalOnBean({Tracer.class})
 @ConditionalOnClass({RestTemplate.class})
 @ConditionalOnProperty(prefix = WebClientTracingProperties.CONFIGURATION_PREFIX, name = "enabled", matchIfMissing = true)
 @Import(InterceptorWebConfiguration.class)
 public class TrasierSpringWebInterceptorConfiguration {
+    @Autowired
+    private List<org.springframework.boot.web.servlet.FilterRegistrationBean> filterRegistrationBeanList;
 
     @Bean("trasierBufferFilterRegistrationBean")
     public FilterRegistrationBean trasierBufferFilter(TrasierClientConfiguration configuration, WebTracingProperties tracingConfiguration) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        registrationBean.setOrder(tracingConfiguration.getOrder());
+        registrationBean.setOrder(calculateAndFixOrder(tracingConfiguration));
         registrationBean.setFilter(new TrasierBufferFilter(configuration));
         registrationBean.setUrlPatterns(tracingConfiguration.getUrlPatterns());
         registrationBean.setAsyncSupported(true);
         return registrationBean;
     }
 
-    @Bean
-    public FilterRegistrationBean trasierFilter(/* Important for order */ @Qualifier("trasierBufferFilterRegistrationBean") FilterRegistrationBean trasierBufferFilterRegistrationBean, TrasierClientConfiguration configuration, TrasierTracer tracer, WebTracingProperties tracingConfiguration) {
-        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-        registrationBean.setOrder(tracingConfiguration.getOrder());
-        registrationBean.setFilter(new TrasierFilter(configuration, tracer, tracingConfiguration.getSkipPattern()));
-        registrationBean.setUrlPatterns(tracingConfiguration.getUrlPatterns());
-        registrationBean.setAsyncSupported(true);
-        return registrationBean;
+    private int calculateAndFixOrder(WebTracingProperties tracingConfiguration) {
+        int configuredTracingOrder = tracingConfiguration.getOrder();
+        fixOpentracingFilterOrder(tracingConfiguration, configuredTracingOrder);
+        return configuredTracingOrder;
+    }
+
+    private void fixOpentracingFilterOrder(WebTracingProperties tracingConfiguration, int configuredTracingOrder) {
+        int fixedOrder = configuredTracingOrder + 1;
+        tracingConfiguration.setOrder(fixedOrder);
+        if (filterRegistrationBeanList != null) {
+            filterRegistrationBeanList.stream()
+                    .filter(regBean -> regBean.getFilter() instanceof TracingFilter)
+                    .forEach(filterRegistrationBean -> filterRegistrationBean.setOrder(fixedOrder));
+        }
     }
 
 }

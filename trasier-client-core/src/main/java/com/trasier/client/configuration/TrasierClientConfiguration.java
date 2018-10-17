@@ -61,4 +61,5 @@ public class TrasierClientConfiguration implements ClientConfiguration {
     public void setActivated(boolean activated) {
         this.activated = activated;
     }
+
 }
