@@ -27,7 +27,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     @Override
     public void onRequest(HttpServletRequest httpServletRequest, Span span) {
-        if(configuration.isActivated() && httpServletRequest instanceof CachedServletResponseWrapper) {
+        if(configuration.isActivated() && httpServletRequest instanceof CachedServletRequestWrapper) {
             TrasierSpan activeSpan = (TrasierSpan) span;
             com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
             String conversationId = trasierSpan.getConversationId();
