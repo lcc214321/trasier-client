@@ -42,6 +42,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     @Override
     public void onResponse(HttpServletRequest httpServletRequest, HttpServletResponse response, Span span) {
         if(configuration.isActivated() && response instanceof CachedServletResponseWrapper) {
+            MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
             handleResponse((CachedServletResponseWrapper) response, ((TrasierSpan) span).unwrap());
         }
     }

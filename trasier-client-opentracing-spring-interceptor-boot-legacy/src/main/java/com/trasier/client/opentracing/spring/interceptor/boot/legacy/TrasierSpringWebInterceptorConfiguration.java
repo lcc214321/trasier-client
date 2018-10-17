@@ -45,11 +45,12 @@ public class TrasierSpringWebInterceptorConfiguration {
     }
 
     private void fixOpentracingFilterOrder(WebTracingProperties tracingConfiguration, int configuredTracingOrder) {
-        tracingConfiguration.setOrder(configuredTracingOrder + 1);
+        int fixedOrder = configuredTracingOrder + 1;
+        tracingConfiguration.setOrder(fixedOrder);
         if (filterRegistrationBeanList != null) {
             filterRegistrationBeanList.stream()
                     .filter(regBean -> regBean.getFilter() instanceof TracingFilter)
-                    .forEach(filterRegistrationBean -> filterRegistrationBean.setOrder(tracingConfiguration.getOrder()));
+                    .forEach(filterRegistrationBean -> filterRegistrationBean.setOrder(fixedOrder));
         }
     }
 
