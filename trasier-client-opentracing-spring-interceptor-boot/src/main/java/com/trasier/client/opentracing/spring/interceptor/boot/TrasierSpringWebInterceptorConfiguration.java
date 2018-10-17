@@ -38,20 +38,4 @@ public class TrasierSpringWebInterceptorConfiguration {
         return registrationBean;
     }
 
-    private int calculateAndFixOrder(WebTracingProperties tracingConfiguration) {
-        int configuredTracingOrder = tracingConfiguration.getOrder();
-        fixOpentracingFilterOrder(tracingConfiguration, configuredTracingOrder);
-        return configuredTracingOrder;
-    }
-
-    private void fixOpentracingFilterOrder(WebTracingProperties tracingConfiguration, int configuredTracingOrder) {
-        int fixedOrder = configuredTracingOrder + 1;
-        tracingConfiguration.setOrder(fixedOrder);
-        if (filterRegistrationBeanList != null) {
-            filterRegistrationBeanList.stream()
-                    .filter(regBean -> regBean.getFilter() instanceof TracingFilter)
-                    .forEach(filterRegistrationBean -> filterRegistrationBean.setOrder(fixedOrder));
-        }
-    }
-
 }
