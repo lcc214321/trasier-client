@@ -53,11 +53,12 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
     }
 
     @Override
-    public boolean sendSpans(String accountId, String spaceKey, List<Span> spans) {
+    public boolean sendSpans(String accountId, String spaceKey, List<Span> spanList) {
         if (!clientConfiguration.isActivated()) {
             return false;
         }
 
+        List<Span> spans = new ArrayList<>(spanList);
         applyInterceptors(spans);
 
         if (spans.isEmpty()) {
