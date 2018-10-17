@@ -5,11 +5,10 @@ import com.trasier.client.api.Span;
 
 public interface TrasierSpanInterceptor {
 
+    /**
+     * Gives the possibility to intercept the Span before it is send to the tracing backend.
+     * One can change the span name, mask out message payload or prevent the span from being send to the tracing backend.
+     */
     void intercept(Span span);
 
-    /**
-     * Gives the possibility to cancel sending the span to the tracing backend.
-     * @return <code>true</code> if the span should not be send, <code>false</code> otherwise
-     */
-    boolean cancel(Span span);
 }
