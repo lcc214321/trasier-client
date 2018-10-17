@@ -1,8 +1,9 @@
 package com.trasier.opentracing.spring.interceptor.rest;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
+import com.trasier.client.api.ContentType;
+import com.trasier.client.api.Span;
+import com.trasier.client.opentracing.TrasierSpan;
+import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
@@ -11,11 +12,8 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
-import com.trasier.client.api.ContentType;
-import com.trasier.client.api.Span;
-import com.trasier.client.opentracing.TrasierSpan;
-
-import io.opentracing.Tracer;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
 public class TrasierClientRequestInterceptor implements ClientHttpRequestInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrasierClientRequestInterceptor.class);
