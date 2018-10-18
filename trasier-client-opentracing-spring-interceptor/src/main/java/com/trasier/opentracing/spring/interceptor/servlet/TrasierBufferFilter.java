@@ -65,7 +65,11 @@ public class TrasierBufferFilter extends GenericFilterBean {
         return servletRequest instanceof CachedServletResponseWrapper ? (CachedServletRequestWrapper) servletRequest : CachedServletRequestWrapper.create(servletRequest);
     }
 
-    private synchronized void initialize() {
+    private boolean needsInitialization() {
+        return configuration == null;
+    }
+
+    private void initialize() {
         WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
         TrasierClientConfiguration configuration = webApplicationContext.getBean(TrasierClientConfiguration.class);
         TrasierTracer tracer = webApplicationContext.getBean(TrasierTracer.class);
@@ -74,10 +78,6 @@ public class TrasierBufferFilter extends GenericFilterBean {
         decoratorList.add(ServletFilterSpanDecorator.STANDARD_TAGS);
         decoratorList.add(new TrasierServletFilterSpanDecorator(configuration));
         getServletContext().setAttribute(TracingFilter.SPAN_DECORATORS, decoratorList);
-    }
-
-    private boolean needsInitialization() {
-        return configuration == null;
     }
 
 }
