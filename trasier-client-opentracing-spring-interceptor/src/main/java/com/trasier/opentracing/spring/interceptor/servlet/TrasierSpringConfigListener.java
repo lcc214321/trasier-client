@@ -17,6 +17,7 @@ import java.util.List;
  * For Non-Spring-Boot applications.
  */
 public class TrasierSpringConfigListener implements ServletContextListener {
+
     @Override
     public void contextInitialized(ServletContextEvent event) {
         WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(event.getServletContext());
@@ -35,4 +36,5 @@ public class TrasierSpringConfigListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
 
     }
+
 }
