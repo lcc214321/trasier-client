@@ -8,19 +8,25 @@ import com.trasier.client.opentracing.TrasierSpan;
 import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapBody;
 import org.springframework.ws.soap.SoapMessage;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Node;
 
+import javax.xml.soap.MimeHeader;
 import javax.xml.transform.dom.DOMSource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Iterator;
+import java.util.Map;
 
 public class TrasierClientInterceptor extends ClientInterceptorAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(TrasierClientInterceptor.class);
@@ -41,12 +47,12 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                 Span trasierSpan = span.unwrap();
                 String endpointName = extractOutgoingEndpointName(messageContext);
                 trasierSpan.setOutgoingEndpoint(new Endpoint(StringUtils.isEmpty(endpointName) ? TrasierConstants.UNKNOWN_OUT : endpointName));
-
                 try {
                     trasierSpan.setIncomingContentType(ContentType.XML);
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     messageContext.getRequest().writeTo(out);
                     trasierSpan.setIncomingData(out.toString());
+                    trasierSpan.setIncomingHeader(extractHeaders(messageContext.getRequest()));
                 } catch (IOException e) {
                     LOG.error(e.getMessage(), e);
                 }
@@ -70,6 +76,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                 messageContext.getResponse().writeTo(out);
                 String outgoingData = out.toString();
                 trasierSpan.setOutgoingData(outgoingData);
+                trasierSpan.setOutgoingHeader(extractHeaders(messageContext.getResponse()));
             } catch (IOException e) {
                 LOG.error(e.getMessage(), e);
             }
@@ -129,6 +136,23 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
             }
         }
         return null;
+    }
+
+    private Map<String, String> extractHeaders(WebServiceMessage message) {
+        LinkedMultiValueMap<String, String> result = new LinkedMultiValueMap<>();
+        if (message instanceof SaajSoapMessage) {
+            SaajSoapMessage soapMessage = (SaajSoapMessage) message;
+            Iterator allHeaders = soapMessage.getSaajMessage().getMimeHeaders().getAllHeaders();
+            while (allHeaders.hasNext()) {
+                Object next = allHeaders.next();
+                if (next instanceof MimeHeader) {
+                    MimeHeader header = (MimeHeader) next;
+                    result.add(header.getName(), header.getValue());
+                }
+            }
+
+        }
+        return result.toSingleValueMap();
     }
 
 }

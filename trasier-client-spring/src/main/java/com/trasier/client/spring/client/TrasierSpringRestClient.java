@@ -3,35 +3,35 @@ package com.trasier.client.spring.client;
 import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.interceptor.TrasierSpanInterceptor;
 import com.trasier.client.spring.auth.OAuthTokenSafe;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component("trasierSpringClient")
-public class SpringRestClient implements SpringClient {
+public class TrasierSpringRestClient implements TrasierSpringClient {
     private final TrasierEndpointConfiguration applicationConfiguration;
     private final TrasierClientConfiguration clientConfiguration;
     private final RestTemplate restTemplate;
     private final OAuthTokenSafe tokenSafe;
+    @Autowired(required = false)
+    private final List<TrasierSpanInterceptor> spanInterceptors = new ArrayList<>();
 
     @Autowired
-    public SpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, OAuthTokenSafe tokenSafe) {
+    public TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, OAuthTokenSafe tokenSafe) {
         this(applicationConfiguration, clientConfiguration, new RestTemplate(), tokenSafe);
     }
 
-    SpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
+    TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
         this.applicationConfiguration = applicationConfiguration;
         this.clientConfiguration = clientConfiguration;
         this.tokenSafe = tokenSafe;
@@ -45,7 +45,7 @@ public class SpringRestClient implements SpringClient {
 
     @Override
     public boolean sendSpan(String accountId, String spaceKey, Span span) {
-        return this.sendSpans(accountId, spaceKey, Collections.singletonList(span));
+        return this.sendSpans(accountId, spaceKey, Arrays.asList(span));
     }
 
     public boolean sendSpans(List<Span> spans) {
@@ -53,10 +53,18 @@ public class SpringRestClient implements SpringClient {
     }
 
     @Override
-    public boolean sendSpans(String accountId, String spaceKey, List<Span> spans) {
+    public boolean sendSpans(String accountId, String spaceKey, List<Span> spanList) {
         if (!clientConfiguration.isActivated()) {
             return false;
         }
+
+        List<Span> spans = new ArrayList<>(spanList);
+        applyInterceptors(spans);
+
+        if (spans.isEmpty()) {
+            return false;
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + tokenSafe.getAuthHeader());
@@ -65,6 +73,20 @@ public class SpringRestClient implements SpringClient {
         HttpEntity<List<Span>> requestEntity = new HttpEntity<>(spans, headers);
         ResponseEntity<Void> exchange = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, requestEntity, Void.class);
         return !exchange.getStatusCode().is4xxClientError() && !exchange.getStatusCode().is5xxServerError();
+    }
+
+    private void applyInterceptors(List<Span> spans) {
+        spans.removeIf(span -> !applyInterceptors(span));
+    }
+
+    private boolean applyInterceptors(Span span) {
+        for (TrasierSpanInterceptor spanInterceptor : this.spanInterceptors) {
+            spanInterceptor.intercept(span);
+            if (span.isCancel()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

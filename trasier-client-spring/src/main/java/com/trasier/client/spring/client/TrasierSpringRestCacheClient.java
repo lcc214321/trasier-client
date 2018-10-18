@@ -20,12 +20,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Primary
 @Component("trasierSpringCacheClient")
-public class SpringRestCacheClient implements SpringClient, Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpringRestCacheClient.class);
+public class TrasierSpringRestCacheClient implements TrasierSpringClient, Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrasierSpringRestCacheClient.class);
 
     private final TrasierClientConfiguration clientConfig;
     private final TrasierSpringConfiguration springConfiguration;
-    private final SpringRestClient springRestClient;
+    private final TrasierSpringRestClient springRestClient;
     private final AtomicInteger countFullQueueErrors = new AtomicInteger();
 
     private LinkedBlockingDeque<Span> spanQueue;
@@ -34,7 +34,7 @@ public class SpringRestCacheClient implements SpringClient, Runnable {
     private ThreadPoolExecutor executor;
 
     @Autowired
-    public SpringRestCacheClient(TrasierClientConfiguration clientConfig, TrasierSpringConfiguration springConfiguration, SpringRestClient springRestClient) {
+    public TrasierSpringRestCacheClient(TrasierClientConfiguration clientConfig, TrasierSpringConfiguration springConfiguration, TrasierSpringRestClient springRestClient) {
         this.clientConfig = clientConfig;
         this.springConfiguration = springConfiguration;
         this.springRestClient = springRestClient;

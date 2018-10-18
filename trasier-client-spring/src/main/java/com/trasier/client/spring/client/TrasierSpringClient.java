@@ -5,7 +5,7 @@ import com.trasier.client.api.Span;
 
 import java.util.List;
 
-public interface SpringClient extends Client {
+public interface TrasierSpringClient extends Client {
     boolean sendSpan(Span span);
     boolean sendSpans(List<Span> spans);
 }
