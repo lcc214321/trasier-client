@@ -1,6 +1,12 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.opentracing.TrasierTracer;
+import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
+import io.opentracing.contrib.web.servlet.filter.TracingFilter;
+import io.opentracing.util.GlobalTracer;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -13,12 +19,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TrasierBufferFilter extends GenericFilterBean {
     private static final String SKIP_PATTERN = TrasierBufferFilter.class.getName() + ".skipPattern";
 
     @Autowired
-    private volatile TrasierClientConfiguration configuration;
+    private TrasierClientConfiguration configuration;
 
     public TrasierBufferFilter() {
     }
@@ -28,11 +36,16 @@ public class TrasierBufferFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    protected void initBeanWrapper(BeanWrapper bw) throws BeansException {
         if (needsInitialization()) {
             initialize();
         }
 
+        super.initBeanWrapper(bw);
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         if (!configuration.isActivated()) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
@@ -52,12 +65,15 @@ public class TrasierBufferFilter extends GenericFilterBean {
         return servletRequest instanceof CachedServletResponseWrapper ? (CachedServletRequestWrapper) servletRequest : CachedServletRequestWrapper.create(servletRequest);
     }
 
-    // TODO optimize this
     private synchronized void initialize() {
-        if (needsInitialization()) {
-            WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-            configuration = webApplicationContext.getBean(TrasierClientConfiguration.class);
-        }
+        WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+        TrasierClientConfiguration configuration = webApplicationContext.getBean(TrasierClientConfiguration.class);
+        TrasierTracer tracer = webApplicationContext.getBean(TrasierTracer.class);
+        GlobalTracer.register(tracer);
+        List<ServletFilterSpanDecorator> decoratorList = new ArrayList<>();
+        decoratorList.add(ServletFilterSpanDecorator.STANDARD_TAGS);
+        decoratorList.add(new TrasierServletFilterSpanDecorator(configuration));
+        getServletContext().setAttribute(TracingFilter.SPAN_DECORATORS, decoratorList);
     }
 
     private boolean needsInitialization() {
