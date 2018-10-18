@@ -1,5 +1,6 @@
 package com.trasier.opentracing.spring.interceptor;
 
+import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.opentracing.spring.interceptor.rest.TrasierClientRequestInterceptor;
 import com.trasier.opentracing.spring.interceptor.servlet.TrasierServletFilterSpanDecorator;
 import io.opentracing.Tracer;
@@ -24,6 +25,9 @@ public class InterceptorWebConfiguration {
     @Autowired
     private Tracer tracer;
 
+    @Autowired
+    private TrasierClientConfiguration configuration;
+
     @Autowired(required = false)
     private Set<RestTemplate> restTemplates;
 
@@ -32,10 +36,10 @@ public class InterceptorWebConfiguration {
 
     @Bean
     public TrasierServletFilterSpanDecorator trasierServletFilterSpanDecorator() {
-        return new TrasierServletFilterSpanDecorator();
+        return new TrasierServletFilterSpanDecorator(configuration);
     }
 
-    @PostConstruct()
+    @PostConstruct
     public void init() {
         if (restTemplates != null) {
             restTemplates.forEach(this::registerTracingInterceptor);
