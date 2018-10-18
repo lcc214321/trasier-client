@@ -1,8 +1,13 @@
 package com.trasier.client.opentracing;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import com.trasier.client.api.Client;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
+
 import io.opentracing.Scope;
 import io.opentracing.ScopeManager;
 import io.opentracing.Span;
@@ -10,10 +15,6 @@ import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class TrasierTracer implements Tracer {
     private Client client;
