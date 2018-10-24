@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class TrasierBufferFilter extends GenericFilterBean {
-    private static final String SKIP_PATTERN = TrasierBufferFilter.class.getName() + ".skipPattern";
 
     @Autowired
     private TrasierClientConfiguration configuration;

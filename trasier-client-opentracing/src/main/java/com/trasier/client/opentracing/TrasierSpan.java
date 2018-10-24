@@ -100,4 +100,19 @@ public class TrasierSpan implements Span {
     public com.trasier.client.api.Span unwrap() {
         return wrapped;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TrasierSpan that = (TrasierSpan) o;
+
+        return wrapped != null ? wrapped.equals(that.wrapped) : that.wrapped == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return wrapped != null ? wrapped.hashCode() : 0;
+    }
 }
