@@ -19,7 +19,6 @@ import org.w3c.dom.Node;
 
 import javax.xml.transform.dom.DOMSource;
 import java.io.IOException;
-import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -38,8 +37,7 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
 
         TransportContext context = TransportContextHolder.getTransportContext();
         if (context.getConnection() instanceof HttpUrlConnection) {
-            HttpUrlConnection httpConnection = (HttpUrlConnection) context.getConnection();
-            URLConnection connection = httpConnection.getConnection();
+            final HttpUrlConnection httpConnection = (HttpUrlConnection) context.getConnection();
             tracer.inject(scope.span().context(), Format.Builtin.HTTP_HEADERS, new TextMap() {
                 @Override
                 public Iterator<Map.Entry<String, String>> iterator() {
