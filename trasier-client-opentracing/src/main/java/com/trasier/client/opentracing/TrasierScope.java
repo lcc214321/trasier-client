@@ -19,11 +19,26 @@ public class TrasierScope implements Scope {
         if (finishSpanOnClose) {
             span.finish();
         }
-        scopeManager.deactivate(span);
+        scopeManager.deactivate(this);
     }
 
     @Override
     public Span span() {
         return span;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TrasierScope that = (TrasierScope) o;
+
+        return span != null ? span.equals(that.span) : that.span == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return span != null ? span.hashCode() : 0;
     }
 }

@@ -22,7 +22,7 @@ public class TrasierScopeManager implements ScopeManager {
         return scopes.get().peekFirst();
     }
 
-    public void deactivate(TrasierSpan span) {
-        scopes.get().remove(span);
+    public void deactivate(TrasierScope scope) {
+        scopes.get().remove(scope);
     }
 }

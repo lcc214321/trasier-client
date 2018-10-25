@@ -8,7 +8,6 @@ import com.trasier.client.opentracing.TrasierSpan;
 import io.opentracing.Span;
 import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletRequest;
@@ -22,12 +21,15 @@ import java.util.TreeMap;
 public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecorator {
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";
 
-    @Autowired
-    private volatile TrasierClientConfiguration configuration;
+    private final TrasierClientConfiguration configuration;
+
+    public TrasierServletFilterSpanDecorator(TrasierClientConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
     @Override
     public void onRequest(HttpServletRequest httpServletRequest, Span span) {
-        if(configuration.isActivated() && httpServletRequest instanceof CachedServletRequestWrapper) {
+        if (configuration.isActivated() && httpServletRequest instanceof CachedServletRequestWrapper) {
             TrasierSpan activeSpan = (TrasierSpan) span;
             com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
             String conversationId = trasierSpan.getConversationId();
@@ -41,7 +43,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     @Override
     public void onResponse(HttpServletRequest httpServletRequest, HttpServletResponse response, Span span) {
-        if(configuration.isActivated() && response instanceof CachedServletResponseWrapper) {
+        if (configuration.isActivated() && response instanceof CachedServletResponseWrapper) {
             MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
             handleResponse((CachedServletResponseWrapper) response, ((TrasierSpan) span).unwrap());
         }
@@ -116,9 +118,9 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         currentSpan.setOutgoingHeader(responseHeaders);
         String responseBody = new String(response.getContentAsByteArray());
         currentSpan.setOutgoingData(responseBody);
-        if(responseBody.startsWith("<")) {
+        if (responseBody.startsWith("<")) {
             currentSpan.setOutgoingContentType(ContentType.XML);
-        } else if(responseBody.startsWith("{") || responseBody.startsWith("[")) {
+        } else if (responseBody.startsWith("{") || responseBody.startsWith("[")) {
             currentSpan.setOutgoingContentType(ContentType.JSON);
         } else if (!responseBody.isEmpty()) {
             currentSpan.setOutgoingContentType(ContentType.TEXT);
