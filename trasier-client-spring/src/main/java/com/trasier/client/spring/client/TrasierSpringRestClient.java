@@ -6,13 +6,18 @@ import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.interceptor.TrasierSpanInterceptor;
 import com.trasier.client.spring.auth.OAuthTokenSafe;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +44,11 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
         this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
+    @PostConstruct
+    public void init() {
+        spanInterceptors.add(new TrasierCompressSpanInterceptor());
+    }
+
     public boolean sendSpan(Span span) {
         return this.sendSpan(clientConfiguration.getAccountId(), clientConfiguration.getSpaceKey(), span);
     }
@@ -59,10 +69,11 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
         }
 
         List<Span> spans = new ArrayList<>(spanList);
-        applyInterceptors(spans);
 
         if (spans.isEmpty()) {
             return false;
+        } else {
+            applyInterceptors(spans);
         }
 
         HttpHeaders headers = new HttpHeaders();
