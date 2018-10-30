@@ -3,18 +3,21 @@ package com.trasier.client.opentracing;
 import io.opentracing.SpanContext;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class TrasierSpanContext implements SpanContext {
     private final String conversationId;
     private final String traceId;
     private final String spanId;
+    private final boolean sample;
     private final Map<String, String> baggageItems;
 
-    public TrasierSpanContext(String conversationId, String traceId, String spanId, Map<String, String> baggageItems) {
+    public TrasierSpanContext(String conversationId, String traceId, String spanId, boolean sample, Map<String, String> baggageItems) {
         this.conversationId = conversationId;
         this.traceId = traceId;
         this.spanId = spanId;
         this.baggageItems = baggageItems;
+        this.sample = sample;
     }
 
     public Map<String, String> getBaggageItems() {
@@ -38,24 +41,23 @@ public class TrasierSpanContext implements SpanContext {
         return spanId;
     }
 
+    public boolean isSample() {
+        return sample;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         TrasierSpanContext that = (TrasierSpanContext) o;
-
-        if (conversationId != null ? !conversationId.equals(that.conversationId) : that.conversationId != null)
-            return false;
-        if (traceId != null ? !traceId.equals(that.traceId) : that.traceId != null) return false;
-        return spanId != null ? spanId.equals(that.spanId) : that.spanId == null;
+        return sample == that.sample &&
+                Objects.equals(conversationId, that.conversationId) &&
+                Objects.equals(traceId, that.traceId) &&
+                Objects.equals(spanId, that.spanId);
     }
 
     @Override
     public int hashCode() {
-        int result = conversationId != null ? conversationId.hashCode() : 0;
-        result = 31 * result + (traceId != null ? traceId.hashCode() : 0);
-        result = 31 * result + (spanId != null ? spanId.hashCode() : 0);
-        return result;
+        return Objects.hash(conversationId, traceId, spanId, sample);
     }
 }

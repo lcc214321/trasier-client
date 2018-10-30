@@ -22,7 +22,7 @@ public class TrasierSpan implements Span {
 
     @Override
     public SpanContext context() {
-        return new TrasierSpanContext(wrapped.getConversationId(), wrapped.getTraceId(), wrapped.getId(), baggageItems);
+        return new TrasierSpanContext(wrapped.getConversationId(), wrapped.getTraceId(), wrapped.getId(), !wrapped.isCancel(), baggageItems);
     }
 
     @Override

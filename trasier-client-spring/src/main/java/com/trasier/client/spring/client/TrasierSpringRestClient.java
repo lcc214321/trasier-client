@@ -76,17 +76,16 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
     }
 
     private void applyInterceptors(List<Span> spans) {
-        spans.removeIf(span -> !applyInterceptors(span));
+        spans.removeIf(span ->  {
+            applyInterceptors(span);
+            return span.isCancel();
+        });
     }
 
-    private boolean applyInterceptors(Span span) {
+    private void applyInterceptors(Span span) {
         for (TrasierSpanInterceptor spanInterceptor : this.spanInterceptors) {
             spanInterceptor.intercept(span);
-            if (span.isCancel()) {
-                return false;
-            }
         }
-        return true;
     }
 
     @Override
