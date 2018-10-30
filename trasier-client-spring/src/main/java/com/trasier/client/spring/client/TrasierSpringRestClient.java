@@ -103,4 +103,5 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
     public void close() {
         // do nothing
     }
+
 }
