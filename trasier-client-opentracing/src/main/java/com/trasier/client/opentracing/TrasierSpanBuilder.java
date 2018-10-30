@@ -3,11 +3,7 @@ package com.trasier.client.opentracing;
 import com.trasier.client.api.Client;
 import com.trasier.client.api.Endpoint;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import io.opentracing.References;
-import io.opentracing.Scope;
-import io.opentracing.Span;
-import io.opentracing.SpanContext;
-import io.opentracing.Tracer;
+import io.opentracing.*;
 import io.opentracing.tag.Tags;
 
 import java.util.HashMap;
@@ -23,6 +19,7 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
     private String spanId;
     private String operationName;
     private long startTimestamp;
+    private boolean cancel;
     private boolean ignoreActiveSpan;
     private TrasierSpanContext reference;
     private Map<String, String> tags;
@@ -63,6 +60,7 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
             reference = (TrasierSpanContext) context;
             conversationId = reference.getConversationId();
             traceId = reference.getTraceId();
+            cancel = !reference.isSample();
             baggageItems = reference.getBaggageItems();
         }
 
@@ -139,6 +137,7 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
         wrappedBuilder.incomingEndpoint(new Endpoint(configuration.getSystemName()));
         wrappedBuilder.outgoingEndpoint(new Endpoint(configuration.getSystemName()));
         wrappedBuilder.startTimestamp(startTimestamp);
+        wrappedBuilder.cancel(cancel);
         if(reference != null) {
             wrappedBuilder.parentId(reference.getSpanId());
         }

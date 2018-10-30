@@ -1,5 +1,6 @@
 package com.trasier.opentracing.spring.interceptor;
 
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
 import com.trasier.opentracing.spring.interceptor.ws.TracingClientInterceptor;
 import com.trasier.opentracing.spring.interceptor.ws.TrasierClientInterceptor;
 import io.opentracing.Tracer;
@@ -28,6 +29,9 @@ public class InterceptorWSConfiguration {
     @Autowired(required = false)
     private Set<WebServiceGatewaySupport> webServiceGatewaySupports;
 
+    @Autowired(required = false)
+    private List<TrasierSamplingInterceptor> samplingFilter;
+
     @Bean
     public TrasierClientInterceptor trasierClientInterceptor(Tracer tracer) {
         return new TrasierClientInterceptor(tracer);
@@ -53,7 +57,7 @@ public class InterceptorWSConfiguration {
                 interceptors.addAll(Arrays.asList(existingInterceptors));
             }
             if (interceptors.stream().noneMatch(i -> i instanceof TracingClientInterceptor)) {
-                interceptors.add(new TracingClientInterceptor(tracer));
+                interceptors.add(new TracingClientInterceptor(tracer, samplingFilter));
             }
             if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientInterceptor)) {
                 interceptors.add(new TrasierClientInterceptor(tracer));
