@@ -6,6 +6,7 @@ import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.opentracing.TrasierScopeManager;
 import com.trasier.client.opentracing.TrasierTracer;
 import com.trasier.client.spring.TrasierSpringConfiguration;
+import com.trasier.client.spring.spancontrol.TrasierSampleByOperationConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,5 +32,12 @@ public class TrasierOpentracingConfiguration {
     public TrasierTracer trasierTracer(Client client, TrasierClientConfiguration configuration) {
         return new TrasierTracer(client, configuration, new TrasierScopeManager());
     }
+
+    @Bean
+    @ConfigurationProperties(prefix = "trasier.client.interceptor.sampling.operation")
+    public TrasierSampleByOperationConfiguration samplingFilterConfiguration() {
+        return new TrasierSampleByOperationConfiguration();
+    }
+
 
 }

@@ -13,13 +13,11 @@ import org.springframework.util.StringUtils;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecorator {
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";
+    private static final List<String> USER_AGENTS = Arrays.asList("mozilla", "chrome", "opera", "explorer", "safari");
 
     private final TrasierClientConfiguration configuration;
 
@@ -34,9 +32,6 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
             String conversationId = trasierSpan.getConversationId();
             MDC.put(TrasierConstants.HEADER_CONVERSATION_ID, conversationId);
-
-            enhanceIncomingEndpoint(trasierSpan.getIncomingEndpoint(), httpServletRequest);
-            enhanceOutgoingEndpoint(trasierSpan.getOutgoingEndpoint(), httpServletRequest);
             handleRequest((CachedServletRequestWrapper) httpServletRequest, trasierSpan);
         }
     }
@@ -59,8 +54,8 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         //TODO
     }
 
-    private void enhanceIncomingEndpoint(Endpoint incomingEndpoint, ServletRequest request) {
-        incomingEndpoint.setName(extractIncomingEndpointName(request));
+    private void enhanceIncomingEndpoint(Endpoint incomingEndpoint, ServletRequest request, Map<String, String> requestHeaders) {
+        incomingEndpoint.setName(extractIncomingEndpointName(requestHeaders, request));
         incomingEndpoint.setHostname(request.getRemoteHost());
         incomingEndpoint.setIpAddress(request.getRemoteAddr());
         incomingEndpoint.setPort("" + request.getRemotePort());
@@ -89,10 +84,22 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         } else {
             currentSpan.setIncomingContentType(null);
         }
+        enhanceIncomingEndpoint(currentSpan.getIncomingEndpoint(), request, requestHeaders);
+        enhanceOutgoingEndpoint(currentSpan.getOutgoingEndpoint(), request);
     }
 
-    protected String extractIncomingEndpointName(ServletRequest servletRequest) {
+    protected String extractIncomingEndpointName(Map<String, String> requestHeaders, ServletRequest servletRequest) {
         String incomingEndpointName = ((HttpServletRequest) servletRequest).getHeader(TrasierConstants.HEADER_INCOMING_ENDPOINT_NAME);
+        if (StringUtils.isEmpty(incomingEndpointName)) {
+            String userAgent = requestHeaders.get("user-agent");
+            if (!StringUtils.isEmpty(userAgent)) {
+                for (String agent : USER_AGENTS) {
+                    if (userAgent.toLowerCase().contains(agent)) {
+                        return "Web Browser";
+                    }
+                }
+            }
+        }
         return StringUtils.isEmpty(incomingEndpointName) ? TrasierConstants.UNKNOWN_IN : incomingEndpointName;
     }
 

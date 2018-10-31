@@ -1,20 +1,15 @@
 package com.trasier.client.opentracing;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import com.trasier.client.api.Client;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-
-import io.opentracing.Scope;
-import io.opentracing.ScopeManager;
-import io.opentracing.Span;
-import io.opentracing.SpanContext;
-import io.opentracing.Tracer;
+import io.opentracing.*;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class TrasierTracer implements Tracer {
     private Client client;
@@ -50,6 +45,7 @@ public class TrasierTracer implements Tracer {
             ((TextMap) context).put(TrasierConstants.HEADER_CONVERSATION_ID, trasierSpanContext.getConversationId());
             ((TextMap) context).put(TrasierConstants.HEADER_TRACE_ID, trasierSpanContext.getTraceId());
             ((TextMap) context).put(TrasierConstants.HEADER_SPAN_ID, trasierSpanContext.getSpanId());
+            ((TextMap) context).put(TrasierConstants.HEADER_CONVERSATION_SAMPLE, Boolean.toString(trasierSpanContext.isSample()));
             ((TextMap) context).put(TrasierConstants.HEADER_INCOMING_ENDPOINT_NAME, configuration.getSystemName());
         }
     }
@@ -60,6 +56,7 @@ public class TrasierTracer implements Tracer {
             String conversationId = null;
             String traceId = null;
             String spanId = null;
+            Boolean sample = Boolean.TRUE;
 
             Map<String, String> baggageItems = new HashMap<>();
             for (Map.Entry<String, String> entry : ((TextMap) context)) {
@@ -69,6 +66,8 @@ public class TrasierTracer implements Tracer {
                     traceId = entry.getValue();
                 } else if (TrasierConstants.HEADER_SPAN_ID.equalsIgnoreCase(entry.getKey())) {
                     spanId = entry.getValue();
+                } else if (TrasierConstants.HEADER_CONVERSATION_SAMPLE.equalsIgnoreCase(entry.getKey())) {
+                    sample = Boolean.valueOf(entry.getValue());
                 }
             }
 
@@ -79,7 +78,7 @@ public class TrasierTracer implements Tracer {
                 if (spanId == null) {
                     spanId = UUID.randomUUID().toString();
                 }
-                TrasierSpanContext spanContext = new TrasierSpanContext(conversationId, traceId, spanId, baggageItems);
+                TrasierSpanContext spanContext = new TrasierSpanContext(conversationId, traceId, spanId, sample, baggageItems);
                 return spanContext;
             }
         }

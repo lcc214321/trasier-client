@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>trasier-client</artifactId>
 		<groupId>com.trasier</groupId>
-		<version>0.12.3</version>
+		<version>0.12.4</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -43,6 +43,10 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>${commons-httpclient.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.trasier</groupId>
+			<artifactId>trasier-client-spring</artifactId>
 		</dependency>
 	</dependencies>
 </project>

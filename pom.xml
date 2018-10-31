@@ -4,7 +4,7 @@
 
 	<groupId>com.trasier</groupId>
 	<artifactId>trasier-client</artifactId>
-	<version>0.12.3</version>
+	<version>0.12.4</version>
 	<packaging>pom</packaging>
 
 	<name>trasier-client</name>
@@ -39,6 +39,7 @@
 		<spring-boot.version>1.5.12.RELEASE</spring-boot.version>
 		<spring-ws.version>2.4.3.RELEASE</spring-ws.version>
 		<spring.version>5.0.8.RELEASE</spring.version>
+		<snappy.version>0.4</snappy.version>
 		<jackson-databind.version>2.9.5</jackson-databind.version>
 		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
 	</properties>
@@ -166,6 +167,12 @@
 				<groupId>io.opentracing</groupId>
 				<artifactId>opentracing-util</artifactId>
 				<version>${opentracing.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.iq80.snappy</groupId>
+				<artifactId>snappy</artifactId>
+				<version>${snappy.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

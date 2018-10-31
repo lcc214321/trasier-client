@@ -1,5 +1,9 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
+import com.trasier.client.api.Span;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.opentracing.TrasierScope;
+import com.trasier.client.opentracing.TrasierSpan;
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
@@ -19,15 +23,17 @@ import org.w3c.dom.Node;
 
 import javax.xml.transform.dom.DOMSource;
 import java.io.IOException;
-import java.net.URLConnection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class TracingClientInterceptor extends ClientInterceptorAdapter {
     private final Tracer tracer;
+    private final List<TrasierSamplingInterceptor> samplingInterceptors;
 
-    public TracingClientInterceptor(Tracer tracer) {
+    public TracingClientInterceptor(Tracer tracer, List<TrasierSamplingInterceptor> samplingInterceptors) {
         this.tracer = tracer;
+        this.samplingInterceptors = samplingInterceptors;
     }
 
     @Override
@@ -36,10 +42,18 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                 .startActive(true);
 
+        if (samplingInterceptors != null && scope instanceof TrasierScope) {
+            Span unwrap = ((TrasierSpan) scope.span()).unwrap();
+            for (TrasierSamplingInterceptor samplingInterceptor : samplingInterceptors) {
+                if (!samplingInterceptor.shouldSample(unwrap)) {
+                    unwrap.setCancel(true);
+                }
+            }
+        }
+
         TransportContext context = TransportContextHolder.getTransportContext();
         if (context.getConnection() instanceof HttpUrlConnection) {
-            HttpUrlConnection httpConnection = (HttpUrlConnection) context.getConnection();
-            URLConnection connection = httpConnection.getConnection();
+            final HttpUrlConnection httpConnection = (HttpUrlConnection) context.getConnection();
             tracer.inject(scope.span().context(), Format.Builtin.HTTP_HEADERS, new TextMap() {
                 @Override
                 public Iterator<Map.Entry<String, String>> iterator() {
