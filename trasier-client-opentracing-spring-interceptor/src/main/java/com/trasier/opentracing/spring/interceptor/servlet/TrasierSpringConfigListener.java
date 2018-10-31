@@ -2,6 +2,7 @@ package com.trasier.opentracing.spring.interceptor.servlet;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.opentracing.TrasierTracer;
+import io.opentracing.contrib.spring.web.starter.WebTracingProperties;
 import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
 import io.opentracing.contrib.web.servlet.filter.TracingFilter;
 import io.opentracing.util.GlobalTracer;
@@ -22,14 +23,21 @@ public class TrasierSpringConfigListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
         WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(event.getServletContext());
 
-        TrasierTracer tracer = webApplicationContext.getBean(TrasierTracer.class);
-        GlobalTracer.register(tracer);
-
         TrasierClientConfiguration configuration = webApplicationContext.getBean(TrasierClientConfiguration.class);
-        List<ServletFilterSpanDecorator> decoratorList = new ArrayList<>();
-        decoratorList.add(ServletFilterSpanDecorator.STANDARD_TAGS);
-        decoratorList.add(new TrasierServletFilterSpanDecorator(configuration));
-        event.getServletContext().setAttribute(TracingFilter.SPAN_DECORATORS, decoratorList);
+        if (configuration != null && configuration.isActivated()) {
+            TrasierTracer tracer = webApplicationContext.getBean(TrasierTracer.class);
+            GlobalTracer.register(tracer);
+
+            List<ServletFilterSpanDecorator> decoratorList = new ArrayList<>();
+            decoratorList.add(ServletFilterSpanDecorator.STANDARD_TAGS);
+            decoratorList.add(new TrasierServletFilterSpanDecorator(configuration));
+            event.getServletContext().setAttribute(TracingFilter.SPAN_DECORATORS, decoratorList);
+        } else {
+            WebTracingProperties tracingConfiguration = webApplicationContext.getBean(WebTracingProperties.class);
+            if (tracingConfiguration != null) {
+                tracingConfiguration.setEnabled(false);
+            }
+        }
     }
 
     @Override
