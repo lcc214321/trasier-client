@@ -1,5 +1,6 @@
 package com.trasier.opentracing.spring.interceptor;
 
+import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.interceptor.TrasierSamplingInterceptor;
 import com.trasier.opentracing.spring.interceptor.ws.TracingClientInterceptor;
 import com.trasier.opentracing.spring.interceptor.ws.TrasierClientInterceptor;
@@ -23,6 +24,9 @@ public class InterceptorWSConfiguration {
     @Autowired
     private Tracer tracer;
 
+    @Autowired
+    private TrasierClientConfiguration configuration;
+
     @Autowired(required = false)
     private Set<WebServiceTemplate> webServiceTemplates;
 
@@ -37,15 +41,17 @@ public class InterceptorWSConfiguration {
         return new TrasierClientInterceptor(tracer);
     }
 
-    @PostConstruct()
+    @PostConstruct
     public void init() {
-        if (webServiceTemplates != null) {
-            webServiceTemplates.forEach(this::registerTracingInterceptor);
-        }
-        if (webServiceGatewaySupports != null) {
-            webServiceGatewaySupports.stream()
-                    .map(WebServiceGatewaySupport::getWebServiceTemplate)
-                    .forEach(this::registerTracingInterceptor);
+        if (configuration.isActivated()) {
+            if (webServiceTemplates != null) {
+                webServiceTemplates.forEach(this::registerTracingInterceptor);
+            }
+            if (webServiceGatewaySupports != null) {
+                webServiceGatewaySupports.stream()
+                        .map(WebServiceGatewaySupport::getWebServiceTemplate)
+                        .forEach(this::registerTracingInterceptor);
+            }
         }
     }
 

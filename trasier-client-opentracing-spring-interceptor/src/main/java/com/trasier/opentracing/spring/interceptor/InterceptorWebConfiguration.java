@@ -41,7 +41,7 @@ public class InterceptorWebConfiguration {
 
     @PostConstruct
     public void init() {
-        if (restTemplates != null) {
+        if (configuration.isActivated() && restTemplates != null) {
             restTemplates.forEach(this::registerTracingInterceptor);
         }
     }
@@ -72,4 +72,5 @@ public class InterceptorWebConfiguration {
     private boolean notYetRegistered(Stream<?> interceptors, Class<?> clazz) {
         return (interceptors).noneMatch(interceptor -> clazz.isAssignableFrom(interceptor.getClass()));
     }
+
 }
