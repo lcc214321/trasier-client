@@ -52,4 +52,5 @@ public class ClientPropertyConfiguration implements ClientConfiguration {
     public boolean isActivated() {
         return activated;
     }
+
 }
