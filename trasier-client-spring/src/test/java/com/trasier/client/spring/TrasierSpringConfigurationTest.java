@@ -1,18 +1,10 @@
 package com.trasier.client.spring;
 
 import org.junit.Test;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TrasierSpringConfigurationTest {
-    @Test
-    public void propertySourcesPlaceholderConfigurer() {
-        PropertySourcesPlaceholderConfigurer configurer = TrasierSpringConfiguration.propertySourcesPlaceholderConfigurer();
-        assertNotNull(configurer);
-    }
-
     @Test
     public void getterSetterTest() {
         TrasierSpringConfiguration sut = new TrasierSpringConfiguration();
