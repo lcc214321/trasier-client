@@ -27,15 +27,19 @@ public class InterceptorFeignConfiguration {
 
     @Bean
     public FeignSpanDecorator trasierServletFilterSpanDecorator() {
-        return new TrasierFeignSpanDecorator(configuration, tracer);
+        return createSpanDecorator();
     }
 
     @Bean
     public BeanPostProcessor trasierFeignTracingAutoConfiguration(BeanFactory beanFactory) {
         List<FeignSpanDecorator> spanDecorators = new ArrayList<>();
         spanDecorators.add(new FeignSpanDecorator.StandardTags());
-        spanDecorators.add(trasierServletFilterSpanDecorator());
+        spanDecorators.add(createSpanDecorator());
         return new TrasierFeignContextBeanPostProcessor(tracer, beanFactory, spanDecorators);
+    }
+
+    private TrasierFeignSpanDecorator createSpanDecorator() {
+        return new TrasierFeignSpanDecorator(configuration, tracer);
     }
 
 }
