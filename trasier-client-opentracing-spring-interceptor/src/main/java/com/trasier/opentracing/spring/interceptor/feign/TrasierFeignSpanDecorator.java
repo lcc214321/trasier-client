@@ -9,7 +9,9 @@ import io.opentracing.Span;
 import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StreamUtils;
 
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -49,9 +51,8 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 try {
                     trasierSpan.setOutgoingHeader(toSingleValueMap(response.headers()));
-                    //TODO
-//                    String responseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
-//                    trasierSpan.setOutgoingData(responseBody);
+                    String responseBody = StreamUtils.copyToString(response.body().asInputStream(), Charset.defaultCharset());
+                    trasierSpan.setOutgoingData(responseBody);
                 } catch (Exception e) {
                     LOGGER.error("Error while logging response", e);
                 }
