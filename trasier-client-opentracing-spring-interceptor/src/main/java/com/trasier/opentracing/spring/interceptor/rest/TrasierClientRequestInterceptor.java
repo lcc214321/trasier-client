@@ -12,6 +12,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -49,8 +50,10 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 try {
                     trasierSpan.setOutgoingHeader(response.getHeaders().toSingleValueMap());
-                    String responseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
-                    trasierSpan.setOutgoingData(responseBody);
+                    if (response.getBody() instanceof ByteArrayInputStream) {
+                        String responseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
+                        trasierSpan.setOutgoingData(responseBody);
+                    }
                 } catch (Exception e) {
                     LOGGER.error("Error while logging response", e);
                 }
