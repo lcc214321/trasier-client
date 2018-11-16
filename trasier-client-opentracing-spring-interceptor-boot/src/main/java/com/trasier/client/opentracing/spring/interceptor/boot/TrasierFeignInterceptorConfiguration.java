@@ -1,7 +1,8 @@
 package com.trasier.client.opentracing.spring.interceptor.boot;
 
-import com.trasier.client.api.Client;
 import com.trasier.opentracing.spring.interceptor.InterceptorFeignConfiguration;
+import feign.Request;
+import feign.opentracing.FeignSpanDecorator;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.spring.cloud.feign.FeignTracingAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -13,9 +14,8 @@ import org.springframework.cloud.netflix.feign.FeignAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-
 @Configuration
-@ConditionalOnClass(Client.class)
+@ConditionalOnClass({Request.class, FeignSpanDecorator.class})
 @ConditionalOnBean(Tracer.class)
 @AutoConfigureAfter(FeignTracingAutoConfiguration.class)
 @AutoConfigureBefore(FeignAutoConfiguration.class)
