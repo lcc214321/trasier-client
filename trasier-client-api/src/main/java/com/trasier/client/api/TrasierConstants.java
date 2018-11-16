@@ -9,4 +9,7 @@ public interface TrasierConstants {
 
     String UNKNOWN_IN = "UNKNOWN_IN";
     String UNKNOWN_OUT = "UNKNOWN_OUT";
+
+    String STATE_OK = "OK";
+    String STATE_ERROR = "ERROR";
 }
