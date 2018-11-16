@@ -92,7 +92,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
         TrasierSpan span = (TrasierSpan) tracer.activeSpan();
         if (span != null) {
             Span trasierSpan = span.unwrap();
-            trasierSpan.setStatus("ERROR");
+            trasierSpan.setStatus(TrasierConstants.STATE_ERROR);
         }
 
         return super.handleFault(messageContext);
@@ -108,11 +108,11 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
             if (e != null) {
                 StringWriter sw = new StringWriter();
                 e.printStackTrace(new PrintWriter(sw));
-                trasierSpan.setStatus("ERROR");
+                trasierSpan.setStatus(TrasierConstants.STATE_ERROR);
                 trasierSpan.setOutgoingContentType(ContentType.TEXT);
                 trasierSpan.setOutgoingData(sw.toString());
             } else {
-                trasierSpan.setStatus("OK");
+                trasierSpan.setStatus(TrasierConstants.STATE_OK);
             }
         }
 
