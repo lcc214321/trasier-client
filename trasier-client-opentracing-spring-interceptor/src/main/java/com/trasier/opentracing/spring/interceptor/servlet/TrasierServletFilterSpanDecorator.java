@@ -5,6 +5,8 @@ import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.opentracing.TrasierSpan;
+import com.trasier.client.util.ContentTypeResolver;
+import com.trasier.client.util.ExceptionUtils;
 import io.opentracing.Span;
 import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
 import org.slf4j.MDC;
@@ -45,27 +47,29 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     }
 
     @Override
-    public void onError(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Throwable exception, Span span) {
-        //TODO
+    public void onError(HttpServletRequest httpServletRequest, HttpServletResponse response, Throwable exception, Span span) {
+        if (configuration.isActivated() && response instanceof CachedServletResponseWrapper) {
+            MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
+            com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
+            trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
+            trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
+            trasierSpan.setOutgoingHeader(getResponseHeaders(response));
+            trasierSpan.setOutgoingData(ExceptionUtils.getString(exception));
+            trasierSpan.setOutgoingContentType(ContentType.TEXT);
+        }
     }
 
     @Override
-    public void onTimeout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, long timeout, Span span) {
-        //TODO
-    }
-
-    private void enhanceIncomingEndpoint(Endpoint incomingEndpoint, ServletRequest request, Map<String, String> requestHeaders) {
-        incomingEndpoint.setName(extractIncomingEndpointName(requestHeaders, request));
-        incomingEndpoint.setHostname(request.getRemoteHost());
-        incomingEndpoint.setIpAddress(request.getRemoteAddr());
-        incomingEndpoint.setPort("" + request.getRemotePort());
-    }
-
-    private void enhanceOutgoingEndpoint(Endpoint outgoingEndpoint, ServletRequest request) {
-        outgoingEndpoint.setName(configuration.getSystemName());
-        outgoingEndpoint.setHostname(request.getLocalName());
-        outgoingEndpoint.setIpAddress(request.getLocalAddr());
-        outgoingEndpoint.setPort("" + request.getLocalPort());
+    public void onTimeout(HttpServletRequest httpServletRequest, HttpServletResponse response, long timeout, Span span) {
+        if (configuration.isActivated() && response instanceof CachedServletResponseWrapper) {
+            MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
+            com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
+            trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
+            trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
+            trasierSpan.setOutgoingHeader(getResponseHeaders(response));
+            trasierSpan.setOutgoingData("Execution timeout after " + timeout);
+            trasierSpan.setOutgoingContentType(ContentType.TEXT);
+        }
     }
 
     private void handleRequest(CachedServletRequestWrapper request, com.trasier.client.api.Span currentSpan) {
@@ -75,17 +79,20 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         String requestBody = new String(request.getContentAsByteArray());
         currentSpan.setIncomingData(requestBody);
         currentSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
-        if (requestBody.startsWith("<")) {
-            currentSpan.setIncomingContentType(ContentType.XML);
-        } else if (requestBody.startsWith("{") || requestBody.startsWith("[")) {
-            currentSpan.setIncomingContentType(ContentType.JSON);
-        } else if (!requestBody.isEmpty()) {
-            currentSpan.setIncomingContentType(ContentType.TEXT);
-        } else {
-            currentSpan.setIncomingContentType(null);
-        }
+        currentSpan.setIncomingContentType(ContentTypeResolver.resolveFromPayload(requestBody));
         enhanceIncomingEndpoint(currentSpan.getIncomingEndpoint(), request, requestHeaders);
         enhanceOutgoingEndpoint(currentSpan.getOutgoingEndpoint(), request);
+    }
+
+    private void enhanceIncomingEndpoint(Endpoint incomingEndpoint, ServletRequest request, Map<String, String> requestHeaders) {
+        incomingEndpoint.setName(extractIncomingEndpointName(requestHeaders, request));
+    }
+
+    private void enhanceOutgoingEndpoint(Endpoint outgoingEndpoint, ServletRequest request) {
+        outgoingEndpoint.setName(configuration.getSystemName());
+        outgoingEndpoint.setHostname(request.getLocalName());
+        outgoingEndpoint.setIpAddress(request.getLocalAddr());
+        outgoingEndpoint.setPort("" + request.getLocalPort());
     }
 
     protected String extractIncomingEndpointName(Map<String, String> requestHeaders, ServletRequest servletRequest) {
@@ -119,21 +126,10 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     private void handleResponse(CachedServletResponseWrapper response, com.trasier.client.api.Span currentSpan) {
         //TODO use Clock everywhere
         currentSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
-
-        //TODO handle headers und status
-        Map<String, String> responseHeaders = getResponseHeaders(response);
-        currentSpan.setOutgoingHeader(responseHeaders);
+        currentSpan.setOutgoingHeader(getResponseHeaders(response));
         String responseBody = new String(response.getContentAsByteArray());
         currentSpan.setOutgoingData(responseBody);
-        if (responseBody.startsWith("<")) {
-            currentSpan.setOutgoingContentType(ContentType.XML);
-        } else if (responseBody.startsWith("{") || responseBody.startsWith("[")) {
-            currentSpan.setOutgoingContentType(ContentType.JSON);
-        } else if (!responseBody.isEmpty()) {
-            currentSpan.setOutgoingContentType(ContentType.TEXT);
-        } else {
-            currentSpan.setOutgoingContentType(null);
-        }
+        currentSpan.setOutgoingContentType(ContentTypeResolver.resolveFromPayload(responseBody));
     }
 
     private Map<String, String> getResponseHeaders(HttpServletResponse response) {
@@ -145,4 +141,5 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         }
         return headerMap;
     }
+
 }

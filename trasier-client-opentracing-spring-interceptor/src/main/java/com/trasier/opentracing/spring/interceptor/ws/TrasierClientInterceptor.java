@@ -5,6 +5,7 @@ import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.Span;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.opentracing.TrasierSpan;
+import com.trasier.client.util.ExceptionUtils;
 import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +24,8 @@ import javax.xml.soap.MimeHeader;
 import javax.xml.transform.dom.DOMSource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -46,7 +47,13 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
             if (span != null) {
                 Span trasierSpan = span.unwrap();
                 String endpointName = extractOutgoingEndpointName(messageContext);
-                trasierSpan.setOutgoingEndpoint(new Endpoint(StringUtils.isEmpty(endpointName) ? TrasierConstants.UNKNOWN_OUT : endpointName));
+                Endpoint outgoingEndpoint = new Endpoint(StringUtils.isEmpty(endpointName) ? TrasierConstants.UNKNOWN_OUT : endpointName);
+                InetAddress inetAddress = getInetAddress();
+                if (inetAddress != null) {
+                    outgoingEndpoint.setHostname(inetAddress.getHostName());
+                    outgoingEndpoint.setIpAddress(inetAddress.getHostAddress());
+                }
+                trasierSpan.setOutgoingEndpoint(outgoingEndpoint);
                 try {
                     trasierSpan.setIncomingContentType(ContentType.XML);
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -92,7 +99,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
         TrasierSpan span = (TrasierSpan) tracer.activeSpan();
         if (span != null) {
             Span trasierSpan = span.unwrap();
-            trasierSpan.setStatus(TrasierConstants.STATE_ERROR);
+            trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
         }
 
         return super.handleFault(messageContext);
@@ -106,13 +113,11 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
 
             if (e != null) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                trasierSpan.setStatus(TrasierConstants.STATE_ERROR);
+                trasierSpan.setOutgoingData(ExceptionUtils.getString(e));
+                trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
                 trasierSpan.setOutgoingContentType(ContentType.TEXT);
-                trasierSpan.setOutgoingData(sw.toString());
             } else {
-                trasierSpan.setStatus(TrasierConstants.STATE_OK);
+                trasierSpan.setStatus(TrasierConstants.STATUS_OK);
             }
         }
 
@@ -153,6 +158,15 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
 
         }
         return result.toSingleValueMap();
+    }
+
+    private InetAddress getInetAddress() {
+        try {
+            return InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            // ignore
+        }
+        return null;
     }
 
 }

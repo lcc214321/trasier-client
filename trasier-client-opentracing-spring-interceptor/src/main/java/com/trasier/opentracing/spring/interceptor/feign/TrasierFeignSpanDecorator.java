@@ -4,6 +4,7 @@ import com.trasier.client.api.ContentType;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.opentracing.TrasierSpan;
+import com.trasier.client.util.ExceptionUtils;
 import com.trasier.opentracing.spring.interceptor.rest.TrasierClientRequestInterceptor;
 import feign.opentracing.FeignSpanDecorator;
 import io.opentracing.Span;
@@ -65,10 +66,11 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
         if (span instanceof TrasierSpan) {
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
-            trasierSpan.setStatus(TrasierConstants.STATE_ERROR);
+            trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
 
             if(e != null) {
-                //TODO
+                String exception = ExceptionUtils.getString(e);
+                trasierSpan.setOutgoingData(exception);
             }
         }
     }

@@ -26,7 +26,7 @@ public class InterceptorFeignConfiguration {
     private Tracer tracer;
 
     @Bean
-    public FeignSpanDecorator trasierServletFilterSpanDecorator() {
+    public FeignSpanDecorator trasierFeignSpanDecorator() {
         return createSpanDecorator();
     }
 
