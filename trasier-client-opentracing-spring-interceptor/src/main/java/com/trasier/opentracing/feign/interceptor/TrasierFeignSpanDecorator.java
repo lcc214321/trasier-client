@@ -1,4 +1,4 @@
-package com.trasier.opentracing.spring.interceptor.feign;
+package com.trasier.opentracing.feign.interceptor;
 
 import com.trasier.client.api.ContentType;
 import com.trasier.client.api.TrasierConstants;
@@ -51,7 +51,7 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 try {
                     trasierSpan.setOutgoingHeader(toSingleValueMap(response.headers()));
-                    //TODO
+                    // TODO
 //                    String responseBody = StreamUtils.copyToString(response.body().asInputStream(), Charset.defaultCharset());
 //                    trasierSpan.setOutgoingData(responseBody);
                 } catch (Exception e) {
