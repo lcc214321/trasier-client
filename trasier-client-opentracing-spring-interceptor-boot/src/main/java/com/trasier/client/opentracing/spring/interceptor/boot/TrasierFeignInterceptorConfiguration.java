@@ -1,6 +1,6 @@
 package com.trasier.client.opentracing.spring.interceptor.boot;
 
-import com.trasier.opentracing.spring.interceptor.InterceptorFeignConfiguration;
+import com.trasier.opentracing.spring.interceptor.feign.InterceptorFeignConfiguration;
 import feign.Request;
 import feign.opentracing.FeignSpanDecorator;
 import io.opentracing.Tracer;
