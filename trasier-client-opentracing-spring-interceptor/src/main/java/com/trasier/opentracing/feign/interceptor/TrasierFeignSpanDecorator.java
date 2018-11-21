@@ -51,7 +51,7 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 try {
                     trasierSpan.setOutgoingHeader(toSingleValueMap(response.headers()));
-                    //TODO
+                    // TODO
 //                    String responseBody = StreamUtils.copyToString(response.body().asInputStream(), Charset.defaultCharset());
 //                    trasierSpan.setOutgoingData(responseBody);
                 } catch (Exception e) {
