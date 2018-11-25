@@ -13,10 +13,7 @@ import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Configuration
@@ -63,7 +60,7 @@ public class InterceptorWSConfiguration {
                 interceptors.addAll(Arrays.asList(existingInterceptors));
             }
             if (interceptors.stream().noneMatch(i -> i instanceof TracingClientInterceptor)) {
-                interceptors.add(new TracingClientInterceptor(tracer, samplingFilter));
+                interceptors.add(new TracingClientInterceptor(tracer, samplingFilter == null ? Collections.emptyList() : samplingFilter));
             }
             if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientInterceptor)) {
                 interceptors.add(new TrasierClientInterceptor(tracer));

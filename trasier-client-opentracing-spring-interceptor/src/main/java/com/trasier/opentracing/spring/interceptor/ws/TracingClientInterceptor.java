@@ -23,6 +23,7 @@ import org.w3c.dom.Node;
 
 import javax.xml.transform.dom.DOMSource;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,10 +43,12 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                 .startActive(true);
 
-        if (samplingInterceptors != null && scope instanceof TrasierScope) {
+        if (scope instanceof TrasierScope) {
             Span unwrap = ((TrasierSpan) scope.span()).unwrap();
+            Map<String, Object> params = new HashMap<>();
+            params.put("url", extractUrlPath(messageContext));
             for (TrasierSamplingInterceptor samplingInterceptor : samplingInterceptors) {
-                if (!samplingInterceptor.shouldSample(unwrap)) {
+                if (!samplingInterceptor.shouldSample(unwrap, params)) {
                     unwrap.setCancel(true);
                 }
             }
@@ -72,6 +75,18 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
         }
 
         return super.handleRequest(messageContext);
+    }
+
+    private String extractUrlPath(MessageContext messageContext) {
+        if (messageContext.getRequest() instanceof SoapMessage) {
+            SoapMessage soapMessage = (SoapMessage) messageContext.getRequest();
+            String soapAction = soapMessage.getSoapAction();
+            if (soapAction != null) {
+                soapAction = soapAction.replaceAll("\"", "");
+            }
+            return soapAction;
+        }
+        return "";
     }
 
     @Override

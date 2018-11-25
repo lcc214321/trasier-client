@@ -1,30 +1,42 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
-import com.trasier.client.api.ContentType;
-import com.trasier.client.api.Endpoint;
-import com.trasier.client.api.TrasierConstants;
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.opentracing.TrasierSpan;
-import com.trasier.client.util.ContentTypeResolver;
-import com.trasier.client.util.ExceptionUtils;
-import io.opentracing.Span;
-import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
-import org.slf4j.MDC;
-import org.springframework.util.StringUtils;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+
+import org.slf4j.MDC;
+import org.springframework.util.StringUtils;
+
+import com.trasier.client.api.ContentType;
+import com.trasier.client.api.Endpoint;
+import com.trasier.client.api.TrasierConstants;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.opentracing.TrasierSpan;
+import com.trasier.client.util.ContentTypeResolver;
+import com.trasier.client.util.ExceptionUtils;
+
+import io.opentracing.Span;
+import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
 
 public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecorator {
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";
     private static final List<String> USER_AGENTS = Arrays.asList("mozilla", "chrome", "opera", "explorer", "safari");
 
     private final TrasierClientConfiguration configuration;
+    private final List<TrasierSamplingInterceptor> samplingInterceptors;
 
-    public TrasierServletFilterSpanDecorator(TrasierClientConfiguration configuration) {
+    public TrasierServletFilterSpanDecorator(TrasierClientConfiguration configuration, List<TrasierSamplingInterceptor> samplingInterceptors) {
         this.configuration = configuration;
+        this.samplingInterceptors = samplingInterceptors;
     }
 
     @Override
@@ -32,9 +44,21 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         if (configuration.isActivated() && httpServletRequest instanceof CachedServletRequestWrapper) {
             TrasierSpan activeSpan = (TrasierSpan) span;
             com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
+            applyInterceptors(httpServletRequest, trasierSpan);
             String conversationId = trasierSpan.getConversationId();
             MDC.put(TrasierConstants.HEADER_CONVERSATION_ID, conversationId);
             handleRequest((CachedServletRequestWrapper) httpServletRequest, trasierSpan);
+        }
+    }
+
+    private void applyInterceptors(HttpServletRequest httpServletRequest, com.trasier.client.api.Span trasierSpan) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("url", httpServletRequest.getServletPath());
+        for (TrasierSamplingInterceptor samplingInterceptor : samplingInterceptors) {
+            boolean shouldSample = samplingInterceptor.shouldSample(trasierSpan, params);
+            if (!shouldSample) {
+                trasierSpan.setCancel(true);
+            }
         }
     }
 
@@ -42,7 +66,10 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     public void onResponse(HttpServletRequest httpServletRequest, HttpServletResponse response, Span span) {
         if (configuration.isActivated() && response instanceof CachedServletResponseWrapper) {
             MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
-            handleResponse((CachedServletResponseWrapper) response, ((TrasierSpan) span).unwrap());
+            TrasierSpan activeSpan = (TrasierSpan) span;
+            com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
+            applyInterceptors(httpServletRequest, trasierSpan);
+            handleResponse((CachedServletResponseWrapper) response, trasierSpan);
         }
     }
 
