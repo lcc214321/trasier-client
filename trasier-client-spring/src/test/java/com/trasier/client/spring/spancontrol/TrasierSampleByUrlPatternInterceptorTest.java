@@ -19,8 +19,9 @@ public class TrasierSampleByUrlPatternInterceptorTest {
 
         // when // then
         assertTrue(sut.shouldSample(span, new HashMap<>()));
-        assertTrue(sut.shouldSample(span, createUrlMap("/checkServlet")));
-        assertFalse(sut.shouldSample(span, createUrlMap("/admin/health")));
+        assertTrue(sut.shouldSample(span, createUrlMap("/getWeather")));
+        assertTrue(sut.shouldSample(span, createUrlMap("/admin/health")));
+        assertFalse(sut.shouldSample(span, createUrlMap("/checkServlet")));
         assertFalse(sut.shouldSample(span, createUrlMap("/health")));
     }
 
@@ -33,7 +34,8 @@ public class TrasierSampleByUrlPatternInterceptorTest {
         cancelledSpan.setCancel(true);
 
         // when // then
-        assertTrue(sut.shouldSample(span, createUrlMap("/checkServlet")));
+        assertFalse(sut.shouldSample(span, createUrlMap("/admin/checkServlet")));
+        assertFalse(sut.shouldSample(span, createUrlMap("/checkServlet")));
         assertFalse(sut.shouldSample(cancelledSpan, createUrlMap("checkServlet")));
     }
 
@@ -41,14 +43,15 @@ public class TrasierSampleByUrlPatternInterceptorTest {
     public void testCustomConfig() {
         // given
         TrasierSampleByUrlPatternConfiguration config = new TrasierSampleByUrlPatternConfiguration();
-        config.setSkipPattern("/checkServlet");
+        config.setSkipPattern("/admin.*");
         TrasierSampleByUrlPatternInterceptor sut = new TrasierSampleByUrlPatternInterceptor(config);
 
         Span span = Span.newSpan("name", "id", "id", "id").build();
 
         // when // then
-        assertFalse(sut.shouldSample(span, createUrlMap("/checkServlet")));
-        assertTrue(sut.shouldSample(span, createUrlMap("/admin/checkServlet")));
+        assertFalse(sut.shouldSample(span, createUrlMap("/admin/health")));
+        assertFalse(sut.shouldSample(span, createUrlMap("/admin/checkServlet")));
+        assertTrue(sut.shouldSample(span, createUrlMap("/info/checkInfoServlet")));
     }
 
     private Map<String, Object> createUrlMap(String url) {
