@@ -11,6 +11,18 @@ import static org.junit.Assert.assertEquals;
 public class GzipUtilTest {
 
     @Test
+    public void testDecompressionEmpty() {
+        // given
+        byte[] empty = new byte[0];
+
+        // when
+        byte[] decompressedString = GzipUtil.decompress(empty);
+
+        // then
+        assertEquals(0, decompressedString.length);
+    }
+
+    @Test
     public void testDecompression() throws IOException {
         // given
         String data = "To be, or not to be...";
