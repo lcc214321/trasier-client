@@ -1,5 +1,20 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.MDC;
+import org.springframework.util.StringUtils;
+
 import com.trasier.client.api.ContentType;
 import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.TrasierConstants;
@@ -8,15 +23,9 @@ import com.trasier.client.interceptor.TrasierSamplingInterceptor;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ContentTypeResolver;
 import com.trasier.client.util.ExceptionUtils;
+
 import io.opentracing.Span;
 import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
-import org.slf4j.MDC;
-import org.springframework.util.StringUtils;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.*;
 
 public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecorator {
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";
@@ -96,14 +105,20 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         currentSpan.setIncomingHeader(requestHeaders);
         String requestBody = new String(request.getContentAsByteArray());
         currentSpan.setIncomingData(requestBody);
-        currentSpan.setName(extractOperationName(request, currentSpan.getName()));
+        currentSpan.setName(extractOperationName(request, requestHeaders.get("soapaction"), currentSpan.getName()));
         currentSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
         currentSpan.setIncomingContentType(ContentTypeResolver.resolveFromPayload(requestBody));
         enhanceIncomingEndpoint(currentSpan.getIncomingEndpoint(), request, requestHeaders);
         enhanceOutgoingEndpoint(currentSpan.getOutgoingEndpoint(), request);
     }
 
-    private String extractOperationName(CachedServletRequestWrapper request, String currentSpanName) {
+    private String extractOperationName(CachedServletRequestWrapper request, String soapaction, String currentSpanName) {
+        // extract for soap calls
+        if (!StringUtils.isEmpty(soapaction)) {
+            String[] soapActionArray = soapaction.replaceAll("\"", "").split("/");
+            return soapActionArray[soapActionArray.length - 1];
+        }
+        // extract for rest calls
         if (!StringUtils.isEmpty(request.getServletPath()) && request.getServletPath().length() > 1) {
             return request.getServletPath().replace("/", "");
         }
