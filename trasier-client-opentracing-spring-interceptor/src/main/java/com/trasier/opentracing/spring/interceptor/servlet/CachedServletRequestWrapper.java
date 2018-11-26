@@ -1,6 +1,7 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHeaders;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -13,6 +14,7 @@ import java.io.IOException;
 public class CachedServletRequestWrapper extends HttpServletRequestWrapper {
 
     private final byte[] data;
+    private HttpServletRequest request;
 
     public static CachedServletRequestWrapper create(HttpServletRequest request) throws IOException {
         return new CachedServletRequestWrapper(request, readAll(request));
@@ -26,6 +28,7 @@ public class CachedServletRequestWrapper extends HttpServletRequestWrapper {
 
     private CachedServletRequestWrapper(HttpServletRequest request, byte[] data) {
         super(request);
+        this.request = request;
         this.data = data;
     }
 
@@ -35,6 +38,13 @@ public class CachedServletRequestWrapper extends HttpServletRequestWrapper {
     }
 
     public byte[] getContentAsByteArray() {
+        String encoding = request.getHeader(HttpHeaders.ACCEPT_ENCODING);
+        if (encoding != null && encoding.toLowerCase().contains("gzip")) {
+            byte[] result = GzipUtil.decompress(data);
+            if (result.length > 0) {
+                return result;
+            }
+        }
         return data;
     }
 
@@ -46,7 +56,7 @@ public class CachedServletRequestWrapper extends HttpServletRequestWrapper {
         }
 
         @Override
-        public int read() throws IOException {
+        public int read() {
             return byteArrayInputStream.read();
         }
 
