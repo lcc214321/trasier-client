@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class GzipUtilTest {
 
@@ -19,6 +19,8 @@ public class GzipUtilTest {
         byte[] decompressedString = GzipUtil.decompress(empty);
 
         // then
+        assertFalse(GzipUtil.isGzipStream(empty));
+        assertFalse(GzipUtil.isGzipStream(decompressedString));
         assertEquals(0, decompressedString.length);
     }
 
@@ -32,6 +34,8 @@ public class GzipUtilTest {
         byte[] decompressedString = GzipUtil.decompress(compressedString);
 
         // then
+        assertTrue(GzipUtil.isGzipStream(compressedString));
+        assertFalse(GzipUtil.isGzipStream(decompressedString));
         assertEquals(data, new String(decompressedString));
     }
 

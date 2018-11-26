@@ -1,7 +1,5 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
-import org.apache.http.HttpHeaders;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +11,6 @@ import java.io.PrintWriter;
 public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
 
     private final CachedOutputStream cachedOutputStream;
-    private final HttpServletResponse response;
 
     public static CachedServletResponseWrapper create(HttpServletResponse response) throws IOException {
         return new CachedServletResponseWrapper(response);
@@ -21,7 +18,6 @@ public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
 
     private CachedServletResponseWrapper(HttpServletResponse response) throws IOException {
         super(response);
-        this.response = response;
         cachedOutputStream = new CachedOutputStream(response.getOutputStream());
     }
 
@@ -36,14 +32,11 @@ public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
     }
 
     public byte[] getContentAsByteArray() {
-        String contentEncoding = response.getHeader(HttpHeaders.CONTENT_ENCODING);
-        if (contentEncoding != null && contentEncoding.toLowerCase().contains("gzip")) {
-            byte[] result = GzipUtil.decompress(cachedOutputStream.out.toByteArray());
-            if (result.length > 0) {
-                return result;
-            }
+        byte[] result = cachedOutputStream.out.toByteArray();
+        if (GzipUtil.isGzipStream(result)) {
+            return GzipUtil.decompress(result);
         }
-        return cachedOutputStream.out.toByteArray();
+        return result;
     }
 
     private static class CachedOutputStream extends ServletOutputStream {

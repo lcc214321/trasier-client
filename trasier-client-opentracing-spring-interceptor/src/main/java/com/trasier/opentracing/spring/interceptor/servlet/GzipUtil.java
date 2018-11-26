@@ -8,11 +8,17 @@ import java.util.zip.GZIPInputStream;
 
 public class GzipUtil {
 
+    public static boolean isGzipStream(byte[] bytes) {
+        return bytes.length > 0 && GZIPInputStream.GZIP_MAGIC == ((int) bytes[0] & 0xff | bytes[1] << 8 & 0xff00);
+    }
+
     public static byte[] decompress(byte[] compressed) {
-        try{
-            return safeDecompress(compressed);
-        } catch(IOException e) {
-            // ignore
+        if (compressed.length > 0) {
+            try {
+                return safeDecompress(compressed);
+            } catch (IOException e) {
+                // ignore
+            }
         }
         return new byte[0];
     }
