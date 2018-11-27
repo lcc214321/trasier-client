@@ -1,20 +1,5 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.MDC;
-import org.springframework.util.StringUtils;
-
 import com.trasier.client.api.ContentType;
 import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.TrasierConstants;
@@ -23,9 +8,15 @@ import com.trasier.client.interceptor.TrasierSamplingInterceptor;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ContentTypeResolver;
 import com.trasier.client.util.ExceptionUtils;
-
 import io.opentracing.Span;
 import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
+import org.slf4j.MDC;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecorator {
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";
@@ -44,10 +35,10 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         if (configuration.isActivated() && httpServletRequest instanceof CachedServletRequestWrapper) {
             TrasierSpan activeSpan = (TrasierSpan) span;
             com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
-            applyInterceptors(httpServletRequest, trasierSpan);
             String conversationId = trasierSpan.getConversationId();
             MDC.put(TrasierConstants.HEADER_CONVERSATION_ID, conversationId);
             handleRequest((CachedServletRequestWrapper) httpServletRequest, trasierSpan);
+            applyInterceptors(httpServletRequest, trasierSpan);
         }
     }
 
