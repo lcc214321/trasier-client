@@ -35,6 +35,9 @@ public class CachedServletRequestWrapper extends HttpServletRequestWrapper {
     }
 
     public byte[] getContentAsByteArray() {
+        if (GzipUtil.isGzipStream(data)) {
+            return GzipUtil.decompress(data);
+        }
         return data;
     }
 
@@ -46,7 +49,7 @@ public class CachedServletRequestWrapper extends HttpServletRequestWrapper {
         }
 
         @Override
-        public int read() throws IOException {
+        public int read() {
             return byteArrayInputStream.read();
         }
 

@@ -6,19 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class TrasierSampleByOperationInterceptor implements TrasierSamplingInterceptor {
 
+    @Autowired(required = false)
     private TrasierSampleByOperationConfiguration configuration;
 
-    @Autowired
+    public TrasierSampleByOperationInterceptor() {
+        this.configuration = new TrasierSampleByOperationConfiguration();
+    }
+
     public TrasierSampleByOperationInterceptor(TrasierSampleByOperationConfiguration configuration) {
         this.configuration = configuration;
     }
 
     @Override
-    public boolean shouldSample(Span span) {
+    public boolean shouldSample(Span span, Map<String, Object> params) {
         if (span.isCancel()) {
             return false;
         }

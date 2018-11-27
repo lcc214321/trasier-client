@@ -1,14 +1,9 @@
 package com.trasier.client.opentracing.spring.interceptor.boot.legacy;
 
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.opentracing.spring.interceptor.InterceptorWebConfiguration;
-import com.trasier.opentracing.spring.interceptor.servlet.TrasierBufferFilter;
-import com.trasier.opentracing.spring.interceptor.servlet.TrasierServletFilterSpanDecorator;
-import io.opentracing.Tracer;
-import io.opentracing.contrib.spring.web.starter.WebClientTracingProperties;
-import io.opentracing.contrib.spring.web.starter.WebTracingProperties;
-import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
-import io.opentracing.contrib.web.servlet.filter.TracingFilter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -21,9 +16,17 @@ import org.springframework.context.annotation.Import;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.opentracing.spring.interceptor.InterceptorWebConfiguration;
+import com.trasier.opentracing.spring.interceptor.servlet.TrasierBufferFilter;
+import com.trasier.opentracing.spring.interceptor.servlet.TrasierServletFilterSpanDecorator;
+
+import io.opentracing.Tracer;
+import io.opentracing.contrib.spring.web.starter.WebClientTracingProperties;
+import io.opentracing.contrib.spring.web.starter.WebTracingProperties;
+import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
+import io.opentracing.contrib.web.servlet.filter.TracingFilter;
 
 @Configuration
 @ConditionalOnBean({Tracer.class})
@@ -36,6 +39,9 @@ public class TrasierSpringWebInterceptorConfiguration {
 
     @Autowired
     private ObjectProvider<List<ServletFilterSpanDecorator>> servletFilterSpanDecorator;
+
+    @Autowired(required = false)
+    private List<TrasierSamplingInterceptor> samplingInterceptors;
 
     @Bean
     public FilterRegistrationBean trasierBufferFilter(TrasierClientConfiguration configuration, WebTracingProperties tracingConfiguration) {
@@ -53,7 +59,7 @@ public class TrasierSpringWebInterceptorConfiguration {
         if (CollectionUtils.isEmpty(decorators)) {
             decorators = new ArrayList<>();
             decorators.add(ServletFilterSpanDecorator.STANDARD_TAGS);
-            decorators.add(new TrasierServletFilterSpanDecorator(configuration));
+            decorators.add(new TrasierServletFilterSpanDecorator(configuration, samplingInterceptors == null ? Collections.emptyList(): samplingInterceptors));
         }
 
         TracingFilter tracingFilter = new TracingFilter(tracer, decorators, tracingConfiguration.getSkipPattern());

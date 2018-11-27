@@ -1,18 +1,19 @@
 package com.trasier.client.spring;
 
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
 import com.trasier.client.spring.auth.OAuthToken;
 import com.trasier.client.spring.client.TrasierSpringClient;
 import com.trasier.client.spring.context.TrasierSpringAccessor;
 import com.trasier.client.spring.spancontrol.TrasierSampleByOperationInterceptor;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(basePackageClasses = {OAuthToken.class, TrasierSpringClient.class, TrasierSpringAccessor.class, TrasierSampleByOperationInterceptor.class})
 public class TrasierSpringConfiguration {
-    private int queueSize = 100;
+    private int queueSize = 1000;
     private int queueSizeErrorThresholdMultiplicator = 10;
-    private long queueDelay = 1000L;
+    private long queueDelay = 500L;
     private int maxTaskCount = 100;
     private int maxSpansPerTask = 10;
 

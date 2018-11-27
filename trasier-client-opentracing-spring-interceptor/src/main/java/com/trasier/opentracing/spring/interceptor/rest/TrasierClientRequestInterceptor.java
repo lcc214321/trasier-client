@@ -1,28 +1,39 @@
 package com.trasier.opentracing.spring.interceptor.rest;
 
-import com.trasier.client.api.ContentType;
-import com.trasier.client.api.Span;
-import com.trasier.client.opentracing.TrasierSpan;
-import io.opentracing.Tracer;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StreamUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
+import com.trasier.client.api.ContentType;
+import com.trasier.client.api.Span;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.opentracing.TrasierSpan;
+
+import io.opentracing.Tracer;
 
 public class TrasierClientRequestInterceptor implements ClientHttpRequestInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrasierClientRequestInterceptor.class);
 
     private final Tracer tracer;
+    private final List<TrasierSamplingInterceptor> samplingInterceptors;
 
-    public TrasierClientRequestInterceptor(Tracer tracer) {
+    public TrasierClientRequestInterceptor(Tracer tracer, List<TrasierSamplingInterceptor> samplingInterceptors) {
         this.tracer = tracer;
+        this.samplingInterceptors = samplingInterceptors;
     }
 
     @Override
@@ -31,6 +42,10 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
 
         if (span != null) {
             Span trasierSpan = span.unwrap();
+            if (!shouldTrace(request, span)) {
+                trasierSpan.setCancel(true);
+            }
+
             trasierSpan.setIncomingContentType(ContentType.JSON);
             trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
             try {
@@ -50,8 +65,14 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 try {
                     trasierSpan.setOutgoingHeader(response.getHeaders().toSingleValueMap());
-                    if (response.getBody() instanceof ByteArrayInputStream) {
-                        String responseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
+                    InputStream body = null;
+                    try {
+                        body = response.getBody(); // throws exception on empty input stream
+                    } catch(Exception e) {
+                        LOGGER.debug(e.getMessage(), e);
+                    }
+                    if (body instanceof ByteArrayInputStream) {
+                        String responseBody = StreamUtils.copyToString(body, Charset.defaultCharset());
                         trasierSpan.setOutgoingData(responseBody);
                     }
                 } catch (Exception e) {
@@ -61,5 +82,20 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
         }
 
         return response;
+    }
+
+    private boolean shouldTrace(HttpRequest request, TrasierSpan span) {
+        if (CollectionUtils.isEmpty(samplingInterceptors)) {
+            return true;
+        }
+        Map<String, Object> params = new HashMap<>();
+        for (TrasierSamplingInterceptor samplingInterceptor : samplingInterceptors) {
+            URI uri = request.getURI();
+            params.put("url", uri.getPath());
+            if (!samplingInterceptor.shouldSample(span.unwrap(), params)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -1,10 +1,13 @@
 package com.trasier.client.spring.client;
 
-import com.trasier.client.api.Span;
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.configuration.TrasierEndpointConfiguration;
-import com.trasier.client.interceptor.TrasierSpanInterceptor;
-import com.trasier.client.spring.auth.OAuthTokenSafe;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,13 +20,17 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.trasier.client.api.Span;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.interceptor.TrasierSpanInterceptor;
+import com.trasier.client.spring.auth.OAuthTokenSafe;
 
 @Component("trasierSpringClient")
 public class TrasierSpringRestClient implements TrasierSpringClient {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrasierSpringRestClient.class);
+
     private final TrasierEndpointConfiguration applicationConfiguration;
     private final TrasierClientConfiguration clientConfiguration;
     private final RestTemplate restTemplate;
@@ -76,14 +83,19 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
             applyInterceptors(spans);
         }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + tokenSafe.getAuthHeader());
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.add("Authorization", "Bearer " + tokenSafe.getAuthHeader());
 
-        UriComponents builder = UriComponentsBuilder.fromHttpUrl(applicationConfiguration.getWriterEndpoint()).buildAndExpand(accountId, spaceKey);
-        HttpEntity<List<Span>> requestEntity = new HttpEntity<>(spans, headers);
-        ResponseEntity<Void> exchange = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, requestEntity, Void.class);
-        return !exchange.getStatusCode().is4xxClientError() && !exchange.getStatusCode().is5xxServerError();
+            UriComponents builder = UriComponentsBuilder.fromHttpUrl(applicationConfiguration.getWriterEndpoint()).buildAndExpand(accountId, spaceKey);
+            HttpEntity<List<Span>> requestEntity = new HttpEntity<>(spans, headers);
+            ResponseEntity<Void> exchange = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, requestEntity, Void.class);
+            return !exchange.getStatusCode().is4xxClientError() && !exchange.getStatusCode().is5xxServerError();
+        } catch(Exception e) {
+            LOGGER.error(e.getMessage(), e);
+            return false;
+        }
     }
 
     private void applyInterceptors(List<Span> spans) {

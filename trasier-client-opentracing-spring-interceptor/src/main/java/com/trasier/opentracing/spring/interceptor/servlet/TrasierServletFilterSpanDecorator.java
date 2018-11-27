@@ -4,6 +4,7 @@ import com.trasier.client.api.ContentType;
 import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ContentTypeResolver;
 import com.trasier.client.util.ExceptionUtils;
@@ -22,9 +23,11 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     private static final List<String> USER_AGENTS = Arrays.asList("mozilla", "chrome", "opera", "explorer", "safari");
 
     private final TrasierClientConfiguration configuration;
+    private final List<TrasierSamplingInterceptor> samplingInterceptors;
 
-    public TrasierServletFilterSpanDecorator(TrasierClientConfiguration configuration) {
+    public TrasierServletFilterSpanDecorator(TrasierClientConfiguration configuration, List<TrasierSamplingInterceptor> samplingInterceptors) {
         this.configuration = configuration;
+        this.samplingInterceptors = samplingInterceptors;
     }
 
     @Override
@@ -35,6 +38,18 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             String conversationId = trasierSpan.getConversationId();
             MDC.put(TrasierConstants.HEADER_CONVERSATION_ID, conversationId);
             handleRequest((CachedServletRequestWrapper) httpServletRequest, trasierSpan);
+            applyInterceptors(httpServletRequest, trasierSpan);
+        }
+    }
+
+    private void applyInterceptors(HttpServletRequest httpServletRequest, com.trasier.client.api.Span trasierSpan) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("url", httpServletRequest.getServletPath());
+        for (TrasierSamplingInterceptor samplingInterceptor : samplingInterceptors) {
+            boolean shouldSample = samplingInterceptor.shouldSample(trasierSpan, params);
+            if (!shouldSample) {
+                trasierSpan.setCancel(true);
+            }
         }
     }
 
@@ -42,7 +57,10 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     public void onResponse(HttpServletRequest httpServletRequest, HttpServletResponse response, Span span) {
         if (configuration.isActivated() && response instanceof CachedServletResponseWrapper) {
             MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
-            handleResponse((CachedServletResponseWrapper) response, ((TrasierSpan) span).unwrap());
+            TrasierSpan activeSpan = (TrasierSpan) span;
+            com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
+            applyInterceptors(httpServletRequest, trasierSpan);
+            handleResponse((CachedServletResponseWrapper) response, trasierSpan);
         }
     }
 
@@ -78,10 +96,24 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         currentSpan.setIncomingHeader(requestHeaders);
         String requestBody = new String(request.getContentAsByteArray());
         currentSpan.setIncomingData(requestBody);
+        currentSpan.setName(extractOperationName(request, requestHeaders.get("soapaction"), currentSpan.getName()));
         currentSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
         currentSpan.setIncomingContentType(ContentTypeResolver.resolveFromPayload(requestBody));
         enhanceIncomingEndpoint(currentSpan.getIncomingEndpoint(), request, requestHeaders);
         enhanceOutgoingEndpoint(currentSpan.getOutgoingEndpoint(), request);
+    }
+
+    private String extractOperationName(CachedServletRequestWrapper request, String soapaction, String currentSpanName) {
+        // extract for soap calls
+        if (!StringUtils.isEmpty(soapaction)) {
+            String[] soapActionArray = soapaction.replaceAll("\"", "").split("/");
+            return soapActionArray[soapActionArray.length - 1];
+        }
+        // extract for rest calls
+        if (!StringUtils.isEmpty(request.getServletPath()) && request.getServletPath().length() > 1) {
+            return request.getServletPath().replace("/", "");
+        }
+        return currentSpanName;
     }
 
     private void enhanceIncomingEndpoint(Endpoint incomingEndpoint, ServletRequest request, Map<String, String> requestHeaders) {

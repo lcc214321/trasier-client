@@ -25,9 +25,9 @@ public class TrasierSampleByOperationInterceptorTest {
         Span span3 = newSpan("checkServlet", "", "", "").build();
 
         // when / then
-        assertTrue(sut.shouldSample(span1));
-        assertFalse(sut.shouldSample(span2));
-        assertTrue(sut.shouldSample(span3));
+        assertTrue(sut.shouldSample(span1, null));
+        assertFalse(sut.shouldSample(span2, null));
+        assertTrue(sut.shouldSample(span3, null));
     }
 
     @Test
@@ -42,9 +42,9 @@ public class TrasierSampleByOperationInterceptorTest {
         Span span3 = newSpan("checkServlet", "", "", "").build();
 
         // when / then
-        assertFalse(sut.shouldSample(span1));
-        assertTrue(sut.shouldSample(span2));
-        assertFalse(sut.shouldSample(span3));
+        assertFalse(sut.shouldSample(span1, null));
+        assertTrue(sut.shouldSample(span2, null));
+        assertFalse(sut.shouldSample(span3, null));
     }
 
 }

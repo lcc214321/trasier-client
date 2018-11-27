@@ -32,7 +32,11 @@ public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
     }
 
     public byte[] getContentAsByteArray() {
-        return cachedOutputStream.out.toByteArray();
+        byte[] result = cachedOutputStream.out.toByteArray();
+        if (GzipUtil.isGzipStream(result)) {
+            return GzipUtil.decompress(result);
+        }
+        return result;
     }
 
     private static class CachedOutputStream extends ServletOutputStream {
