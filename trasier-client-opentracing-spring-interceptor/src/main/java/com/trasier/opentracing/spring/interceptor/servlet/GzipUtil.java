@@ -1,10 +1,10 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.zip.GZIPInputStream;
+
+import org.apache.commons.io.IOUtils;
 
 public class GzipUtil {
 
@@ -17,10 +17,10 @@ public class GzipUtil {
             try {
                 return safeDecompress(compressed);
             } catch (IOException e) {
-                // ignore
+                return ("Error while decompressing gzip: " + e.getMessage()).getBytes();
             }
         }
-        return new byte[0];
+        return compressed;
     }
 
     private static byte[] safeDecompress(byte[] compressed) throws IOException {

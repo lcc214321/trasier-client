@@ -13,7 +13,7 @@ import com.trasier.client.spring.spancontrol.TrasierSampleByOperationInterceptor
 public class TrasierSpringConfiguration {
     private int queueSize = 1000;
     private int queueSizeErrorThresholdMultiplicator = 10;
-    private long queueDelay = 1000L;
+    private long queueDelay = 500L;
     private int maxTaskCount = 100;
     private int maxSpansPerTask = 10;
 
