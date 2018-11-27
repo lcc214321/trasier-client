@@ -1,10 +1,14 @@
 package com.trasier.opentracing.spring.interceptor.rest;
 
-import com.trasier.client.api.ContentType;
-import com.trasier.client.api.Span;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
-import com.trasier.client.opentracing.TrasierSpan;
-import io.opentracing.Tracer;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
@@ -14,13 +18,12 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StreamUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.trasier.client.api.ContentType;
+import com.trasier.client.api.Span;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.opentracing.TrasierSpan;
+
+import io.opentracing.Tracer;
 
 public class TrasierClientRequestInterceptor implements ClientHttpRequestInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrasierClientRequestInterceptor.class);
@@ -62,8 +65,14 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 try {
                     trasierSpan.setOutgoingHeader(response.getHeaders().toSingleValueMap());
-                    if (response.getBody() instanceof ByteArrayInputStream) {
-                        String responseBody = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
+                    InputStream body = null;
+                    try {
+                        body = response.getBody(); // throws exception on empty input stream
+                    } catch(Exception e) {
+                        LOGGER.debug(e.getMessage(), e);
+                    }
+                    if (body instanceof ByteArrayInputStream) {
+                        String responseBody = StreamUtils.copyToString(body, Charset.defaultCharset());
                         trasierSpan.setOutgoingData(responseBody);
                     }
                 } catch (Exception e) {

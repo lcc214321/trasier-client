@@ -77,18 +77,6 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
         return super.handleRequest(messageContext);
     }
 
-    private String extractUrlPath(MessageContext messageContext) {
-        if (messageContext.getRequest() instanceof SoapMessage) {
-            SoapMessage soapMessage = (SoapMessage) messageContext.getRequest();
-            String soapAction = soapMessage.getSoapAction();
-            if (soapAction != null) {
-                soapAction = soapAction.replaceAll("\"", "");
-            }
-            return soapAction;
-        }
-        return "";
-    }
-
     @Override
     public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
         return super.handleResponse(messageContext);
@@ -103,6 +91,16 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
     public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
         tracer.scopeManager().active().close();
         super.afterCompletion(messageContext, ex);
+    }
+
+    private String extractUrlPath(MessageContext messageContext) {
+        if (messageContext.getRequest() instanceof SoapMessage) {
+            String pathByOperationName = extractOperationName(messageContext, null);
+            if (!StringUtils.isEmpty(pathByOperationName)) {
+                return "/" + pathByOperationName;
+            }
+        }
+        return "";
     }
 
     private String extractOperationName(MessageContext messageContext, Object endpoint) {

@@ -5,8 +5,9 @@ import java.util.regex.Pattern;
 public class TrasierSampleByUrlPatternConfiguration {
 
     private static final Pattern DEFAULT_SKIP_PATTERN = Pattern.compile(
-            ".*/api-docs.*|.*/autoconfig|.*/configprops|.*/dump|.*/health|.*/info|.*/metrics.*|" +
-                    ".*/mappings|.*/swagger.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|.*/favicon.ico|.*/hystrix.stream");
+            "/api-docs.*|/autoconfig|/configprops|/dump|/health|/info|/metrics.*|" +
+                    "/mappings|/swagger.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|" +
+                    ".*/checkServlet|/admin/check");
 
     private Pattern skipPattern;
     private Pattern defaultSkipPattern = DEFAULT_SKIP_PATTERN;

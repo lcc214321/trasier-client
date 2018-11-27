@@ -1,14 +1,5 @@
 package com.trasier.client.spring.client;
 
-import com.trasier.client.api.Span;
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.spring.TrasierSpringConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -17,6 +8,16 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+
+import com.trasier.client.api.Span;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.spring.TrasierSpringConfiguration;
 
 @Primary
 @Component("trasierSpringCacheClient")
@@ -63,6 +64,9 @@ public class TrasierSpringRestCacheClient implements TrasierSpringClient, Runnab
     @Override
     public boolean sendSpan(Span span) {
         if (!clientConfig.isActivated()) {
+            return false;
+        }
+        if (span.isCancel()) {
             return false;
         }
         try {
