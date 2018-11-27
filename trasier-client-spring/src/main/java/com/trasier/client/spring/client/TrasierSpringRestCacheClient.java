@@ -33,6 +33,7 @@ public class TrasierSpringRestCacheClient implements TrasierSpringClient, Runnab
     private int countFullQueueErrorsThreshold;
     private ScheduledThreadPoolExecutor scheduler;
     private ThreadPoolExecutor executor;
+    private TrasierCompressSpanInterceptor compressSpanInterceptor;
 
     @Autowired
     public TrasierSpringRestCacheClient(TrasierClientConfiguration clientConfig, TrasierSpringConfiguration springConfiguration, TrasierSpringRestClient springRestClient) {
@@ -41,6 +42,7 @@ public class TrasierSpringRestCacheClient implements TrasierSpringClient, Runnab
         this.springRestClient = springRestClient;
 
         if (clientConfig.isActivated()) {
+            this.compressSpanInterceptor = new TrasierCompressSpanInterceptor();
             this.spanQueue = new LinkedBlockingDeque<>(springConfiguration.getQueueSize());
             this.countFullQueueErrorsThreshold = springConfiguration.getQueueSize() * springConfiguration.getQueueSizeErrorThresholdMultiplicator();
 
@@ -70,6 +72,7 @@ public class TrasierSpringRestCacheClient implements TrasierSpringClient, Runnab
             return false;
         }
         try {
+            compressSpanInterceptor.intercept(span);
             spanQueue.addLast(span);
             return true;
         } catch (IllegalStateException e) {
