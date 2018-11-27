@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
 
     private final CachedOutputStream cachedOutputStream;
+    private final PrintWriter writer;
 
     public static CachedServletResponseWrapper create(HttpServletResponse response) throws IOException {
         return new CachedServletResponseWrapper(response);
@@ -19,11 +20,12 @@ public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
     private CachedServletResponseWrapper(HttpServletResponse response) throws IOException {
         super(response);
         cachedOutputStream = new CachedOutputStream(response.getOutputStream());
+        writer = new PrintWriter(cachedOutputStream);
     }
 
     @Override
     public PrintWriter getWriter() {
-        return new PrintWriter(cachedOutputStream);
+        return writer;
     }
 
     @Override
@@ -31,7 +33,14 @@ public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
         return cachedOutputStream;
     }
 
+    @Override
+    public void flushBuffer() throws IOException {
+        writer.flush();
+        super.flushBuffer();
+    }
+
     public byte[] getContentAsByteArray() {
+        writer.flush();
         byte[] result = cachedOutputStream.out.toByteArray();
         if (GzipUtil.isGzipStream(result)) {
             return GzipUtil.decompress(result);
@@ -55,12 +64,12 @@ public class CachedServletResponseWrapper extends HttpServletResponseWrapper {
 
         @Override
         public boolean isReady() {
-            return true;
+            return outputStream.isReady();
         }
 
         @Override
         public void setWriteListener(WriteListener writeListener) {
-
+            outputStream.setWriteListener(writeListener);
         }
     }
 }
