@@ -13,6 +13,7 @@ import java.io.IOException;
 public class CachedServletRequestWrapper extends HttpServletRequestWrapper {
 
     private final byte[] data;
+    private final ByteArrayServletInputStream inputStream;
 
     public static CachedServletRequestWrapper create(HttpServletRequest request) throws IOException {
         return new CachedServletRequestWrapper(request, readAll(request));
@@ -27,11 +28,12 @@ public class CachedServletRequestWrapper extends HttpServletRequestWrapper {
     private CachedServletRequestWrapper(HttpServletRequest request, byte[] data) {
         super(request);
         this.data = data;
+        this.inputStream  = new ByteArrayServletInputStream(new ByteArrayInputStream(data));
     }
 
     @Override
     public ServletInputStream getInputStream() {
-        return new ByteArrayServletInputStream(new ByteArrayInputStream(data));
+        return inputStream;
     }
 
     public byte[] getContentAsByteArray() {

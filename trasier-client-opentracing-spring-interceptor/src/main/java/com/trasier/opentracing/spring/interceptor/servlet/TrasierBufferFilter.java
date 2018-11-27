@@ -45,6 +45,8 @@ public class TrasierBufferFilter extends GenericFilterBean {
         CachedServletResponseWrapper response = createCachedResponse((HttpServletResponse) servletResponse);
 
         filterChain.doFilter(request, response);
+
+        response.getWriter().flush();
     }
 
     protected CachedServletResponseWrapper createCachedResponse(HttpServletResponse servletResponse) throws IOException {
