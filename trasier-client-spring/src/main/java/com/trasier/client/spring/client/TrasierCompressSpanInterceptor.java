@@ -1,14 +1,14 @@
 package com.trasier.client.spring.client;
 
-import com.trasier.client.api.Span;
-import com.trasier.client.interceptor.TrasierSpanInterceptor;
+import java.util.Base64;
+
 import org.iq80.snappy.Snappy;
 import org.springframework.util.StringUtils;
 
-import java.util.Base64;
+import com.trasier.client.api.Span;
 
-public class TrasierCompressSpanInterceptor implements TrasierSpanInterceptor {
-    @Override
+public class TrasierCompressSpanInterceptor {
+
     public void intercept(Span span) {
         String incomingData = span.getIncomingData();
         if (!StringUtils.isEmpty(incomingData)) {

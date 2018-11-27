@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +47,6 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
         this.tokenSafe = tokenSafe;
         this.restTemplate = restTemplate;
         this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-    }
-
-    @PostConstruct
-    public void init() {
-        spanInterceptors.add(new TrasierCompressSpanInterceptor());
     }
 
     public boolean sendSpan(Span span) {
