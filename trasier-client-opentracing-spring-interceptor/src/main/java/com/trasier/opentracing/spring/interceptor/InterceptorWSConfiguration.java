@@ -1,10 +1,14 @@
 package com.trasier.opentracing.spring.interceptor;
 
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
-import com.trasier.opentracing.spring.interceptor.ws.TracingClientInterceptor;
-import com.trasier.opentracing.spring.interceptor.ws.TrasierClientInterceptor;
-import io.opentracing.Tracer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,9 +16,13 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.stream.Stream;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.opentracing.spring.interceptor.ws.TracingClientInterceptor;
+import com.trasier.opentracing.spring.interceptor.ws.TrasierClientInterceptor;
+import com.trasier.opentracing.spring.interceptor.ws.TrasierEndpointInterceptor;
+
+import io.opentracing.Tracer;
 
 @Configuration
 public class InterceptorWSConfiguration {
@@ -34,8 +42,13 @@ public class InterceptorWSConfiguration {
     private List<TrasierSamplingInterceptor> samplingFilter;
 
     @Bean
-    public TrasierClientInterceptor trasierClientInterceptor(Tracer tracer) {
-        return new TrasierClientInterceptor(tracer);
+    public TrasierClientInterceptor trasierClientInterceptor() {
+        return new TrasierClientInterceptor(tracer, configuration);
+    }
+
+    @Bean
+    public TrasierEndpointInterceptor trasierEndpointInterceptor() {
+        return new TrasierEndpointInterceptor(tracer, configuration);
     }
 
     @PostConstruct
@@ -63,7 +76,7 @@ public class InterceptorWSConfiguration {
                 interceptors.add(new TracingClientInterceptor(tracer, samplingFilter == null ? Collections.emptyList() : samplingFilter));
             }
             if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientInterceptor)) {
-                interceptors.add(new TrasierClientInterceptor(tracer));
+                interceptors.add(new TrasierClientInterceptor(tracer, configuration));
             }
             webServiceTemplate.setInterceptors(interceptors.toArray(new ClientInterceptor[interceptors.size()]));
         }
