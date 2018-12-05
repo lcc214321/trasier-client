@@ -4,7 +4,7 @@
 
 	<groupId>com.trasier</groupId>
 	<artifactId>trasier-client</artifactId>
-	<version>0.13.9</version>
+	<version>0.13.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>trasier-client</name>
