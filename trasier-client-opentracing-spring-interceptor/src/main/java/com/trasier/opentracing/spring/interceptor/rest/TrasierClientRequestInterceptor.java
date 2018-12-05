@@ -46,6 +46,7 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
                 trasierSpan.setCancel(true);
             }
 
+            trasierSpan.setName(extractOperationName(request.getURI(), trasierSpan.getName()));
             trasierSpan.setIncomingContentType(ContentType.JSON);
             trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
             try {
@@ -84,14 +85,22 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
         return response;
     }
 
+    private String extractOperationName(URI requestUri, String defaultName) {
+        String path = requestUri.getPath();
+        if (!path.isEmpty() && !path.equals("/")) {
+            return path;
+        }
+        return defaultName;
+    }
+
     private boolean shouldTrace(HttpRequest request, TrasierSpan span) {
         if (CollectionUtils.isEmpty(samplingInterceptors)) {
             return true;
         }
         Map<String, Object> params = new HashMap<>();
+        URI uri = request.getURI();
+        params.put("url", uri.getPath());
         for (TrasierSamplingInterceptor samplingInterceptor : samplingInterceptors) {
-            URI uri = request.getURI();
-            params.put("url", uri.getPath());
             if (!samplingInterceptor.shouldSample(span.unwrap(), params)) {
                 return false;
             }
