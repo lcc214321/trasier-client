@@ -6,8 +6,9 @@ public class TrasierSampleByUrlPatternConfiguration {
 
     private static final Pattern DEFAULT_SKIP_PATTERN = Pattern.compile(
             "/api-docs.*|/autoconfig|/configprops|/dump|/health|/info|/metrics.*|" +
-                    "/mappings|/swagger.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|" +
-                    ".*/checkServlet|/admin/check");
+                    ".*/healthCheckServlet|.*/checkServlet|/admin/check|/actuatorhealth|" +
+                    "/hystrix.stream|/mappings|/swagger.*|" +
+                    ".*\\.wsdl|.*\\.xsd|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico");
 
     private Pattern skipPattern;
     private Pattern defaultSkipPattern = DEFAULT_SKIP_PATTERN;
