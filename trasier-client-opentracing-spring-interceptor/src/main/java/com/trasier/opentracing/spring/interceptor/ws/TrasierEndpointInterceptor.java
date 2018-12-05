@@ -11,7 +11,7 @@ import io.opentracing.Tracer;
 
 /**
  * Enrich data that we could not access much higher on the filter level.
- * The rest will be handeled by the {@see TrasierServletFilterSpanDecorator}
+ * The rest will be handeled by the TrasierServletFilterSpanDecorator
  */
 public class TrasierEndpointInterceptor implements SmartEndpointInterceptor {
 
