@@ -46,7 +46,8 @@
 		<snappy.version>0.4</snappy.version>
 		<jackson-databind.version>2.9.5</jackson-databind.version>
 		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
-	</properties>
+        <httpclient.version>4.5.5</httpclient.version>
+    </properties>
 
 	<modules>
 		<module>trasier-client-api</module>
@@ -160,6 +161,17 @@
 				<artifactId>feign-core</artifactId>
 				<version>${feign-core.version}</version>
 			</dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
 
 			<dependency>
 				<groupId>io.grpc</groupId>
