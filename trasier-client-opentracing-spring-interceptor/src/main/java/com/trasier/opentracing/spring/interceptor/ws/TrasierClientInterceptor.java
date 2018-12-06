@@ -1,12 +1,15 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
-import com.trasier.client.api.ContentType;
-import com.trasier.client.api.Endpoint;
-import com.trasier.client.api.Span;
-import com.trasier.client.api.TrasierConstants;
-import com.trasier.client.opentracing.TrasierSpan;
-import com.trasier.client.util.ExceptionUtils;
-import io.opentracing.Tracer;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.xml.soap.MimeHeader;
+import javax.xml.transform.dom.DOMSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
@@ -20,22 +23,28 @@ import org.springframework.ws.soap.SoapMessage;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Node;
 
-import javax.xml.soap.MimeHeader;
-import javax.xml.transform.dom.DOMSource;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.Map;
+import com.trasier.client.api.ContentType;
+import com.trasier.client.api.Endpoint;
+import com.trasier.client.api.Span;
+import com.trasier.client.api.TrasierConstants;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.opentracing.TrasierSpan;
+import com.trasier.client.util.ExceptionUtils;
+
+import io.opentracing.Tracer;
 
 public class TrasierClientInterceptor extends ClientInterceptorAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(TrasierClientInterceptor.class);
 
     private final Tracer tracer;
 
-    public TrasierClientInterceptor(Tracer tracer) {
+    private Endpoint localEndpoint;
+
+    private final TrasierClientConfiguration configuration;
+
+    public TrasierClientInterceptor(Tracer tracer, TrasierClientConfiguration configuration) {
         this.tracer = tracer;
+        this.configuration = configuration;
     }
 
     @Override
@@ -48,11 +57,6 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                 Span trasierSpan = span.unwrap();
                 String endpointName = extractOutgoingEndpointName(messageContext);
                 Endpoint outgoingEndpoint = new Endpoint(StringUtils.isEmpty(endpointName) ? TrasierConstants.UNKNOWN_OUT : endpointName);
-                InetAddress inetAddress = getInetAddress();
-                if (inetAddress != null) {
-                    outgoingEndpoint.setHostname(inetAddress.getHostName());
-                    outgoingEndpoint.setIpAddress(inetAddress.getHostAddress());
-                }
                 trasierSpan.setOutgoingEndpoint(outgoingEndpoint);
                 try {
                     trasierSpan.setIncomingContentType(ContentType.XML);
@@ -60,6 +64,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                     messageContext.getRequest().writeTo(out);
                     trasierSpan.setIncomingData(out.toString());
                     trasierSpan.setIncomingHeader(extractHeaders(messageContext.getRequest()));
+                    enhanceIncommingEndpoint(trasierSpan);
                 } catch (IOException e) {
                     LOG.error(e.getMessage(), e);
                 }
@@ -158,6 +163,20 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
 
         }
         return result.toSingleValueMap();
+    }
+
+    private void enhanceIncommingEndpoint(com.trasier.client.api.Span span) {
+        // no synchronisation on purpose
+        if (this.localEndpoint == null) {
+            Endpoint endpoint = new Endpoint(configuration.getSystemName());
+            InetAddress inetAddress = getInetAddress();
+            if (inetAddress != null) {
+                endpoint.setHostname(inetAddress.getHostName());
+                endpoint.setIpAddress(inetAddress.getHostAddress());
+            }
+            this.localEndpoint = endpoint;
+        }
+        span.setIncomingEndpoint(localEndpoint);
     }
 
     private InetAddress getInetAddress() {

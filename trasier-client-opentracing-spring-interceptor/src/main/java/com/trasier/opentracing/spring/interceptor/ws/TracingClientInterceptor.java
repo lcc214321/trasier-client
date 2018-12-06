@@ -1,32 +1,30 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
-import com.trasier.client.api.Span;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
-import com.trasier.client.opentracing.TrasierScope;
-import com.trasier.client.opentracing.TrasierSpan;
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMap;
-import io.opentracing.tag.Tags;
-import org.springframework.util.StringUtils;
-import org.springframework.ws.client.WebServiceClientException;
-import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
-import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.server.endpoint.MethodEndpoint;
-import org.springframework.ws.soap.SoapBody;
-import org.springframework.ws.soap.SoapMessage;
-import org.springframework.ws.transport.context.TransportContext;
-import org.springframework.ws.transport.context.TransportContextHolder;
-import org.springframework.ws.transport.http.HttpUrlConnection;
-import org.w3c.dom.Node;
-
-import javax.xml.transform.dom.DOMSource;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.util.StringUtils;
+import org.springframework.ws.client.WebServiceClientException;
+import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
+import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.soap.SoapMessage;
+import org.springframework.ws.transport.context.TransportContext;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpUrlConnection;
+
+import com.trasier.client.api.Span;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.opentracing.TrasierScope;
+import com.trasier.client.opentracing.TrasierSpan;
+
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMap;
+import io.opentracing.tag.Tags;
 
 public class TracingClientInterceptor extends ClientInterceptorAdapter {
     private final Tracer tracer;
@@ -39,7 +37,7 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
 
     @Override
     public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
-        Scope scope = tracer.buildSpan(extractOperationName(messageContext, null))
+        Scope scope = tracer.buildSpan(WSUtil.extractOperationName(messageContext, null))
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                 .startActive(true);
 
@@ -95,7 +93,7 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
 
     private String extractUrlPath(MessageContext messageContext) {
         if (messageContext.getRequest() instanceof SoapMessage) {
-            String pathByOperationName = extractOperationName(messageContext, null);
+            String pathByOperationName = WSUtil.extractOperationName(messageContext, null);
             if (!StringUtils.isEmpty(pathByOperationName)) {
                 return "/" + pathByOperationName;
             }
@@ -103,30 +101,4 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
         return "";
     }
 
-    private String extractOperationName(MessageContext messageContext, Object endpoint) {
-        if (messageContext.getRequest() instanceof SoapMessage) {
-            SoapMessage soapMessage = (SoapMessage) messageContext.getRequest();
-
-            String soapAction = soapMessage.getSoapAction();
-            SoapBody body = soapMessage.getSoapBody();
-            if (body.getPayloadSource() instanceof DOMSource) {
-                Node node = ((DOMSource) body.getPayloadSource()).getNode();
-                return node.getLocalName();
-            } else if (!StringUtils.isEmpty(soapAction)) {
-                soapAction = soapAction.replaceAll("\"", "");
-                String[] soapActionArray = soapAction.split("/");
-                return soapActionArray[soapActionArray.length - 1];
-            }
-        }
-
-        return extractOperationName(endpoint);
-    }
-
-    private String extractOperationName(Object endpoint) {
-        if (endpoint instanceof MethodEndpoint) {
-            return ((MethodEndpoint) endpoint).getMethod().getName();
-        }
-
-        return "UNKNOWN-WS-CALL";
-    }
 }
