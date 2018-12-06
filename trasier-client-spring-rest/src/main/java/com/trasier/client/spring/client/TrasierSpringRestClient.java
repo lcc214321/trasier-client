@@ -5,9 +5,6 @@ import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.interceptor.TrasierSpanInterceptor;
 import com.trasier.client.spring.auth.OAuthTokenSafe;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.SSLContextBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +13,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.net.ssl.SSLContext;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +37,7 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
 
     @Autowired
     public TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, OAuthTokenSafe tokenSafe) throws Exception {
-        this(applicationConfiguration, clientConfiguration, createRestTemplate(), tokenSafe);
+        this(applicationConfiguration, clientConfiguration, new RestTemplate(), tokenSafe);
     }
 
     TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
@@ -118,24 +108,8 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
         // do nothing
     }
 
-
-    private static RestTemplate createRestTemplate() throws Exception {
-        char[] password = "trasier".toCharArray();
-        SSLContext sslContext = new SSLContextBuilder()
-                .loadKeyMaterial(keyStore("classpath:trasier.jks", password), password)
-                .build();
-        HttpClient client = HttpClients.custom().setSSLContext(sslContext).build();
-        return new RestTemplate(new HttpComponentsClientHttpRequestFactory(client));
-    }
-
-
-    private static KeyStore keyStore(String file, char[] password) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        File key = ResourceUtils.getFile(file);
-        try (InputStream in = new FileInputStream(key)) {
-            keyStore.load(in, password);
-        }
-        return keyStore;
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
     }
 
 }
