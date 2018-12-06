@@ -1,11 +1,10 @@
 package com.trasier.client.spring.client;
 
-import java.util.Base64;
-
+import com.trasier.client.api.Span;
 import org.iq80.snappy.Snappy;
 import org.springframework.util.StringUtils;
 
-import com.trasier.client.api.Span;
+import java.util.Base64;
 
 public class TrasierCompressSpanInterceptor {
 
