@@ -5,14 +5,11 @@ import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.interceptor.TrasierSpanInterceptor;
 import com.trasier.client.spring.auth.OAuthTokenSafe;
+import com.trasier.client.util.ProjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -21,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 @Component("trasierSpringClient")
@@ -69,11 +67,13 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
 
         List<Span> spans = new ArrayList<>(spanList);
 
+        applyInterceptors(spans);
+
         if (spans.isEmpty()) {
             return false;
-        } else {
-            applyInterceptors(spans);
         }
+
+        enrichSpans(spans);
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -88,6 +88,22 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
             LOGGER.error(e.getMessage(), e);
             return false;
         }
+    }
+
+    private void enrichSpans(List<Span> spans) {
+        spans.forEach(this::enrichVersion);
+    }
+
+    private void enrichVersion(Span span) {
+        if (span.getTags() == null) {
+            span.setTags(new HashMap<>());
+        }
+        String spanKind = span.getTags().get("span.kind");
+        if (spanKind == null) {
+            spanKind = "-";
+        }
+        span.getTags().put("trasier_client." + spanKind, "rest-spring-client");
+        span.getTags().put("trasier_client_version." + spanKind, ProjectUtils.getProjectVersion());
     }
 
     private void applyInterceptors(List<Span> spans) {
