@@ -35,7 +35,10 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
             trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
             try {
                 trasierSpan.setIncomingHeader(toSingleValueMap(request.headers()));
-                trasierSpan.setIncomingData(new String(request.body()));
+                byte[] body = request.body();
+                if(body != null && body.length > 0) {
+                    trasierSpan.setIncomingData(new String(body));
+                }
             } catch (Exception e) {
                 LOGGER.error("Error while logging request", e);
             }
