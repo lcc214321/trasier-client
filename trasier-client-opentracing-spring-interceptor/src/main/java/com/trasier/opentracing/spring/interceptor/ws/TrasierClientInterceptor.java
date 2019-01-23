@@ -64,7 +64,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                     messageContext.getRequest().writeTo(out);
                     trasierSpan.setIncomingData(out.toString());
                     trasierSpan.setIncomingHeader(extractHeaders(messageContext.getRequest()));
-                    enhanceIncommingEndpoint(trasierSpan);
+                    enhanceIncomingEndpoint(trasierSpan);
                 } catch (IOException e) {
                     LOG.error(e.getMessage(), e);
                 }
@@ -165,7 +165,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
         return result.toSingleValueMap();
     }
 
-    private void enhanceIncommingEndpoint(com.trasier.client.api.Span span) {
+    private void enhanceIncomingEndpoint(com.trasier.client.api.Span span) {
         // no synchronisation on purpose
         if (this.localEndpoint == null) {
             Endpoint endpoint = new Endpoint(configuration.getSystemName());
