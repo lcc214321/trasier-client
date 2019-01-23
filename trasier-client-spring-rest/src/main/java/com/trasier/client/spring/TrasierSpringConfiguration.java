@@ -15,6 +15,7 @@ public class TrasierSpringConfiguration {
     private long queueDelay = 500L;
     private int maxTaskCount = 100;
     private int maxSpansPerTask = 10;
+    private int maxPoolSize = 20;
 
     public int getQueueSize() {
         return queueSize;
@@ -54,5 +55,13 @@ public class TrasierSpringConfiguration {
 
     public void setQueueSizeErrorThresholdMultiplicator(int queueSizeErrorThresholdMultiplicator) {
         this.queueSizeErrorThresholdMultiplicator = queueSizeErrorThresholdMultiplicator;
+    }
+
+    public int getMaxPoolSize() {
+        return maxPoolSize;
+    }
+
+    public void setMaxPoolSize(final int maxPoolSize) {
+        this.maxPoolSize = maxPoolSize;
     }
 }
