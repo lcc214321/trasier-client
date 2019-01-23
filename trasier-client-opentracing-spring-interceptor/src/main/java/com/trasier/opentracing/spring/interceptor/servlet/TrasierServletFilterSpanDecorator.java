@@ -1,5 +1,6 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -33,6 +34,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     private final TrasierClientConfiguration configuration;
     private final List<TrasierSamplingInterceptor> samplingInterceptors;
+    private Endpoint localEndpoint;
     
     public TrasierServletFilterSpanDecorator(TrasierClientConfiguration configuration, List<TrasierSamplingInterceptor> samplingInterceptors) {
         this.configuration = configuration;
@@ -117,11 +119,15 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     }
 
     private void enhanceOutgoingEndpoint(com.trasier.client.api.Span span, ServletRequest request) {
-        Endpoint endpoint = new Endpoint(configuration.getSystemName());
-        endpoint.setHostname(request.getLocalName());
-        endpoint.setIpAddress(request.getLocalAddr());
-        endpoint.setPort("" + request.getLocalPort());
-        span.setOutgoingEndpoint(endpoint);
+        // no synchronisation on purpose
+        if (this.localEndpoint == null) {
+            Endpoint endpoint = new Endpoint(configuration.getSystemName());
+            endpoint.setHostname(request.getLocalName());
+            endpoint.setIpAddress(request.getLocalAddr());
+            endpoint.setPort("" + request.getLocalPort());
+            this.localEndpoint = endpoint;
+        }
+        span.setOutgoingEndpoint(localEndpoint);
     }
 
     protected String extractIncomingEndpointName(Map<String, String> requestHeaders, ServletRequest servletRequest) {

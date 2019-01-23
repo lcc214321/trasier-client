@@ -48,7 +48,7 @@ public class TrasierSpringRestCacheClient implements TrasierSpringClient, Runnab
             this.scheduler = new ScheduledThreadPoolExecutor(1);
             this.scheduler.scheduleWithFixedDelay(this, springConfiguration.getQueueDelay(), springConfiguration.getQueueDelay(), TimeUnit.MILLISECONDS);
 
-            this.executor = new ThreadPoolExecutor(1, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+            this.executor = new ThreadPoolExecutor(1, springConfiguration.getMaxPoolSize(), 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
         }
     }
 
