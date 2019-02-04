@@ -48,32 +48,33 @@ public class InterceptorWebConfiguration {
 
     @PostConstruct
     public void init() {
-        if (configuration.isActivated() && restTemplates != null) {
+        if (restTemplates != null) {
             restTemplates.forEach(this::registerTracingInterceptor);
         }
     }
 
-    private void registerTracingInterceptor(RestTemplate restTemplate) {
-        List<ClientHttpRequestInterceptor> existingInterceptors = restTemplate.getInterceptors();
-        if (existingInterceptors == null || notYetRegistered(existingInterceptors.stream(), TrasierClientRequestInterceptor.class)) {
-            List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-            if (existingInterceptors != null) {
-                interceptors.addAll(existingInterceptors);
-            }
-            if (interceptors.stream().noneMatch(i -> i instanceof TracingRestTemplateInterceptor)) {
-                interceptors.add(new TracingRestTemplateInterceptor(tracer, spanDecorators == null ? Collections.emptyList() : spanDecorators));
-            }
-            if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientRequestInterceptor)) {
-                interceptors.add(new TrasierClientRequestInterceptor(tracer, samplingFilter == null ? Collections.emptyList() : samplingFilter));
-            }
-            if (!(restTemplate.getRequestFactory() instanceof BufferingClientHttpRequestFactory)) {
-                restTemplate.setInterceptors(Collections.emptyList());
-                restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(restTemplate.getRequestFactory()));
-            }
-            restTemplate.setInterceptors(interceptors);
+    public void registerTracingInterceptor(RestTemplate restTemplate) {
+        if(configuration.isActivated()) {
+            List<ClientHttpRequestInterceptor> existingInterceptors = restTemplate.getInterceptors();
+            if (existingInterceptors == null || notYetRegistered(existingInterceptors.stream(), TrasierClientRequestInterceptor.class)) {
+                List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+                if (existingInterceptors != null) {
+                    interceptors.addAll(existingInterceptors);
+                }
+                if (interceptors.stream().noneMatch(i -> i instanceof TracingRestTemplateInterceptor)) {
+                    interceptors.add(new TracingRestTemplateInterceptor(tracer, spanDecorators == null ? Collections.emptyList() : spanDecorators));
+                }
+                if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientRequestInterceptor)) {
+                    interceptors.add(new TrasierClientRequestInterceptor(tracer, samplingFilter == null ? Collections.emptyList() : samplingFilter));
+                }
+                if (!(restTemplate.getRequestFactory() instanceof BufferingClientHttpRequestFactory)) {
+                    restTemplate.setInterceptors(Collections.emptyList());
+                    restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(restTemplate.getRequestFactory()));
+                }
+                restTemplate.setInterceptors(interceptors);
 
+            }
         }
-
     }
 
     private boolean notYetRegistered(Stream<?> interceptors, Class<?> clazz) {
