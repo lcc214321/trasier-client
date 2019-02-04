@@ -53,32 +53,32 @@ public class InterceptorWSConfiguration {
 
     @PostConstruct
     public void init() {
-        if (configuration.isActivated()) {
-            if (webServiceTemplates != null) {
-                webServiceTemplates.forEach(this::registerTracingInterceptor);
-            }
-            if (webServiceGatewaySupports != null) {
-                webServiceGatewaySupports.stream()
-                        .map(WebServiceGatewaySupport::getWebServiceTemplate)
-                        .forEach(this::registerTracingInterceptor);
-            }
+        if (webServiceTemplates != null) {
+            webServiceTemplates.forEach(this::registerTracingInterceptor);
+        }
+        if (webServiceGatewaySupports != null) {
+            webServiceGatewaySupports.stream()
+                    .map(WebServiceGatewaySupport::getWebServiceTemplate)
+                    .forEach(this::registerTracingInterceptor);
         }
     }
 
-    private void registerTracingInterceptor(WebServiceTemplate webServiceTemplate) {
-        ClientInterceptor[] existingInterceptors = webServiceTemplate.getInterceptors();
-        if (existingInterceptors == null || notYetRegistered(Arrays.stream(existingInterceptors), TrasierClientInterceptor.class)) {
-            List<ClientInterceptor> interceptors = new ArrayList<>();
-            if (existingInterceptors != null) {
-                interceptors.addAll(Arrays.asList(existingInterceptors));
+    public void registerTracingInterceptor(WebServiceTemplate webServiceTemplate) {
+        if (configuration.isActivated()) {
+            ClientInterceptor[] existingInterceptors = webServiceTemplate.getInterceptors();
+            if (existingInterceptors == null || notYetRegistered(Arrays.stream(existingInterceptors), TrasierClientInterceptor.class)) {
+                List<ClientInterceptor> interceptors = new ArrayList<>();
+                if (existingInterceptors != null) {
+                    interceptors.addAll(Arrays.asList(existingInterceptors));
+                }
+                if (interceptors.stream().noneMatch(i -> i instanceof TracingClientInterceptor)) {
+                    interceptors.add(new TracingClientInterceptor(tracer, samplingFilter == null ? Collections.emptyList() : samplingFilter));
+                }
+                if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientInterceptor)) {
+                    interceptors.add(new TrasierClientInterceptor(tracer, configuration));
+                }
+                webServiceTemplate.setInterceptors(interceptors.toArray(new ClientInterceptor[interceptors.size()]));
             }
-            if (interceptors.stream().noneMatch(i -> i instanceof TracingClientInterceptor)) {
-                interceptors.add(new TracingClientInterceptor(tracer, samplingFilter == null ? Collections.emptyList() : samplingFilter));
-            }
-            if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientInterceptor)) {
-                interceptors.add(new TrasierClientInterceptor(tracer, configuration));
-            }
-            webServiceTemplate.setInterceptors(interceptors.toArray(new ClientInterceptor[interceptors.size()]));
         }
     }
 
