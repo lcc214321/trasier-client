@@ -11,9 +11,9 @@ import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapMessage;
+import org.springframework.ws.transport.HeadersAwareSenderWebServiceConnection;
 import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
-import org.springframework.ws.transport.http.HttpUrlConnection;
 
 import com.trasier.client.api.Span;
 import com.trasier.client.interceptor.TrasierSamplingInterceptor;
@@ -53,8 +53,9 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
         }
 
         TransportContext context = TransportContextHolder.getTransportContext();
-        if (context.getConnection() instanceof HttpUrlConnection) {
-            final HttpUrlConnection httpConnection = (HttpUrlConnection) context.getConnection();
+        if (context.getConnection() instanceof HeadersAwareSenderWebServiceConnection) {
+            final HeadersAwareSenderWebServiceConnection httpConnection = (HeadersAwareSenderWebServiceConnection) context.getConnection();
+
             tracer.inject(scope.span().context(), Format.Builtin.HTTP_HEADERS, new TextMap() {
                 @Override
                 public Iterator<Map.Entry<String, String>> iterator() {
@@ -65,6 +66,9 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
                 public void put(String key, String value) {
                     try {
                         httpConnection.addRequestHeader(key, value);
+                        if (scope instanceof TrasierScope) {
+                            ((TrasierSpan) scope.span()).unwrap().getIncomingHeader().put(key, value);
+                        }
                     } catch (IOException e) {
                         logger.error(e.getMessage(), e);
                     }

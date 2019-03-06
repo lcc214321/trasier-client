@@ -1,20 +1,22 @@
 package com.trasier.opentracing.feign.interceptor;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.trasier.client.api.ContentType;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ExceptionUtils;
 import com.trasier.opentracing.spring.interceptor.rest.TrasierClientRequestInterceptor;
+
 import feign.opentracing.FeignSpanDecorator;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrasierClientRequestInterceptor.class);
@@ -34,7 +36,7 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
             trasierSpan.setIncomingContentType(ContentType.JSON);
             trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
             try {
-                trasierSpan.setIncomingHeader(toSingleValueMap(request.headers()));
+                trasierSpan.getIncomingHeader().putAll(toSingleValueMap(request.headers()));
                 byte[] body = request.body();
                 if(body != null && body.length > 0) {
                     trasierSpan.setIncomingData(new String(body));
@@ -53,7 +55,7 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
             if (response != null) {
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 try {
-                    trasierSpan.setOutgoingHeader(toSingleValueMap(response.headers()));
+                    trasierSpan.getOutgoingHeader().putAll(toSingleValueMap(response.headers()));
                     // TODO
 //                    String responseBody = StreamUtils.copyToString(response.body().asInputStream(), Charset.defaultCharset());
 //                    trasierSpan.setOutgoingData(responseBody);

@@ -1,6 +1,5 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
-import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -82,7 +81,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
             trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
-            trasierSpan.setOutgoingHeader(getResponseHeaders(response));
+            trasierSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
             trasierSpan.setOutgoingData(ExceptionUtils.getString(exception));
             trasierSpan.setOutgoingContentType(ContentType.TEXT);
         }
@@ -95,7 +94,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
             trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
-            trasierSpan.setOutgoingHeader(getResponseHeaders(response));
+            trasierSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
             trasierSpan.setOutgoingData("Execution timeout after " + timeout);
             trasierSpan.setOutgoingContentType(ContentType.TEXT);
         }
@@ -104,7 +103,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     private void handleRequest(CachedServletRequestWrapper request, com.trasier.client.api.Span currentSpan) {
         //TODO handle headers und parameters
         Map<String, String> requestHeaders = getRequestHeaders(request);
-        currentSpan.setIncomingHeader(requestHeaders);
+        currentSpan.getIncomingHeader().putAll(requestHeaders);
         String requestBody = new String(request.getContentAsByteArray());
         currentSpan.setIncomingData(requestBody);
         currentSpan.setName(currentSpan.getName());
@@ -161,7 +160,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     private void handleResponse(CachedServletResponseWrapper response, com.trasier.client.api.Span currentSpan) {
         //TODO use Clock everywhere
         currentSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
-        currentSpan.setOutgoingHeader(getResponseHeaders(response));
+        currentSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
         String responseBody = new String(response.getContentAsByteArray());
         currentSpan.setOutgoingData(responseBody);
         currentSpan.setOutgoingContentType(ContentTypeResolver.resolveFromPayload(responseBody));

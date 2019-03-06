@@ -63,7 +63,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     messageContext.getRequest().writeTo(out);
                     trasierSpan.setIncomingData(out.toString());
-                    trasierSpan.setIncomingHeader(extractHeaders(messageContext.getRequest()));
+                    trasierSpan.getIncomingHeader().putAll(extractHeaders(messageContext.getRequest()));
                     enhanceIncomingEndpoint(trasierSpan);
                 } catch (IOException e) {
                     LOG.error(e.getMessage(), e);
@@ -88,7 +88,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                 messageContext.getResponse().writeTo(out);
                 String outgoingData = out.toString();
                 trasierSpan.setOutgoingData(outgoingData);
-                trasierSpan.setOutgoingHeader(extractHeaders(messageContext.getResponse()));
+                trasierSpan.getOutgoingHeader().putAll(extractHeaders(messageContext.getResponse()));
             } catch (IOException e) {
                 LOG.error(e.getMessage(), e);
             }
