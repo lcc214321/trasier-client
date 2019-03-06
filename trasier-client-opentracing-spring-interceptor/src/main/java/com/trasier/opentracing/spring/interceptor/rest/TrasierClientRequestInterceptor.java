@@ -50,7 +50,7 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
             trasierSpan.setIncomingContentType(ContentType.JSON);
             trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
             try {
-                trasierSpan.setIncomingHeader(request.getHeaders().toSingleValueMap());
+                trasierSpan.getIncomingHeader().putAll(request.getHeaders().toSingleValueMap());
                 trasierSpan.setIncomingData(new String(data));
             } catch (Exception e) {
                 LOGGER.error("Error while logging request", e);
@@ -65,7 +65,7 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
             if (response != null) {
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 try {
-                    trasierSpan.setOutgoingHeader(response.getHeaders().toSingleValueMap());
+                    trasierSpan.getOutgoingHeader().putAll(response.getHeaders().toSingleValueMap());
                     InputStream body = null;
                     try {
                         body = response.getBody(); // throws exception on empty input stream

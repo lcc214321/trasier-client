@@ -1,8 +1,14 @@
 package com.trasier.client.api;
 
-import lombok.*;
-
+import java.util.LinkedHashMap;
 import java.util.Map;
+
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 
 @Builder(builderMethodName = "hiddenBuilder")
 @Getter
@@ -44,5 +50,26 @@ public class Span {
 
     private static SpanBuilder hiddenBuilder() {
         return new SpanBuilder();
+    }
+
+    public Map<String, String> getIncomingHeader() {
+        if (this.incomingHeader == null) {
+            this.incomingHeader = new LinkedHashMap<>();
+        }
+        return this.incomingHeader;
+    }
+
+    public Map<String, String> getOutgoingHeader() {
+        if (this.outgoingHeader == null) {
+            this.outgoingHeader = new LinkedHashMap<>();
+        }
+        return this.outgoingHeader;
+    }
+
+    public Map<String, String> getTags() {
+        if (this.tags == null) {
+            this.tags = new LinkedHashMap<>();
+        }
+        return this.tags;
     }
 }
