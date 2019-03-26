@@ -11,13 +11,13 @@ import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.opentracing.TrasierScopeManager;
 import com.trasier.client.opentracing.TrasierTracer;
+import com.trasier.client.spring.TrasierSpringClientQueueConfiguration;
 import com.trasier.client.spring.TrasierSpringConfiguration;
-import com.trasier.client.spring.TrasierSpringRootConfiguration;
 import com.trasier.client.spring.spancontrol.TrasierSampleByOperationConfiguration;
 import com.trasier.client.spring.spancontrol.TrasierSampleByUrlPatternConfiguration;
 
 @Configuration
-@Import({TrasierSpringRootConfiguration.class})
+@Import({TrasierSpringConfiguration.class})
 public class TrasierOpentracingConfiguration {
 
     @Bean
@@ -28,9 +28,9 @@ public class TrasierOpentracingConfiguration {
 
     @Bean
     @Primary
-    @ConfigurationProperties("trasier.client.spring")
-    public TrasierSpringConfiguration trasierSpringConfiguration() {
-        return new TrasierSpringConfiguration();
+    @ConfigurationProperties("trasier.client.queue")
+    public TrasierSpringClientQueueConfiguration trasierSpringConfiguration() {
+        return new TrasierSpringClientQueueConfiguration();
     }
 
     @Bean

@@ -1,10 +1,9 @@
 package com.trasier.client.spring.client;
 
-import com.trasier.client.api.ContentType;
-import com.trasier.client.api.Endpoint;
-import com.trasier.client.api.Span;
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.spring.TrasierSpringConfiguration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import com.trasier.client.api.ContentType;
+import com.trasier.client.api.Endpoint;
+import com.trasier.client.api.Span;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.spring.TrasierSpringClientQueueConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TrasierSpringConfiguration.class, TrasierClientConfiguration.class})
+@ContextConfiguration(classes = {TrasierSpringClientQueueConfiguration.class, TrasierClientConfiguration.class})
 public class SpringRestClientIntegrationTest {
     @Autowired
     private TrasierSpringRestClient client;
