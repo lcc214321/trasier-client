@@ -14,7 +14,7 @@ import com.trasier.client.spring.spancontrol.TrasierSampleByOperationInterceptor
 public class TrasierSpringConfiguration {
 
     @Bean
-    public TrasierSpringClientQueueConfiguration trasierSpringConfiguration() {
+    public TrasierSpringClientQueueConfiguration trasierSpringClientQueueConfiguration() {
         return new TrasierSpringClientQueueConfiguration();
     }
 

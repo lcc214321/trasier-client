@@ -29,7 +29,7 @@ public class TrasierOpentracingConfiguration {
     @Bean
     @Primary
     @ConfigurationProperties("trasier.client.queue")
-    public TrasierSpringClientQueueConfiguration trasierSpringConfiguration() {
+    public TrasierSpringClientQueueConfiguration trasierSpringClientQueueConfiguration() {
         return new TrasierSpringClientQueueConfiguration();
     }
 
