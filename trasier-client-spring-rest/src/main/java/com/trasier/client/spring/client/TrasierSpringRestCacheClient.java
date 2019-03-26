@@ -1,14 +1,5 @@
 package com.trasier.client.spring.client;
 
-import com.trasier.client.api.Span;
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.spring.TrasierSpringConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -18,13 +9,23 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+
+import com.trasier.client.api.Span;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.spring.TrasierSpringClientQueueConfiguration;
+
 @Primary
 @Component("trasierSpringCacheClient")
 public class TrasierSpringRestCacheClient implements TrasierSpringClient, Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrasierSpringRestCacheClient.class);
 
     private final TrasierClientConfiguration clientConfig;
-    private final TrasierSpringConfiguration springConfiguration;
+    private final TrasierSpringClientQueueConfiguration springConfiguration;
     private final TrasierSpringRestClient springRestClient;
     private final AtomicInteger countFullQueueErrors = new AtomicInteger();
 
@@ -35,7 +36,7 @@ public class TrasierSpringRestCacheClient implements TrasierSpringClient, Runnab
     private TrasierCompressSpanInterceptor compressSpanInterceptor;
 
     @Autowired
-    public TrasierSpringRestCacheClient(TrasierClientConfiguration clientConfig, TrasierSpringConfiguration springConfiguration, TrasierSpringRestClient springRestClient) {
+    public TrasierSpringRestCacheClient(TrasierClientConfiguration clientConfig, TrasierSpringClientQueueConfiguration springConfiguration, TrasierSpringRestClient springRestClient) {
         this.clientConfig = clientConfig;
         this.springConfiguration = springConfiguration;
         this.springRestClient = springRestClient;

@@ -1,13 +1,13 @@
 package com.trasier.client.spring;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 
-public class TrasierSpringConfigurationTest {
+import org.junit.Test;
+
+public class TrasierSpringClientQueueConfigurationTest {
     @Test
     public void getterSetterTest() {
-        TrasierSpringConfiguration sut = new TrasierSpringConfiguration();
+        TrasierSpringClientQueueConfiguration sut = new TrasierSpringClientQueueConfiguration();
 
         sut.setQueueSize(1);
         sut.setQueueDelay(2);
