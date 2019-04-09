@@ -13,6 +13,8 @@ public class OAuthToken {
     private String refreshToken;
     @JsonProperty("refresh_expires_in")
     private String refreshExpiresIn;
+    @JsonProperty("session_state")
+    private String sessionState;
 
     public String getAccessToken() {
         return accessToken;
@@ -44,5 +46,13 @@ public class OAuthToken {
 
     public void setRefreshExpiresIn(String refreshExpiresIn) {
         this.refreshExpiresIn = refreshExpiresIn;
+    }
+
+    public String getSessionState() {
+        return sessionState;
+    }
+
+    public void setSessionState(String sessionState) {
+        this.sessionState = sessionState;
     }
 }
