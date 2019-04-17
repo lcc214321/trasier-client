@@ -5,11 +5,18 @@ import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.interceptor.TrasierSpanInterceptor;
 import com.trasier.client.spring.auth.OAuthTokenSafe;
+import com.trasier.client.spring.client.TrasierSpringClient;
 import com.trasier.client.util.ProjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -38,12 +45,17 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
         this(applicationConfiguration, clientConfiguration, new RestTemplate(), tokenSafe);
     }
 
-    TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
+    public TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
         this.applicationConfiguration = applicationConfiguration;
         this.clientConfiguration = clientConfiguration;
         this.tokenSafe = tokenSafe;
         this.restTemplate = restTemplate;
         this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+        ClientHttpRequestFactory requestFactory = this.restTemplate.getRequestFactory();
+        if(requestFactory instanceof SimpleClientHttpRequestFactory) {
+            ((SimpleClientHttpRequestFactory)requestFactory).setBufferRequestBody(false);
+        }
     }
 
     public boolean sendSpan(Span span) {
@@ -80,7 +92,7 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.add("Authorization", "Bearer " + tokenSafe.getAuthHeader());
 
-            UriComponents builder = UriComponentsBuilder.fromHttpUrl(applicationConfiguration.getWriterEndpoint()).buildAndExpand(accountId, spaceKey);
+            UriComponents builder = UriComponentsBuilder.fromHttpUrl(applicationConfiguration.getHttpEndpoint()).buildAndExpand(accountId, spaceKey);
             HttpEntity<List<Span>> requestEntity = new HttpEntity<>(spans, headers);
             ResponseEntity<Void> exchange = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, requestEntity, Void.class);
             return !exchange.getStatusCode().is4xxClientError() && !exchange.getStatusCode().is5xxServerError();
