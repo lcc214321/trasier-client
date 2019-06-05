@@ -1,25 +1,30 @@
 package com.trasier.client.spring.client;
 
-import com.trasier.client.api.Span;
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.configuration.TrasierEndpointConfiguration;
-import com.trasier.client.interceptor.TrasierSpanInterceptor;
-import com.trasier.client.spring.auth.OAuthTokenSafe;
-import com.trasier.client.util.ProjectUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import com.trasier.client.api.Span;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.interceptor.TrasierSpanInterceptor;
+import com.trasier.client.spring.auth.OAuthTokenSafe;
+import com.trasier.client.util.ProjectUtils;
 
 @Component("trasierSpringClient")
 public class TrasierSpringRestClient implements TrasierSpringClient {
@@ -38,7 +43,7 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
         this(applicationConfiguration, clientConfiguration, new RestTemplate(), tokenSafe);
     }
 
-    TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
+    public TrasierSpringRestClient(TrasierEndpointConfiguration applicationConfiguration, TrasierClientConfiguration clientConfiguration, RestTemplate restTemplate, OAuthTokenSafe tokenSafe) {
         this.applicationConfiguration = applicationConfiguration;
         this.clientConfiguration = clientConfiguration;
         this.tokenSafe = tokenSafe;
