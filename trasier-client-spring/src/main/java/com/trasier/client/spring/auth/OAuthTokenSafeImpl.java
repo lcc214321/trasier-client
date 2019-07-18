@@ -1,7 +1,7 @@
 package com.trasier.client.spring.auth;
 
-import java.util.Base64;
-
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,11 +13,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import java.util.Base64;
 
 @Component
-public class OAuthTokenSafe {
+public class OAuthTokenSafeImpl implements OAuthTokenSafe {
     private static final int EXPIRES_IN_TOLERANCE = 60;
 
     private final TrasierEndpointConfiguration appConfig;
@@ -29,18 +28,18 @@ public class OAuthTokenSafe {
     private long refreshTokenExpiresAt;
 
     @Autowired
-    public OAuthTokenSafe(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig) {
+    public OAuthTokenSafeImpl(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig) {
         this(appConfig, springConfig, new RestTemplate());
     }
 
-    public OAuthTokenSafe(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig, RestTemplate restTemplate) {
+    public OAuthTokenSafeImpl(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig, RestTemplate restTemplate) {
         this.appConfig = appConfig;
         this.springConfig = springConfig;
         this.restTemplate = restTemplate;
         this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
-    public String getAuthHeader() {
+    public String getToken() {
         if (isTokenInvalid()) {
             refreshToken();
         }

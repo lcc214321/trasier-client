@@ -1,9 +1,12 @@
 package com.trasier.client.spring.client;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import com.trasier.client.api.ContentType;
+import com.trasier.client.api.Endpoint;
+import com.trasier.client.api.Span;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.spring.TrasierSpringRestConfiguration;
+import com.trasier.client.spring.rest.TrasierSpringRestClient;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,20 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.trasier.client.api.ContentType;
-import com.trasier.client.api.Endpoint;
-import com.trasier.client.api.Span;
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.spring.TrasierSpringClientQueueConfiguration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TrasierSpringClientQueueConfiguration.class, TrasierClientConfiguration.class})
+@ContextConfiguration(classes = {TrasierSpringRestConfiguration.class, TrasierClientConfiguration.class, TrasierEndpointConfiguration.class})
 public class SpringRestClientIntegrationTest {
     @Autowired
     private TrasierSpringRestClient client;
 
     @Test
-    @Ignore
     public void sendSpanOneByOne() throws InterruptedException {
         Span.SpanBuilder spanBuilder = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "GIVE_50_CHF").startTimestamp(System.currentTimeMillis());
 

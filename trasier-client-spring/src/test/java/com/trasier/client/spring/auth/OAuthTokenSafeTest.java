@@ -4,26 +4,20 @@ import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 public class OAuthTokenSafeTest {
 
     @Test
     public void testRefreshTokenRequestedOnce() {
         // given
-        RestTemplate restTemplate = mock(RestTemplate.class);
+        RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
         TrasierClientConfiguration clientConfig = new TrasierClientConfiguration();
         TrasierEndpointConfiguration appConfig = new TrasierEndpointConfiguration();
 
@@ -34,22 +28,22 @@ public class OAuthTokenSafeTest {
         token.setRefreshExpiresIn("" + (160 * 1000));
         ResponseEntity<OAuthToken> exchange = new ResponseEntity<>(token, HttpStatus.OK);
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class))).thenReturn(exchange);
+        Mockito.when(restTemplate.postForEntity(ArgumentMatchers.anyString(), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(OAuthToken.class))).thenReturn(exchange);
 
-        OAuthTokenSafe sut = new OAuthTokenSafe(appConfig, clientConfig, restTemplate);
+        OAuthTokenSafe sut = new OAuthTokenSafeImpl(appConfig, clientConfig, restTemplate);
 
         // when
-        sut.getAuthHeader();
-        sut.getAuthHeader();
+        sut.getToken();
+        sut.getToken();
 
         // then
-        verify(restTemplate).postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class));
+        Mockito.verify(restTemplate).postForEntity(ArgumentMatchers.anyString(), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(OAuthToken.class));
     }
 
     @Test
     public void testRefreshExpiredToken() {
         // given
-        RestTemplate restTemplate = mock(RestTemplate.class);
+        RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
         TrasierClientConfiguration clientConfig = new TrasierClientConfiguration();
         TrasierEndpointConfiguration appConfig = new TrasierEndpointConfiguration();
 
@@ -60,22 +54,22 @@ public class OAuthTokenSafeTest {
         token.setRefreshExpiresIn("" + (-40 * 1000));
         ResponseEntity<OAuthToken> exchange = new ResponseEntity<>(token, HttpStatus.OK);
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class))).thenReturn(exchange);
+        Mockito.when(restTemplate.postForEntity(ArgumentMatchers.anyString(), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(OAuthToken.class))).thenReturn(exchange);
 
-        OAuthTokenSafe sut = new OAuthTokenSafe(appConfig, clientConfig, restTemplate);
+        OAuthTokenSafe sut = new OAuthTokenSafeImpl(appConfig, clientConfig, restTemplate);
 
         // when
-        sut.getAuthHeader();
-        sut.getAuthHeader();
+        sut.getToken();
+        sut.getToken();
 
         // then
-        verify(restTemplate, times(2)).postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class));
+        Mockito.verify(restTemplate, Mockito.times(2)).postForEntity(ArgumentMatchers.anyString(), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(OAuthToken.class));
     }
 
     @Test
     public void testRefreshExpiredTokenValidRefreshToken() {
         // given
-        RestTemplate restTemplate = mock(RestTemplate.class);
+        RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
         TrasierClientConfiguration clientConfig = new TrasierClientConfiguration();
         TrasierEndpointConfiguration appConfig = new TrasierEndpointConfiguration();
 
@@ -86,25 +80,25 @@ public class OAuthTokenSafeTest {
         token.setRefreshExpiresIn("" + (80 * 1000));
         ResponseEntity<OAuthToken> exchange = new ResponseEntity<>(token, HttpStatus.OK);
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(OAuthToken.class))).thenReturn(exchange);
+        Mockito.when(restTemplate.postForEntity(ArgumentMatchers.anyString(), ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(OAuthToken.class))).thenReturn(exchange);
 
-        OAuthTokenSafe sut = new OAuthTokenSafe(appConfig, clientConfig, restTemplate);
+        OAuthTokenSafe sut = new OAuthTokenSafeImpl(appConfig, clientConfig, restTemplate);
 
         // when 1
-        HttpEntity<MultiValueMap<String, String>> withoutTokenRequestEntity = sut.createTokenRequestEntity();
-        sut.getAuthHeader();
+        HttpEntity<MultiValueMap<String, String>> withoutTokenRequestEntity = ((OAuthTokenSafeImpl) sut).createTokenRequestEntity();
+        sut.getToken();
 
         // then 1
         Assert.assertEquals("client_credentials", withoutTokenRequestEntity.getBody().getFirst("grant_type"));
-        verify(restTemplate, times(1)).postForEntity(anyString(), eq(withoutTokenRequestEntity), eq(OAuthToken.class));
+        Mockito.verify(restTemplate, Mockito.times(1)).postForEntity(ArgumentMatchers.anyString(), ArgumentMatchers.eq(withoutTokenRequestEntity), ArgumentMatchers.eq(OAuthToken.class));
 
         // when 2
-        HttpEntity<MultiValueMap<String, String>> withInvalidTokenRequestEntity = sut.createTokenRequestEntity();
-        sut.getAuthHeader();
+        HttpEntity<MultiValueMap<String, String>> withInvalidTokenRequestEntity = ((OAuthTokenSafeImpl) sut).createTokenRequestEntity();
+        sut.getToken();
 
         // then 2
         Assert.assertEquals("refresh_token", withInvalidTokenRequestEntity.getBody().getFirst("grant_type"));
         Assert.assertEquals("refreshTokenMock", withInvalidTokenRequestEntity.getBody().getFirst("refresh_token"));
-        verify(restTemplate, times(1)).postForEntity(anyString(), eq(withInvalidTokenRequestEntity), eq(OAuthToken.class));
+        Mockito.verify(restTemplate, Mockito.times(1)).postForEntity(ArgumentMatchers.anyString(), ArgumentMatchers.eq(withInvalidTokenRequestEntity), ArgumentMatchers.eq(OAuthToken.class));
     }
 }

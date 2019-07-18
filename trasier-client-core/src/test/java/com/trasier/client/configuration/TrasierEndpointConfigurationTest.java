@@ -8,8 +8,8 @@ public class TrasierEndpointConfigurationTest {
     @Test
     public void getWriterEndpoint() {
         TrasierEndpointConfiguration configuration = new TrasierEndpointConfiguration();
-        configuration.setWriterEndpoint("writer");
-        assertEquals("writer", configuration.getWriterEndpoint());
+        configuration.setHttpEndpoint("writer");
+        assertEquals("writer", configuration.getHttpEndpoint());
     }
 
     @Test

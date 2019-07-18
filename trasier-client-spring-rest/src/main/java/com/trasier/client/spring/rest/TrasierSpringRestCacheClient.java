@@ -1,4 +1,15 @@
-package com.trasier.client.spring.client;
+package com.trasier.client.spring.rest;
+
+import com.trasier.client.api.Span;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.spring.TrasierCompressSpanInterceptor;
+import com.trasier.client.spring.TrasierSpringClientQueueConfiguration;
+import com.trasier.client.spring.client.TrasierSpringClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,16 +19,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
-
-import com.trasier.client.api.Span;
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.spring.TrasierSpringClientQueueConfiguration;
 
 @Primary
 @Component("trasierSpringCacheClient")
@@ -115,10 +116,10 @@ public class TrasierSpringRestCacheClient implements TrasierSpringClient, Runnab
         do {
             final List<Span> spans = new ArrayList<>(springConfiguration.getMaxSpansPerTask());
             spanCount = spanQueue.drainTo(spans, springConfiguration.getMaxSpansPerTask());
-            if(spanCount > 0) {
+            if (spanCount > 0) {
                 executor.submit(() -> springRestClient.sendSpans(spans));
             }
-        } while(spanCount == springConfiguration.getMaxSpansPerTask() && (maxNewTasks--) > 0);
+        } while (spanCount == springConfiguration.getMaxSpansPerTask() && (maxNewTasks--) > 0);
     }
 
     public AtomicInteger getCountFullQueueErrors() {

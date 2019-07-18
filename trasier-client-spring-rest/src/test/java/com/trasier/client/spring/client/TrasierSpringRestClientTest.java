@@ -4,6 +4,7 @@ import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.spring.auth.OAuthTokenSafe;
+import com.trasier.client.spring.rest.TrasierSpringRestClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
@@ -14,11 +15,15 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class TrasierSpringRestClientTest {
 
-    private RestTemplate teamplate;
+    private RestTemplate template;
     private TrasierSpringRestClient sut;
     private TrasierClientConfiguration clientConfig;
 
@@ -31,9 +36,9 @@ public class TrasierSpringRestClientTest {
         clientConfig.setSpaceKey("my-space");
         clientConfig.setSystemName("ping");
         clientConfig.setClientSecret("abcd1234");
-        teamplate = mock(RestTemplate.class);
+        template = mock(RestTemplate.class);
         OAuthTokenSafe tokenSafe = mock(OAuthTokenSafe.class);
-        sut = new TrasierSpringRestClient(config, clientConfig, teamplate, tokenSafe);
+        sut = new TrasierSpringRestClient(config, clientConfig, template, tokenSafe);
     }
 
     @Test
@@ -46,7 +51,7 @@ public class TrasierSpringRestClientTest {
         sut.sendSpan(span);
 
         // then
-        verify(teamplate, times(0)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
+        verify(template, times(0)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
     }
 
     @Test
@@ -60,7 +65,7 @@ public class TrasierSpringRestClientTest {
 
         // then
         assertNotNull(span.getTags().get("trasier_client.-"));
-        verify(teamplate, times(1)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
+        verify(template, times(1)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
     }
 
     @Test
@@ -76,7 +81,7 @@ public class TrasierSpringRestClientTest {
 
         // then
         assertNotNull(span.getTags().get("trasier_client.server"));
-        verify(teamplate, times(1)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
+        verify(template, times(1)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
     }
 
     @Test
@@ -88,7 +93,7 @@ public class TrasierSpringRestClientTest {
         sut.sendSpans(Collections.emptyList());
 
         // then
-        verify(teamplate, times(0)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
+        verify(template, times(0)).exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class));
     }
 
 

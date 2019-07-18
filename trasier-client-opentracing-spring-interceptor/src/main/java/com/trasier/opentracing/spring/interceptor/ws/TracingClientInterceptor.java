@@ -1,11 +1,14 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.trasier.client.api.Span;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.opentracing.TrasierScope;
+import com.trasier.client.opentracing.TrasierSpan;
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMap;
+import io.opentracing.tag.Tags;
 import org.springframework.util.StringUtils;
 import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
@@ -15,16 +18,11 @@ import org.springframework.ws.transport.HeadersAwareSenderWebServiceConnection;
 import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
 
-import com.trasier.client.api.Span;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
-import com.trasier.client.opentracing.TrasierScope;
-import com.trasier.client.opentracing.TrasierSpan;
-
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMap;
-import io.opentracing.tag.Tags;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class TracingClientInterceptor extends ClientInterceptorAdapter {
     private final Tracer tracer;
@@ -66,7 +64,7 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
                 public void put(String key, String value) {
                     try {
                         httpConnection.addRequestHeader(key, value);
-                        if (scope instanceof TrasierScope) {
+                        if (scope instanceof TrasierScope && value != null) {
                             ((TrasierSpan) scope.span()).unwrap().getIncomingHeader().put(key, value);
                         }
                     } catch (IOException e) {

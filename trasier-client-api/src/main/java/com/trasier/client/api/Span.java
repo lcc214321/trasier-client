@@ -28,6 +28,7 @@ public class Span {
     private String parentId;
     private String status;
     private Map<String, String> tags;
+    private Map<String, String> features;
 
     private Long startTimestamp;
     private Long beginProcessingTimestamp;
@@ -71,5 +72,12 @@ public class Span {
             this.tags = new LinkedHashMap<>();
         }
         return this.tags;
+    }
+
+    public Map<String, String> getFeatures() {
+        if (this.features == null) {
+            this.features = new LinkedHashMap<>();
+        }
+        return this.features;
     }
 }

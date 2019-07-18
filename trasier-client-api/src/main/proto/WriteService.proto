@@ -5,7 +5,7 @@ option java_multiple_files = true;
 package com.trasier.api.client.protobuf;
 
 service WriteService {
-    rpc send(SpanRequest) returns (SpanResponse);
+    rpc send(stream SpanRequest) returns (stream SpanResponse);
 }
 
 message SpanResponse {
@@ -32,16 +32,17 @@ message Span {
     int64 finishProcessingTimestamp = 10;
 
     map<string, string> tags = 11;
+    map<string, string> features = 12;
 
-    Endpoint incomingEndpoint = 12;
-    ContentType incomingContentType = 13;
-    map<string, string> incomingHeader = 14;
-    string incomingData = 15;
+    Endpoint incomingEndpoint = 13;
+    ContentType incomingContentType = 14;
+    map<string, string> incomingHeader = 15;
+    string incomingData = 16;
 
-    Endpoint outgoingEndpoint = 16;
-    ContentType outgoingContentType = 17;
-    map<string, string> outgoingHeader = 18;
-    string outgoingData = 19;
+    Endpoint outgoingEndpoint = 17;
+    ContentType outgoingContentType = 18;
+    map<string, string> outgoingHeader = 19;
+    string outgoingData = 20;
 }
 
 enum ContentType {
