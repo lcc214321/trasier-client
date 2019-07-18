@@ -1,18 +1,14 @@
 package com.trasier.opentracing.spring;
 
-import static com.trasier.client.api.TrasierConstants.HEADER_CONVERSATION_ID;
-import static com.trasier.client.api.TrasierConstants.HEADER_SPAN_ID;
-import static com.trasier.client.api.TrasierConstants.HEADER_TRACE_ID;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-
+import com.trasier.client.api.ContentType;
+import com.trasier.client.api.Span;
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.opentracing.TrasierScopeManager;
+import com.trasier.client.opentracing.TrasierTracer;
+import com.trasier.client.opentracing.spring.boot.TrasierOpentracingConfiguration;
+import com.trasier.client.spring.TrasierSpringRestConfiguration;
+import com.trasier.opentracing.spring.interceptor.InterceptorWebConfiguration;
+import com.trasier.opentracing.spring.testsupport.ClientCollector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,17 +29,21 @@ import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import com.trasier.client.api.ContentType;
-import com.trasier.client.api.Span;
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.opentracing.TrasierScopeManager;
-import com.trasier.client.opentracing.TrasierTracer;
-import com.trasier.client.opentracing.spring.boot.TrasierOpentracingConfiguration;
-import com.trasier.opentracing.spring.interceptor.InterceptorWebConfiguration;
-import com.trasier.opentracing.spring.testsupport.ClientCollector;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
+import static com.trasier.client.api.TrasierConstants.HEADER_CONVERSATION_ID;
+import static com.trasier.client.api.TrasierConstants.HEADER_SPAN_ID;
+import static com.trasier.client.api.TrasierConstants.HEADER_TRACE_ID;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 @RunWith(SpringRunner.class)
-@Import({TrasierOpentracingConfiguration.class, InterceptorWebConfiguration.class})
+@Import({TrasierOpentracingConfiguration.class, TrasierSpringRestConfiguration.class, InterceptorWebConfiguration.class})
 public class TrasierIntegrationTest {
 
     public static final String MOCKED_HTTP_ENDPOINT = "http://localhost:76762/submit";

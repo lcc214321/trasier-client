@@ -1,5 +1,8 @@
 package com.trasier.client.spring;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class TrasierSpringClientQueueConfiguration {
     private int queueSize = 1000;
     private int queueSizeErrorThresholdMultiplicator = 10;

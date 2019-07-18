@@ -1,4 +1,4 @@
-package com.trasier.client.spring.client;
+package com.trasier.client.spring;
 
 import com.trasier.client.api.Span;
 import org.iq80.snappy.Snappy;

@@ -157,7 +157,9 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                 Object next = allHeaders.next();
                 if (next instanceof MimeHeader) {
                     MimeHeader header = (MimeHeader) next;
-                    result.add(header.getName(), header.getValue());
+                    if (header.getValue() != null) {
+                        result.add(header.getName(), header.getValue());
+                    }
                 }
             }
 

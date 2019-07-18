@@ -151,7 +151,9 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             String headerKey = headerNames.nextElement();
             if (!HEADER_KEY_AUTHORIZATION.equalsIgnoreCase(headerKey)) {
                 String headerValue = request.getHeader(headerKey);
-                headerMap.put(headerKey, headerValue);
+                if (headerValue != null) {
+                    headerMap.put(headerKey, headerValue);
+                }
             }
         }
         return headerMap;

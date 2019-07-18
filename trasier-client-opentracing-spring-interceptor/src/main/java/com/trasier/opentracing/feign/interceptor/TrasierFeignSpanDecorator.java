@@ -1,22 +1,20 @@
 package com.trasier.opentracing.feign.interceptor;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.trasier.client.api.ContentType;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ExceptionUtils;
 import com.trasier.opentracing.spring.interceptor.rest.TrasierClientRequestInterceptor;
-
 import feign.opentracing.FeignSpanDecorator;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrasierClientRequestInterceptor.class);
