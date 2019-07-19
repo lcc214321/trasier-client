@@ -13,11 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Primary
@@ -124,5 +120,10 @@ public class TrasierSpringRestCacheClient implements TrasierSpringClient, Runnab
 
     public AtomicInteger getCountFullQueueErrors() {
         return countFullQueueErrors;
+    }
+
+
+    public void setCompressSpanInterceptor(TrasierCompressSpanInterceptor compressSpanInterceptor) {
+        this.compressSpanInterceptor = compressSpanInterceptor;
     }
 }
