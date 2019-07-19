@@ -35,6 +35,7 @@ public class TrasierSpringGrpcClient implements TrasierSpringClient {
     private ManagedChannel channel;
     private WriteServiceGrpc.WriteServiceStub stub;
     private GrpcSpanConverter converter;
+
     private TrasierCompressSpanInterceptor compressSpanInterceptor;
 
     @Autowired(required = false)
@@ -160,6 +161,10 @@ public class TrasierSpringGrpcClient implements TrasierSpringClient {
     @Override
     public void close() {
         channel.shutdownNow();
+    }
+
+    public void setCompressSpanInterceptor(TrasierCompressSpanInterceptor compressSpanInterceptor) {
+        this.compressSpanInterceptor = compressSpanInterceptor;
     }
 
 }

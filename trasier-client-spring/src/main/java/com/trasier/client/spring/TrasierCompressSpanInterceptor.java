@@ -19,6 +19,7 @@ public class TrasierCompressSpanInterceptor {
     private static final String SPAN_KIND_SERVER = "server";
 
     private int payloadLimitBytes = PAYLOAD_LIMIT_BYTES;
+    private boolean truncateMessage = false;
 
     public void intercept(Span span) {
         String incomingData = span.getIncomingData();
@@ -31,8 +32,8 @@ public class TrasierCompressSpanInterceptor {
 
         if (incomingDataBytes.length > 0) {
             if (totalBytes > this.payloadLimitBytes) {
-                if (incomingDataBytes.length > this.payloadLimitBytes || (isServer(span) && outgoingDataBytes.length < this.payloadLimitBytes)){
-                    incomingDataBytes = Snappy.compress(truncate(incomingData.getBytes()));
+                if (incomingDataBytes.length > this.payloadLimitBytes || (isServer(span) && outgoingDataBytes.length < this.payloadLimitBytes)) {
+                    incomingDataBytes = Snappy.compress(truncateMessage ? truncate(incomingData.getBytes()) : PAYLOAD_TOO_BIG);
                 }
             }
             String compressedData = Base64.getEncoder().encodeToString(incomingDataBytes);
@@ -42,7 +43,7 @@ public class TrasierCompressSpanInterceptor {
         if (outgoingDataBytes.length > 0) {
             if (totalBytes > this.payloadLimitBytes) {
                 if (outgoingDataBytes.length > this.payloadLimitBytes || (!isServer(span) && incomingDataBytes.length < this.payloadLimitBytes)) {
-                    outgoingDataBytes = Snappy.compress(truncate(outgoingData.getBytes()));
+                    outgoingDataBytes = Snappy.compress(truncateMessage ? truncate(outgoingData.getBytes()) : PAYLOAD_TOO_BIG);
                 }
             }
             String compressedData = Base64.getEncoder().encodeToString(outgoingDataBytes);
@@ -66,6 +67,10 @@ public class TrasierCompressSpanInterceptor {
 
     public void setPayloadLimitBytes(int payloadLimitBytes) {
         this.payloadLimitBytes = payloadLimitBytes;
+    }
+
+    public void setTruncateMessage(boolean truncateMessage) {
+        this.truncateMessage = truncateMessage;
     }
 
     private boolean isServer(Span span) {
