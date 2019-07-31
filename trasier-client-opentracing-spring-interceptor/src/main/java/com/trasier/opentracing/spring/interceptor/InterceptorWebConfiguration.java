@@ -62,7 +62,7 @@ public class InterceptorWebConfiguration {
                     interceptors.add(new TracingRestTemplateInterceptor(tracer, spanDecorators == null ? Collections.emptyList() : spanDecorators));
                 }
                 if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientRequestInterceptor)) {
-                    interceptors.add(new TrasierClientRequestInterceptor(tracer, samplingFilter == null ? Collections.emptyList() : samplingFilter));
+                    interceptors.add(new TrasierClientRequestInterceptor(tracer, configuration, samplingFilter == null ? Collections.emptyList() : samplingFilter));
                 }
                 if (!(restTemplate.getRequestFactory() instanceof BufferingClientHttpRequestFactory)) {
                     restTemplate.setInterceptors(Collections.emptyList());

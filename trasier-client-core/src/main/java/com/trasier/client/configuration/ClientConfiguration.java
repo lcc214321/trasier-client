@@ -7,4 +7,5 @@ public interface ClientConfiguration {
     String getClientSecret();
     String getSystemName();
     boolean isActivated();
+    boolean isPayloadTracingDisabled();
 }

@@ -31,12 +31,12 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
     public void onRequest(feign.Request request, feign.Request.Options options, Span span) {
         if (span instanceof TrasierSpan) {
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
-            trasierSpan.setIncomingContentType(ContentType.JSON);
             trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
+            trasierSpan.setIncomingContentType(ContentType.JSON);
             try {
                 trasierSpan.getIncomingHeader().putAll(toSingleValueMap(request.headers()));
                 byte[] body = request.body();
-                if(body != null && body.length > 0) {
+                if(body != null && body.length > 0 && !configuration.isPayloadTracingDisabled()) {
                     trasierSpan.setIncomingData(new String(body));
                 }
             } catch (Exception e) {
@@ -71,7 +71,7 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
             trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
 
-            if(e != null) {
+            if(e != null && !configuration.isPayloadTracingDisabled()) {
                 String exception = ExceptionUtils.getString(e);
                 trasierSpan.setOutgoingData(exception);
             }
