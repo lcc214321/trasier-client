@@ -11,18 +11,21 @@ public class TrasierScopeManager implements ScopeManager {
     private final ThreadLocal<Deque<Scope>> scopes = ThreadLocal.withInitial(ArrayDeque::new);
 
     @Override
-    public Scope activate(Span span, boolean finishSpanOnClose) {
-        TrasierScope scope = new TrasierScope(this, (TrasierSpan) span, finishSpanOnClose);
+    public Scope activate(Span span) {
+        TrasierScope scope = new TrasierScope((TrasierSpan) span);
         scopes.get().addFirst(scope);
         return scope;
     }
 
     @Override
-    public Scope active() {
-        return scopes.get().peekFirst();
+    public Span activeSpan() {
+        TrasierScope trasierScope = (TrasierScope) scopes.get().peekFirst();
+        return trasierScope != null ? trasierScope.getSpan() : null;
     }
 
-    public void deactivate(TrasierScope scope) {
-        scopes.get().remove(scope);
+    public Scope closeActiveSpan() {
+        Scope scope = scopes.get().removeFirst();
+        scope.close();
+        return scope;
     }
 }

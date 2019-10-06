@@ -1,10 +1,10 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
-import com.trasier.client.api.Span;
 import com.trasier.client.interceptor.TrasierSamplingInterceptor;
-import com.trasier.client.opentracing.TrasierScope;
+import com.trasier.client.opentracing.TrasierScopeManager;
 import com.trasier.client.opentracing.TrasierSpan;
-import io.opentracing.Scope;
+import io.opentracing.ScopeManager;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
@@ -35,17 +35,15 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
 
     @Override
     public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
-        Scope scope = tracer.buildSpan(WSUtil.extractOperationName(messageContext, null))
-                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                .startActive(true);
+        Span span = tracer.buildSpan(WSUtil.extractOperationName(messageContext, null))
+                .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).start();
 
-        if (scope instanceof TrasierScope) {
-            Span unwrap = ((TrasierSpan) scope.span()).unwrap();
+        if (span instanceof TrasierSpan) {
             Map<String, Object> params = new HashMap<>();
             params.put("url", extractUrlPath(messageContext));
             for (TrasierSamplingInterceptor samplingInterceptor : samplingInterceptors) {
-                if (!samplingInterceptor.shouldSample(unwrap, params)) {
-                    unwrap.setCancel(true);
+                if (!samplingInterceptor.shouldSample(((TrasierSpan) span).unwrap(), params)) {
+                    ((TrasierSpan) span).unwrap().setCancel(true);
                 }
             }
         }
@@ -54,7 +52,7 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
         if (context.getConnection() instanceof HeadersAwareSenderWebServiceConnection) {
             final HeadersAwareSenderWebServiceConnection httpConnection = (HeadersAwareSenderWebServiceConnection) context.getConnection();
 
-            tracer.inject(scope.span().context(), Format.Builtin.HTTP_HEADERS, new TextMap() {
+            tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, new TextMap() {
                 @Override
                 public Iterator<Map.Entry<String, String>> iterator() {
                     return null;
@@ -64,8 +62,8 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
                 public void put(String key, String value) {
                     try {
                         httpConnection.addRequestHeader(key, value);
-                        if (scope instanceof TrasierScope && value != null) {
-                            ((TrasierSpan) scope.span()).unwrap().getIncomingHeader().put(key, value);
+                        if (span instanceof TrasierSpan && value != null) {
+                            ((TrasierSpan) span).unwrap().getIncomingHeader().put(key, value);
                         }
                     } catch (IOException e) {
                         logger.error(e.getMessage(), e);
@@ -89,9 +87,9 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
 
     @Override
     public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
-        Scope activeScope = tracer.scopeManager().active();
-        if(activeScope != null) {
-            activeScope.close();
+        ScopeManager scopeManager = tracer.scopeManager();
+        if (scopeManager instanceof TrasierScopeManager) {
+            ((TrasierScopeManager) scopeManager).closeActiveSpan();
         }
         super.afterCompletion(messageContext, ex);
     }

@@ -4,6 +4,7 @@ import com.trasier.client.api.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
+import io.opentracing.tag.Tag;
 
 import java.util.Map;
 
@@ -41,6 +42,14 @@ public class TrasierSpan implements Span {
     public Span setTag(String key, Number value) {
         if(value != null) {
             wrapped.getTags().put(key, value.toString());
+        }
+        return this;
+    }
+
+    @Override
+    public <T> Span setTag(Tag<T> tag, T value) {
+        if(tag != null && value != null) {
+            wrapped.getTags().put(tag.getKey(), value.toString());
         }
         return this;
     }

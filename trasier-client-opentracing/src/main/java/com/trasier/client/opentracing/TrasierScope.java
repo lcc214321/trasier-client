@@ -1,30 +1,17 @@
 package com.trasier.client.opentracing;
 
 import io.opentracing.Scope;
-import io.opentracing.Span;
 
 public class TrasierScope implements Scope {
-    private final TrasierScopeManager scopeManager;
     private TrasierSpan span;
-    private boolean finishSpanOnClose;
 
-    public TrasierScope(TrasierScopeManager scopeManager, TrasierSpan span, boolean finishSpanOnClose) {
-        this.scopeManager = scopeManager;
+    public TrasierScope(TrasierSpan span) {
         this.span = span;
-        this.finishSpanOnClose = finishSpanOnClose;
     }
 
     @Override
     public void close() {
-        if (finishSpanOnClose) {
-            span.finish();
-        }
-        scopeManager.deactivate(this);
-    }
-
-    @Override
-    public Span span() {
-        return span;
+        //span.finish();
     }
 
     @Override
@@ -40,5 +27,9 @@ public class TrasierScope implements Scope {
     @Override
     public int hashCode() {
         return span != null ? span.hashCode() : 0;
+    }
+
+    public TrasierSpan getSpan() {
+        return span;
     }
 }
