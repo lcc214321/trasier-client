@@ -55,6 +55,8 @@
         <module>trasier-client-api-protobuf</module>
         <module>trasier-client-core</module>
         <module>trasier-client-spring</module>
+        <module>trasier-client-spring-noop</module>
+        <module>trasier-client-spring-noop-starter</module>
         <module>trasier-client-spring-rest</module>
         <module>trasier-client-spring-rest-starter</module>
         <module>trasier-client-spring-grpc</module>
