@@ -7,7 +7,7 @@ public class TrasierEndpointConfiguration {
     private static final String TRASIER_GRPC_ENDPOINT_PROPERTY = "trasier.endpoint.grpcEndpoint";
 
     private static final String DEFAULT_HTTP_ENDPOINT = "https://writer.trasier.com/api/accounts/{accountId}/spaces/{spaceKey}/spans";
-    private static final String DEFAULT_GRPC_ENDPOINT = "api.trasier.com:443";
+    private static final String DEFAULT_GRPC_ENDPOINT = "grpc.trasier.com:443";
     private static final String DEFAULT_AUTH_ENDPOINT = "https://auth.trasier.com/auth/realms/trasier-prod/protocol/openid-connect/token";
 
     private String httpEndpoint = System.getProperty(TRASIER_HTTP_ENDPOINT_PROPERTY, DEFAULT_HTTP_ENDPOINT);
