@@ -13,6 +13,7 @@ public class TrasierSpan implements Span {
     private TrasierClientConfiguration configuration;
     private final com.trasier.client.api.Span wrapped;
     private Map<String, String> baggageItems;
+    private boolean finished;
 
     public TrasierSpan(Client client, TrasierClientConfiguration configuration, com.trasier.client.api.Span wrapped, Map<String, String> baggageItems) {
         this.client = client;
@@ -95,6 +96,10 @@ public class TrasierSpan implements Span {
         return this;
     }
 
+    public boolean isFinished() {
+        return finished;
+    }
+
     @Override
     public void finish() {
         finish(System.currentTimeMillis());
@@ -102,8 +107,11 @@ public class TrasierSpan implements Span {
 
     @Override
     public void finish(long endTimestamp) {
-        wrapped.setEndTimestamp(endTimestamp);
-        client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), unwrap());
+        if(!finished) {
+            wrapped.setEndTimestamp(endTimestamp);
+            finished = true;
+            client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), unwrap());
+        }
     }
 
     public com.trasier.client.api.Span unwrap() {

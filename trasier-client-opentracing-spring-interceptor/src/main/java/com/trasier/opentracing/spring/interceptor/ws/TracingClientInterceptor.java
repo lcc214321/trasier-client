@@ -89,7 +89,7 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
     public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
         ScopeManager scopeManager = tracer.scopeManager();
         if (scopeManager instanceof TrasierScopeManager) {
-            ((TrasierScopeManager) scopeManager).closeActiveSpan();
+            ((TrasierScopeManager) scopeManager).activeScope().close();
         }
         super.afterCompletion(messageContext, ex);
     }
