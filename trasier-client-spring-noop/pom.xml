@@ -11,15 +11,19 @@
         <lombok.version>1.16.16</lombok.version>
     </properties>
 
-    <artifactId>trasier-client-spring</artifactId>
+    <artifactId>trasier-client-spring-noop</artifactId>
+
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>com.trasier</groupId>
-            <artifactId>trasier-client-core</artifactId>
+            <artifactId>trasier-client-spring</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.iq80.snappy</groupId>
             <artifactId>snappy</artifactId>
@@ -48,6 +52,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -57,6 +62,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>

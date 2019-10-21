@@ -3,7 +3,11 @@ package com.trasier.client.opentracing;
 import com.trasier.client.api.Client;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import io.opentracing.*;
+import io.opentracing.Scope;
+import io.opentracing.ScopeManager;
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
 
@@ -29,8 +33,18 @@ public class TrasierTracer implements Tracer {
 
     @Override
     public Span activeSpan() {
-        Scope active = trasierScopeManager.active();
-        return active != null ? active.span() : null;
+        return trasierScopeManager.activeSpan();
+    }
+
+    @Override
+    public Scope activateSpan(Span span) {
+        return trasierScopeManager.activate(span);
+    }
+
+    @Override
+    public void close() {
+        //TODO Hackergarten
+        //Close everything
     }
 
     @Override

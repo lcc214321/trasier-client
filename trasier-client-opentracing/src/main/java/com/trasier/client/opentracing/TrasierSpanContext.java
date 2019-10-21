@@ -46,6 +46,16 @@ public class TrasierSpanContext implements SpanContext {
     }
 
     @Override
+    public String toTraceId() {
+        return traceId;
+    }
+
+    @Override
+    public String toSpanId() {
+        return spanId;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
