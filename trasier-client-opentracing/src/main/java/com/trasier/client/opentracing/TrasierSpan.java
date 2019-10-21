@@ -4,6 +4,7 @@ import com.trasier.client.api.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
+import io.opentracing.tag.Tag;
 
 import java.util.Map;
 
@@ -12,6 +13,7 @@ public class TrasierSpan implements Span {
     private TrasierClientConfiguration configuration;
     private final com.trasier.client.api.Span wrapped;
     private Map<String, String> baggageItems;
+    private boolean finished;
 
     public TrasierSpan(Client client, TrasierClientConfiguration configuration, com.trasier.client.api.Span wrapped, Map<String, String> baggageItems) {
         this.client = client;
@@ -41,6 +43,14 @@ public class TrasierSpan implements Span {
     public Span setTag(String key, Number value) {
         if(value != null) {
             wrapped.getTags().put(key, value.toString());
+        }
+        return this;
+    }
+
+    @Override
+    public <T> Span setTag(Tag<T> tag, T value) {
+        if(tag != null && value != null) {
+            wrapped.getTags().put(tag.getKey(), value.toString());
         }
         return this;
     }
@@ -86,6 +96,10 @@ public class TrasierSpan implements Span {
         return this;
     }
 
+    public boolean isFinished() {
+        return finished;
+    }
+
     @Override
     public void finish() {
         finish(System.currentTimeMillis());
@@ -93,8 +107,11 @@ public class TrasierSpan implements Span {
 
     @Override
     public void finish(long endTimestamp) {
-        wrapped.setEndTimestamp(endTimestamp);
-        client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), unwrap());
+        if(!finished) {
+            wrapped.setEndTimestamp(endTimestamp);
+            finished = true;
+            client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), unwrap());
+        }
     }
 
     public com.trasier.client.api.Span unwrap() {

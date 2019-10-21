@@ -3,7 +3,11 @@ package com.trasier.client.opentracing;
 import com.trasier.client.api.Client;
 import com.trasier.client.api.Endpoint;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import io.opentracing.*;
+import io.opentracing.References;
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.tag.Tag;
 import io.opentracing.tag.Tags;
 
 import java.util.HashMap;
@@ -75,7 +79,7 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
 
     @Override
     public Tracer.SpanBuilder withTag(String key, String value) {
-        if(value != null) {
+        if (value != null) {
             tags.put(key, value);
         }
         return this;
@@ -89,8 +93,16 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
 
     @Override
     public Tracer.SpanBuilder withTag(String key, Number value) {
-        if(value != null) {
+        if (value != null) {
             tags.put(key, value.toString());
+        }
+        return this;
+    }
+
+    @Override
+    public <T> Tracer.SpanBuilder withTag(Tag<T> tag, T value) {
+        if (tag != null && value != null) {
+            tags.put(tag.getKey(), value.toString());
         }
         return this;
     }
@@ -102,34 +114,17 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
     }
 
     @Override
-    public Scope startActive(boolean finishSpanOnClose) {
-        if (!ignoreActiveSpan) {
-            Scope parent = tracer.scopeManager().active();
-            if (parent != null) {
-                asChildOf(parent.span());
-            }
-        }
-        return tracer.scopeManager().activate(start(), finishSpanOnClose);
-    }
-
-    @Deprecated
-    @Override
-    public Span startManual() {
-        return start();
-    }
-
-    @Override
     public Span start() {
         boolean server = Tags.SPAN_KIND_SERVER.equals(tags.get(Tags.SPAN_KIND.getKey()));
 
         if (reference == null && !ignoreActiveSpan) {
-            Scope parent = tracer.scopeManager().active();
+            Span parent = tracer.scopeManager().activeSpan();
             if (parent != null) {
-                asChildOf(parent.span());
+                asChildOf(parent);
             }
         }
 
-        if(server && reference != null) {
+        if (server && reference != null) {
             spanId = reference.getSpanId();
         }
 
@@ -138,7 +133,7 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
         wrappedBuilder.outgoingEndpoint(new Endpoint(configuration.getSystemName()));
         wrappedBuilder.startTimestamp(startTimestamp);
         wrappedBuilder.cancel(cancel);
-        if(reference != null) {
+        if (reference != null) {
             wrappedBuilder.parentId(reference.getSpanId());
         }
         com.trasier.client.api.Span wrapped = wrappedBuilder.build();

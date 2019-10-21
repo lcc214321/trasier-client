@@ -1,41 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <parent>
         <artifactId>trasier-client</artifactId>
         <groupId>com.trasier</groupId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
-
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>trasier-client-core</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>trasier-client-spring-noop-starter</artifactId>
 
     <dependencies>
         <dependency>
+            <groupId>io.opentracing.contrib</groupId>
+            <artifactId>opentracing-spring-web-starter</artifactId>
+            <version>${opentracing-spring-web.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.trasier</groupId>
-            <artifactId>trasier-client-api</artifactId>
+            <artifactId>trasier-client-opentracing-spring-interceptor-boot</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <groupId>com.trasier</groupId>
+            <artifactId>trasier-client-spring-noop</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-    </build>
 
 </project>
