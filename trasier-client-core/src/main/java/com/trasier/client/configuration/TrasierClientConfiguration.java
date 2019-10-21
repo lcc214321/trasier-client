@@ -7,6 +7,7 @@ public class TrasierClientConfiguration implements ClientConfiguration {
     private String clientSecret;
     private String systemName;
     private boolean activated = true;
+    private boolean payloadTracingDisabled;
 
     @Override
     public String getAccountId() {
@@ -60,6 +61,15 @@ public class TrasierClientConfiguration implements ClientConfiguration {
 
     public void setActivated(boolean activated) {
         this.activated = activated;
+    }
+
+    public void setPayloadTracingDisabled(boolean payloadTracingDisabled) {
+        this.payloadTracingDisabled = payloadTracingDisabled;
+    }
+
+    @Override
+    public boolean isPayloadTracingDisabled() {
+        return payloadTracingDisabled;
     }
 
 }

@@ -1,22 +1,20 @@
 package com.trasier.opentracing.feign.interceptor;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.trasier.client.api.ContentType;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ExceptionUtils;
 import com.trasier.opentracing.spring.interceptor.rest.TrasierClientRequestInterceptor;
-
 import feign.opentracing.FeignSpanDecorator;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrasierClientRequestInterceptor.class);
@@ -33,12 +31,12 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
     public void onRequest(feign.Request request, feign.Request.Options options, Span span) {
         if (span instanceof TrasierSpan) {
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
-            trasierSpan.setIncomingContentType(ContentType.JSON);
             trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
+            trasierSpan.setIncomingContentType(ContentType.JSON);
             try {
                 trasierSpan.getIncomingHeader().putAll(toSingleValueMap(request.headers()));
                 byte[] body = request.body();
-                if(body != null && body.length > 0) {
+                if(body != null && body.length > 0 && !configuration.isPayloadTracingDisabled()) {
                     trasierSpan.setIncomingData(new String(body));
                 }
             } catch (Exception e) {
@@ -73,7 +71,7 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
             trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
 
-            if(e != null) {
+            if(e != null && !configuration.isPayloadTracingDisabled()) {
                 String exception = ExceptionUtils.getString(e);
                 trasierSpan.setOutgoingData(exception);
             }

@@ -1,14 +1,11 @@
 package com.trasier.opentracing.spring.interceptor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
-
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.opentracing.spring.interceptor.ws.TracingClientInterceptor;
+import com.trasier.opentracing.spring.interceptor.ws.TrasierClientInterceptor;
+import com.trasier.opentracing.spring.interceptor.ws.TrasierEndpointInterceptor;
+import io.opentracing.Tracer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,13 +13,13 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
-import com.trasier.opentracing.spring.interceptor.ws.TracingClientInterceptor;
-import com.trasier.opentracing.spring.interceptor.ws.TrasierClientInterceptor;
-import com.trasier.opentracing.spring.interceptor.ws.TrasierEndpointInterceptor;
-
-import io.opentracing.Tracer;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Configuration
 public class InterceptorWSConfiguration {

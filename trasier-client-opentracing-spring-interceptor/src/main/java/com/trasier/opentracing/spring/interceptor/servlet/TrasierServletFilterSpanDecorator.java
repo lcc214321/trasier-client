@@ -1,20 +1,5 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.MDC;
-import org.springframework.util.StringUtils;
-
 import com.trasier.client.api.ContentType;
 import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.TrasierConstants;
@@ -23,9 +8,21 @@ import com.trasier.client.interceptor.TrasierSamplingInterceptor;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ContentTypeResolver;
 import com.trasier.client.util.ExceptionUtils;
-
 import io.opentracing.Span;
 import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
+import org.slf4j.MDC;
+import org.springframework.util.StringUtils;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecorator {
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";
@@ -42,12 +39,12 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     @Override
     public void onRequest(HttpServletRequest httpServletRequest, Span span) {
-        if (configuration.isActivated() && httpServletRequest instanceof CachedServletRequestWrapper) {
+        if (configuration.isActivated()) {
             TrasierSpan activeSpan = (TrasierSpan) span;
             com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
             String conversationId = trasierSpan.getConversationId();
             MDC.put(TrasierConstants.HEADER_CONVERSATION_ID, conversationId);
-            handleRequest((CachedServletRequestWrapper) httpServletRequest, trasierSpan);
+            handleRequest(httpServletRequest, trasierSpan);
             applyInterceptors(httpServletRequest, trasierSpan);
         }
     }
@@ -65,11 +62,11 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     @Override
     public void onResponse(HttpServletRequest httpServletRequest, HttpServletResponse response, Span span) {
-        if (configuration.isActivated() && response instanceof CachedServletResponseWrapper) {
+        if (configuration.isActivated()) {
             MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
             TrasierSpan activeSpan = (TrasierSpan) span;
             com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
-            handleResponse((CachedServletResponseWrapper) response, trasierSpan);
+            handleResponse(response, trasierSpan);
             applyInterceptors(httpServletRequest, trasierSpan);
         }
     }
@@ -82,8 +79,10 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
             trasierSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
-            trasierSpan.setOutgoingData(ExceptionUtils.getString(exception));
             trasierSpan.setOutgoingContentType(ContentType.TEXT);
+            if (!configuration.isPayloadTracingDisabled()) {
+                trasierSpan.setOutgoingData(ExceptionUtils.getString(exception));
+            }
         }
     }
 
@@ -100,17 +99,19 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         }
     }
 
-    private void handleRequest(CachedServletRequestWrapper request, com.trasier.client.api.Span currentSpan) {
+    private void handleRequest(HttpServletRequest request, com.trasier.client.api.Span currentSpan) {
         //TODO handle headers und parameters
         Map<String, String> requestHeaders = getRequestHeaders(request);
         currentSpan.getIncomingHeader().putAll(requestHeaders);
-        String requestBody = new String(request.getContentAsByteArray());
-        currentSpan.setIncomingData(requestBody);
         currentSpan.setName(currentSpan.getName());
         currentSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
-        currentSpan.setIncomingContentType(ContentTypeResolver.resolveFromPayload(requestBody));
         enhanceIncomingEndpoint(currentSpan, request, requestHeaders);
         enhanceOutgoingEndpoint(currentSpan, request);
+        if (!configuration.isPayloadTracingDisabled() && request instanceof CachedServletRequestWrapper) {
+            String requestBody = new String(((CachedServletRequestWrapper) request).getContentAsByteArray());
+            currentSpan.setIncomingData(requestBody);
+            currentSpan.setIncomingContentType(ContentTypeResolver.resolveFromPayload(requestBody));
+        }
     }
 
     private void enhanceIncomingEndpoint(com.trasier.client.api.Span span, ServletRequest request, Map<String, String> requestHeaders) {
@@ -151,19 +152,23 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             String headerKey = headerNames.nextElement();
             if (!HEADER_KEY_AUTHORIZATION.equalsIgnoreCase(headerKey)) {
                 String headerValue = request.getHeader(headerKey);
-                headerMap.put(headerKey, headerValue);
+                if (headerValue != null) {
+                    headerMap.put(headerKey, headerValue);
+                }
             }
         }
         return headerMap;
     }
 
-    private void handleResponse(CachedServletResponseWrapper response, com.trasier.client.api.Span currentSpan) {
+    private void handleResponse(HttpServletResponse response, com.trasier.client.api.Span currentSpan) {
         //TODO use Clock everywhere
         currentSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
         currentSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
-        String responseBody = new String(response.getContentAsByteArray());
-        currentSpan.setOutgoingData(responseBody);
-        currentSpan.setOutgoingContentType(ContentTypeResolver.resolveFromPayload(responseBody));
+        if (!configuration.isPayloadTracingDisabled() && response instanceof CachedServletResponseWrapper) {
+            String responseBody = new String(((CachedServletResponseWrapper) response).getContentAsByteArray());
+            currentSpan.setOutgoingData(responseBody);
+            currentSpan.setOutgoingContentType(ContentTypeResolver.resolveFromPayload(responseBody));
+        }
     }
 
     private Map<String, String> getResponseHeaders(HttpServletResponse response) {

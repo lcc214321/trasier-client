@@ -1,13 +1,12 @@
 package com.trasier.opentracing.spring.interceptor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
-
+import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.opentracing.spring.interceptor.rest.TrasierClientRequestInterceptor;
+import com.trasier.opentracing.spring.interceptor.servlet.TrasierServletFilterSpanDecorator;
+import io.opentracing.Tracer;
+import io.opentracing.contrib.spring.web.client.RestTemplateSpanDecorator;
+import io.opentracing.contrib.spring.web.client.TracingRestTemplateInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,14 +14,12 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
-import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
-import com.trasier.opentracing.spring.interceptor.rest.TrasierClientRequestInterceptor;
-import com.trasier.opentracing.spring.interceptor.servlet.TrasierServletFilterSpanDecorator;
-
-import io.opentracing.Tracer;
-import io.opentracing.contrib.spring.web.client.RestTemplateSpanDecorator;
-import io.opentracing.contrib.spring.web.client.TracingRestTemplateInterceptor;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Configuration
 public class InterceptorWebConfiguration {
@@ -65,7 +62,7 @@ public class InterceptorWebConfiguration {
                     interceptors.add(new TracingRestTemplateInterceptor(tracer, spanDecorators == null ? Collections.emptyList() : spanDecorators));
                 }
                 if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientRequestInterceptor)) {
-                    interceptors.add(new TrasierClientRequestInterceptor(tracer, samplingFilter == null ? Collections.emptyList() : samplingFilter));
+                    interceptors.add(new TrasierClientRequestInterceptor(tracer, configuration, samplingFilter == null ? Collections.emptyList() : samplingFilter));
                 }
                 if (!(restTemplate.getRequestFactory() instanceof BufferingClientHttpRequestFactory)) {
                     restTemplate.setInterceptors(Collections.emptyList());

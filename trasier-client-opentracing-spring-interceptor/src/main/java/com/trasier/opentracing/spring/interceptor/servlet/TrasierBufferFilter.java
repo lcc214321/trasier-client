@@ -41,8 +41,8 @@ public class TrasierBufferFilter extends GenericFilterBean {
             return;
         }
 
-        CachedServletRequestWrapper request = createCachedRequest((HttpServletRequest) servletRequest);
-        CachedServletResponseWrapper response = createCachedResponse((HttpServletResponse) servletResponse);
+        ServletRequest request = configuration.isPayloadTracingDisabled() ? servletRequest : createCachedRequest((HttpServletRequest) servletRequest);
+        ServletResponse response = configuration.isPayloadTracingDisabled() ? servletResponse : createCachedResponse((HttpServletResponse) servletResponse);
 
         filterChain.doFilter(request, response);
 

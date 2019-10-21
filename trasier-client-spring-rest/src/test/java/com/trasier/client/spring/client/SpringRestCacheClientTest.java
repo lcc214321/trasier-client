@@ -1,17 +1,18 @@
 package com.trasier.client.spring.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collections;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.spring.TrasierSpringClientQueueConfiguration;
+import com.trasier.client.spring.rest.TrasierSpringRestCacheClient;
+import com.trasier.client.spring.rest.TrasierSpringRestClient;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SpringRestCacheClientTest {
     private TrasierSpringRestClient client = Mockito.mock(TrasierSpringRestClient.class);

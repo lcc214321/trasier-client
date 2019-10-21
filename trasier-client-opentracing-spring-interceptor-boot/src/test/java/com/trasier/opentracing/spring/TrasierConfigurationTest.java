@@ -5,6 +5,7 @@ import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.opentracing.TrasierTracer;
 import com.trasier.client.opentracing.spring.boot.TrasierOpentracingConfiguration;
 import com.trasier.client.spring.TrasierSpringClientQueueConfiguration;
+import com.trasier.client.spring.TrasierSpringRestConfiguration;
 import com.trasier.client.spring.spancontrol.TrasierSampleByOperationConfiguration;
 import com.trasier.client.spring.spancontrol.TrasierSampleByUrlPatternConfiguration;
 import org.junit.Test;
@@ -17,7 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
-@Import(TrasierOpentracingConfiguration.class)
+@Import({TrasierOpentracingConfiguration.class, TrasierSpringRestConfiguration.class})
 public class TrasierConfigurationTest {
 
     @Autowired
