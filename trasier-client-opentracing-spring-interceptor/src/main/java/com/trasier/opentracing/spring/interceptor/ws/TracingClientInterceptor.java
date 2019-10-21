@@ -72,6 +72,7 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
             });
         }
 
+        tracer.activateSpan(span);
         return super.handleRequest(messageContext);
     }
 
