@@ -8,7 +8,7 @@ import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 /**
  */
 @javax.annotation.Generated(
-    value = "by gRPC proto compiler (version 1.4.0)",
+    value = "by gRPC proto compiler (version 1.24.0)",
     comments = "Source: WriteService.proto")
 public final class WriteServiceGrpc {
 
@@ -17,18 +17,36 @@ public final class WriteServiceGrpc {
   public static final String SERVICE_NAME = "com.trasier.api.client.protobuf.WriteService";
 
   // Static method descriptors that strictly reflect the proto.
-  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<SpanRequest,
-          SpanResponse> METHOD_SEND =
-      io.grpc.MethodDescriptor.<SpanRequest, SpanResponse>newBuilder()
-          .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
-          .setFullMethodName(generateFullMethodName(
-              "com.trasier.api.client.protobuf.WriteService", "send"))
-          .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              SpanRequest.getDefaultInstance()))
-          .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              SpanResponse.getDefaultInstance()))
-          .build();
+  private static volatile io.grpc.MethodDescriptor<SpanRequest,
+      SpanResponse> getSendMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "send",
+      requestType = com.trasier.api.client.protobuf.SpanRequest.class,
+      responseType = com.trasier.api.client.protobuf.SpanResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+  public static io.grpc.MethodDescriptor<SpanRequest,
+      SpanResponse> getSendMethod() {
+    io.grpc.MethodDescriptor<SpanRequest, SpanResponse> getSendMethod;
+    if ((getSendMethod = WriteServiceGrpc.getSendMethod) == null) {
+      synchronized (WriteServiceGrpc.class) {
+        if ((getSendMethod = WriteServiceGrpc.getSendMethod) == null) {
+          WriteServiceGrpc.getSendMethod = getSendMethod =
+              io.grpc.MethodDescriptor.<com.trasier.api.client.protobuf.SpanRequest, com.trasier.api.client.protobuf.SpanResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "send"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.trasier.api.client.protobuf.SpanRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.trasier.api.client.protobuf.SpanResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new WriteServiceMethodDescriptorSupplier("send"))
+              .build();
+        }
+      }
+    }
+    return getSendMethod;
+  }
 
   /**
    * Creates a new async stub that supports all call types for the service
@@ -61,17 +79,17 @@ public final class WriteServiceGrpc {
      */
     public io.grpc.stub.StreamObserver<SpanRequest> send(
         io.grpc.stub.StreamObserver<SpanResponse> responseObserver) {
-      return asyncUnimplementedStreamingCall(METHOD_SEND, responseObserver);
+      return asyncUnimplementedStreamingCall(getSendMethod(), responseObserver);
     }
 
     @Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
-            METHOD_SEND,
+            getSendMethod(),
             asyncBidiStreamingCall(
               new MethodHandlers<
-                      SpanRequest,
-                      SpanResponse>(
+                com.trasier.api.client.protobuf.SpanRequest,
+                com.trasier.api.client.protobuf.SpanResponse>(
                   this, METHODID_SEND)))
           .build();
     }
@@ -100,7 +118,7 @@ public final class WriteServiceGrpc {
     public io.grpc.stub.StreamObserver<SpanRequest> send(
         io.grpc.stub.StreamObserver<SpanResponse> responseObserver) {
       return asyncBidiStreamingCall(
-          getChannel().newCall(METHOD_SEND, getCallOptions()), responseObserver);
+          getChannel().newCall(getSendMethod(), getCallOptions()), responseObserver);
     }
   }
 
@@ -180,10 +198,38 @@ public final class WriteServiceGrpc {
     }
   }
 
-  private static final class WriteServiceDescriptorSupplier implements io.grpc.protobuf.ProtoFileDescriptorSupplier {
+  private static abstract class WriteServiceBaseDescriptorSupplier
+      implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
+    WriteServiceBaseDescriptorSupplier() {}
+
     @Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return WriteServiceOuterClass.getDescriptor();
+      return com.trasier.api.client.protobuf.WriteServiceOuterClass.getDescriptor();
+    }
+
+    @Override
+    public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
+      return getFileDescriptor().findServiceByName("WriteService");
+    }
+  }
+
+  private static final class WriteServiceFileDescriptorSupplier
+      extends WriteServiceBaseDescriptorSupplier {
+    WriteServiceFileDescriptorSupplier() {}
+  }
+
+  private static final class WriteServiceMethodDescriptorSupplier
+      extends WriteServiceBaseDescriptorSupplier
+      implements io.grpc.protobuf.ProtoMethodDescriptorSupplier {
+    private final String methodName;
+
+    WriteServiceMethodDescriptorSupplier(String methodName) {
+      this.methodName = methodName;
+    }
+
+    @Override
+    public com.google.protobuf.Descriptors.MethodDescriptor getMethodDescriptor() {
+      return getServiceDescriptor().findMethodByName(methodName);
     }
   }
 
@@ -196,8 +242,8 @@ public final class WriteServiceGrpc {
         result = serviceDescriptor;
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
-              .setSchemaDescriptor(new WriteServiceDescriptorSupplier())
-              .addMethod(METHOD_SEND)
+              .setSchemaDescriptor(new WriteServiceFileDescriptorSupplier())
+              .addMethod(getSendMethod())
               .build();
         }
       }

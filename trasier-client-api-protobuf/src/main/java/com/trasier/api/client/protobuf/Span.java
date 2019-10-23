@@ -10,6 +10,7 @@ public  final class Span extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:com.trasier.api.client.protobuf.Span)
         SpanOrBuilder {
+private static final long serialVersionUID = 0L;
   // Use Span.newBuilder() to construct.
   private Span(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -21,10 +22,6 @@ public  final class Span extends
     conversationId_ = "";
     name_ = "";
     status_ = "";
-    startTimestamp_ = 0L;
-    endTimestamp_ = 0L;
-    beginProcessingTimestamp_ = 0L;
-    finishProcessingTimestamp_ = 0L;
     incomingContentType_ = 0;
     incomingData_ = "";
     outgoingContentType_ = 0;
@@ -32,16 +29,28 @@ public  final class Span extends
   }
 
   @Override
+  @SuppressWarnings({"unused"})
+  protected Object newInstance(
+      UnusedPrivateParameter unused) {
+    return new Span();
+  }
+
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
-    return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    return this.unknownFields;
   }
   private Span(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     this();
+    if (extensionRegistry == null) {
+      throw new NullPointerException();
+    }
     int mutable_bitField0_ = 0;
+    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+        com.google.protobuf.UnknownFieldSet.newBuilder();
     try {
       boolean done = false;
       while (!done) {
@@ -50,12 +59,6 @@ public  final class Span extends
           case 0:
             done = true;
             break;
-          default: {
-            if (!input.skipField(tag)) {
-              done = true;
-            }
-            break;
-          }
           case 10: {
             String s = input.readStringRequireUtf8();
 
@@ -113,10 +116,10 @@ public  final class Span extends
             break;
           }
           case 90: {
-            if (!((mutable_bitField0_ & 0x00000400) == 0x00000400)) {
+            if (!((mutable_bitField0_ & 0x00000001) != 0)) {
               tags_ = com.google.protobuf.MapField.newMapField(
                   TagsDefaultEntryHolder.defaultEntry);
-              mutable_bitField0_ |= 0x00000400;
+              mutable_bitField0_ |= 0x00000001;
             }
             com.google.protobuf.MapEntry<String, String>
             tags__ = input.readMessage(
@@ -126,10 +129,10 @@ public  final class Span extends
             break;
           }
           case 98: {
-            if (!((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
+            if (!((mutable_bitField0_ & 0x00000002) != 0)) {
               features_ = com.google.protobuf.MapField.newMapField(
                   FeaturesDefaultEntryHolder.defaultEntry);
-              mutable_bitField0_ |= 0x00000800;
+              mutable_bitField0_ |= 0x00000002;
             }
             com.google.protobuf.MapEntry<String, String>
             features__ = input.readMessage(
@@ -158,10 +161,10 @@ public  final class Span extends
             break;
           }
           case 122: {
-            if (!((mutable_bitField0_ & 0x00004000) == 0x00004000)) {
+            if (!((mutable_bitField0_ & 0x00000004) != 0)) {
               incomingHeader_ = com.google.protobuf.MapField.newMapField(
                   IncomingHeaderDefaultEntryHolder.defaultEntry);
-              mutable_bitField0_ |= 0x00004000;
+              mutable_bitField0_ |= 0x00000004;
             }
             com.google.protobuf.MapEntry<String, String>
             incomingHeader__ = input.readMessage(
@@ -196,10 +199,10 @@ public  final class Span extends
             break;
           }
           case 154: {
-            if (!((mutable_bitField0_ & 0x00040000) == 0x00040000)) {
+            if (!((mutable_bitField0_ & 0x00000008) != 0)) {
               outgoingHeader_ = com.google.protobuf.MapField.newMapField(
                   OutgoingHeaderDefaultEntryHolder.defaultEntry);
-              mutable_bitField0_ |= 0x00040000;
+              mutable_bitField0_ |= 0x00000008;
             }
             com.google.protobuf.MapEntry<String, String>
             outgoingHeader__ = input.readMessage(
@@ -214,6 +217,13 @@ public  final class Span extends
             outgoingData_ = s;
             break;
           }
+          default: {
+            if (!parseUnknownField(
+                input, unknownFields, extensionRegistry, tag)) {
+              done = true;
+            }
+            break;
+          }
         }
       }
     } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -222,6 +232,7 @@ public  final class Span extends
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
+      this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
   }
@@ -231,6 +242,7 @@ public  final class Span extends
   }
 
   @SuppressWarnings({"rawtypes"})
+  @Override
   protected com.google.protobuf.MapField internalGetMapField(
       int number) {
     switch (number) {
@@ -247,6 +259,7 @@ public  final class Span extends
             "Invalid map field number: " + number);
     }
   }
+  @Override
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
     return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_Span_fieldAccessorTable
@@ -254,11 +267,11 @@ public  final class Span extends
             Span.class, Span.Builder.class);
   }
 
-  private int bitField0_;
   public static final int ID_FIELD_NUMBER = 1;
   private volatile Object id_;
   /**
    * <code>string id = 1;</code>
+   * @return The id.
    */
   public String getId() {
     Object ref = id_;
@@ -274,6 +287,7 @@ public  final class Span extends
   }
   /**
    * <code>string id = 1;</code>
+   * @return The bytes for id.
    */
   public com.google.protobuf.ByteString
       getIdBytes() {
@@ -293,6 +307,7 @@ public  final class Span extends
   private volatile Object parentId_;
   /**
    * <code>string parentId = 2;</code>
+   * @return The parentId.
    */
   public String getParentId() {
     Object ref = parentId_;
@@ -308,6 +323,7 @@ public  final class Span extends
   }
   /**
    * <code>string parentId = 2;</code>
+   * @return The bytes for parentId.
    */
   public com.google.protobuf.ByteString
       getParentIdBytes() {
@@ -327,6 +343,7 @@ public  final class Span extends
   private volatile Object traceId_;
   /**
    * <code>string traceId = 3;</code>
+   * @return The traceId.
    */
   public String getTraceId() {
     Object ref = traceId_;
@@ -342,6 +359,7 @@ public  final class Span extends
   }
   /**
    * <code>string traceId = 3;</code>
+   * @return The bytes for traceId.
    */
   public com.google.protobuf.ByteString
       getTraceIdBytes() {
@@ -361,6 +379,7 @@ public  final class Span extends
   private volatile Object conversationId_;
   /**
    * <code>string conversationId = 4;</code>
+   * @return The conversationId.
    */
   public String getConversationId() {
     Object ref = conversationId_;
@@ -376,6 +395,7 @@ public  final class Span extends
   }
   /**
    * <code>string conversationId = 4;</code>
+   * @return The bytes for conversationId.
    */
   public com.google.protobuf.ByteString
       getConversationIdBytes() {
@@ -395,6 +415,7 @@ public  final class Span extends
   private volatile Object name_;
   /**
    * <code>string name = 5;</code>
+   * @return The name.
    */
   public String getName() {
     Object ref = name_;
@@ -410,6 +431,7 @@ public  final class Span extends
   }
   /**
    * <code>string name = 5;</code>
+   * @return The bytes for name.
    */
   public com.google.protobuf.ByteString
       getNameBytes() {
@@ -429,6 +451,7 @@ public  final class Span extends
   private volatile Object status_;
   /**
    * <code>string status = 6;</code>
+   * @return The status.
    */
   public String getStatus() {
     Object ref = status_;
@@ -444,6 +467,7 @@ public  final class Span extends
   }
   /**
    * <code>string status = 6;</code>
+   * @return The bytes for status.
    */
   public com.google.protobuf.ByteString
       getStatusBytes() {
@@ -463,6 +487,7 @@ public  final class Span extends
   private long startTimestamp_;
   /**
    * <code>int64 startTimestamp = 7;</code>
+   * @return The startTimestamp.
    */
   public long getStartTimestamp() {
     return startTimestamp_;
@@ -472,6 +497,7 @@ public  final class Span extends
   private long endTimestamp_;
   /**
    * <code>int64 endTimestamp = 8;</code>
+   * @return The endTimestamp.
    */
   public long getEndTimestamp() {
     return endTimestamp_;
@@ -481,6 +507,7 @@ public  final class Span extends
   private long beginProcessingTimestamp_;
   /**
    * <code>int64 beginProcessingTimestamp = 9;</code>
+   * @return The beginProcessingTimestamp.
    */
   public long getBeginProcessingTimestamp() {
     return beginProcessingTimestamp_;
@@ -490,6 +517,7 @@ public  final class Span extends
   private long finishProcessingTimestamp_;
   /**
    * <code>int64 finishProcessingTimestamp = 10;</code>
+   * @return The finishProcessingTimestamp.
    */
   public long getFinishProcessingTimestamp() {
     return finishProcessingTimestamp_;
@@ -651,12 +679,14 @@ public  final class Span extends
   private Endpoint incomingEndpoint_;
   /**
    * <code>.com.trasier.api.client.protobuf.Endpoint incomingEndpoint = 13;</code>
+   * @return Whether the incomingEndpoint field is set.
    */
   public boolean hasIncomingEndpoint() {
     return incomingEndpoint_ != null;
   }
   /**
    * <code>.com.trasier.api.client.protobuf.Endpoint incomingEndpoint = 13;</code>
+   * @return The incomingEndpoint.
    */
   public Endpoint getIncomingEndpoint() {
     return incomingEndpoint_ == null ? Endpoint.getDefaultInstance() : incomingEndpoint_;
@@ -672,14 +702,17 @@ public  final class Span extends
   private int incomingContentType_;
   /**
    * <code>.com.trasier.api.client.protobuf.ContentType incomingContentType = 14;</code>
+   * @return The enum numeric value on the wire for incomingContentType.
    */
   public int getIncomingContentTypeValue() {
     return incomingContentType_;
   }
   /**
    * <code>.com.trasier.api.client.protobuf.ContentType incomingContentType = 14;</code>
+   * @return The incomingContentType.
    */
   public ContentType getIncomingContentType() {
+    @SuppressWarnings("deprecation")
     ContentType result = ContentType.valueOf(incomingContentType_);
     return result == null ? ContentType.UNRECOGNIZED : result;
   }
@@ -764,6 +797,7 @@ public  final class Span extends
   private volatile Object incomingData_;
   /**
    * <code>string incomingData = 16;</code>
+   * @return The incomingData.
    */
   public String getIncomingData() {
     Object ref = incomingData_;
@@ -779,6 +813,7 @@ public  final class Span extends
   }
   /**
    * <code>string incomingData = 16;</code>
+   * @return The bytes for incomingData.
    */
   public com.google.protobuf.ByteString
       getIncomingDataBytes() {
@@ -798,12 +833,14 @@ public  final class Span extends
   private Endpoint outgoingEndpoint_;
   /**
    * <code>.com.trasier.api.client.protobuf.Endpoint outgoingEndpoint = 17;</code>
+   * @return Whether the outgoingEndpoint field is set.
    */
   public boolean hasOutgoingEndpoint() {
     return outgoingEndpoint_ != null;
   }
   /**
    * <code>.com.trasier.api.client.protobuf.Endpoint outgoingEndpoint = 17;</code>
+   * @return The outgoingEndpoint.
    */
   public Endpoint getOutgoingEndpoint() {
     return outgoingEndpoint_ == null ? Endpoint.getDefaultInstance() : outgoingEndpoint_;
@@ -819,14 +856,17 @@ public  final class Span extends
   private int outgoingContentType_;
   /**
    * <code>.com.trasier.api.client.protobuf.ContentType outgoingContentType = 18;</code>
+   * @return The enum numeric value on the wire for outgoingContentType.
    */
   public int getOutgoingContentTypeValue() {
     return outgoingContentType_;
   }
   /**
    * <code>.com.trasier.api.client.protobuf.ContentType outgoingContentType = 18;</code>
+   * @return The outgoingContentType.
    */
   public ContentType getOutgoingContentType() {
+    @SuppressWarnings("deprecation")
     ContentType result = ContentType.valueOf(outgoingContentType_);
     return result == null ? ContentType.UNRECOGNIZED : result;
   }
@@ -911,6 +951,7 @@ public  final class Span extends
   private volatile Object outgoingData_;
   /**
    * <code>string outgoingData = 20;</code>
+   * @return The outgoingData.
    */
   public String getOutgoingData() {
     Object ref = outgoingData_;
@@ -926,6 +967,7 @@ public  final class Span extends
   }
   /**
    * <code>string outgoingData = 20;</code>
+   * @return The bytes for outgoingData.
    */
   public com.google.protobuf.ByteString
       getOutgoingDataBytes() {
@@ -942,6 +984,7 @@ public  final class Span extends
   }
 
   private byte memoizedIsInitialized = -1;
+  @Override
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
     if (isInitialized == 1) return true;
@@ -951,6 +994,7 @@ public  final class Span extends
     return true;
   }
 
+  @Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
     if (!getIdBytes().isEmpty()) {
@@ -1025,8 +1069,10 @@ public  final class Span extends
     if (!getOutgoingDataBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 20, outgoingData_);
     }
+    unknownFields.writeTo(output);
   }
 
+  @Override
   public int getSerializedSize() {
     int size = memoizedSize;
     if (size != -1) return size;
@@ -1128,11 +1174,11 @@ public  final class Span extends
     if (!getOutgoingDataBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(20, outgoingData_);
     }
+    size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
   }
 
-  private static final long serialVersionUID = 0L;
   @Override
   public boolean equals(final Object obj) {
     if (obj == this) {
@@ -1143,52 +1189,52 @@ public  final class Span extends
     }
     Span other = (Span) obj;
 
-    boolean result = true;
-    result = result && getId()
-        .equals(other.getId());
-    result = result && getParentId()
-        .equals(other.getParentId());
-    result = result && getTraceId()
-        .equals(other.getTraceId());
-    result = result && getConversationId()
-        .equals(other.getConversationId());
-    result = result && getName()
-        .equals(other.getName());
-    result = result && getStatus()
-        .equals(other.getStatus());
-    result = result && (getStartTimestamp()
-        == other.getStartTimestamp());
-    result = result && (getEndTimestamp()
-        == other.getEndTimestamp());
-    result = result && (getBeginProcessingTimestamp()
-        == other.getBeginProcessingTimestamp());
-    result = result && (getFinishProcessingTimestamp()
-        == other.getFinishProcessingTimestamp());
-    result = result && internalGetTags().equals(
-        other.internalGetTags());
-    result = result && internalGetFeatures().equals(
-        other.internalGetFeatures());
-    result = result && (hasIncomingEndpoint() == other.hasIncomingEndpoint());
+    if (!getId()
+        .equals(other.getId())) return false;
+    if (!getParentId()
+        .equals(other.getParentId())) return false;
+    if (!getTraceId()
+        .equals(other.getTraceId())) return false;
+    if (!getConversationId()
+        .equals(other.getConversationId())) return false;
+    if (!getName()
+        .equals(other.getName())) return false;
+    if (!getStatus()
+        .equals(other.getStatus())) return false;
+    if (getStartTimestamp()
+        != other.getStartTimestamp()) return false;
+    if (getEndTimestamp()
+        != other.getEndTimestamp()) return false;
+    if (getBeginProcessingTimestamp()
+        != other.getBeginProcessingTimestamp()) return false;
+    if (getFinishProcessingTimestamp()
+        != other.getFinishProcessingTimestamp()) return false;
+    if (!internalGetTags().equals(
+        other.internalGetTags())) return false;
+    if (!internalGetFeatures().equals(
+        other.internalGetFeatures())) return false;
+    if (hasIncomingEndpoint() != other.hasIncomingEndpoint()) return false;
     if (hasIncomingEndpoint()) {
-      result = result && getIncomingEndpoint()
-          .equals(other.getIncomingEndpoint());
+      if (!getIncomingEndpoint()
+          .equals(other.getIncomingEndpoint())) return false;
     }
-    result = result && incomingContentType_ == other.incomingContentType_;
-    result = result && internalGetIncomingHeader().equals(
-        other.internalGetIncomingHeader());
-    result = result && getIncomingData()
-        .equals(other.getIncomingData());
-    result = result && (hasOutgoingEndpoint() == other.hasOutgoingEndpoint());
+    if (incomingContentType_ != other.incomingContentType_) return false;
+    if (!internalGetIncomingHeader().equals(
+        other.internalGetIncomingHeader())) return false;
+    if (!getIncomingData()
+        .equals(other.getIncomingData())) return false;
+    if (hasOutgoingEndpoint() != other.hasOutgoingEndpoint()) return false;
     if (hasOutgoingEndpoint()) {
-      result = result && getOutgoingEndpoint()
-          .equals(other.getOutgoingEndpoint());
+      if (!getOutgoingEndpoint()
+          .equals(other.getOutgoingEndpoint())) return false;
     }
-    result = result && outgoingContentType_ == other.outgoingContentType_;
-    result = result && internalGetOutgoingHeader().equals(
-        other.internalGetOutgoingHeader());
-    result = result && getOutgoingData()
-        .equals(other.getOutgoingData());
-    return result;
+    if (outgoingContentType_ != other.outgoingContentType_) return false;
+    if (!internalGetOutgoingHeader().equals(
+        other.internalGetOutgoingHeader())) return false;
+    if (!getOutgoingData()
+        .equals(other.getOutgoingData())) return false;
+    if (!unknownFields.equals(other.unknownFields)) return false;
+    return true;
   }
 
   @Override
@@ -1329,6 +1375,7 @@ public  final class Span extends
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
 
+  @Override
   public Builder newBuilderForType() { return newBuilder(); }
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
@@ -1336,6 +1383,7 @@ public  final class Span extends
   public static Builder newBuilder(Span prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
+  @Override
   public Builder toBuilder() {
     return this == DEFAULT_INSTANCE
         ? new Builder() : new Builder().mergeFrom(this);
@@ -1393,6 +1441,7 @@ public  final class Span extends
               "Invalid map field number: " + number);
       }
     }
+    @Override
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_Span_fieldAccessorTable
@@ -1415,6 +1464,7 @@ public  final class Span extends
               .alwaysUseFieldBuilders) {
       }
     }
+    @Override
     public Builder clear() {
       super.clear();
       id_ = "";
@@ -1464,15 +1514,18 @@ public  final class Span extends
       return this;
     }
 
+    @Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_Span_descriptor;
     }
 
+    @Override
     public Span getDefaultInstanceForType() {
       return Span.getDefaultInstance();
     }
 
+    @Override
     public Span build() {
       Span result = buildPartial();
       if (!result.isInitialized()) {
@@ -1481,10 +1534,10 @@ public  final class Span extends
       return result;
     }
 
+    @Override
     public Span buildPartial() {
       Span result = new Span(this);
       int from_bitField0_ = bitField0_;
-      int to_bitField0_ = 0;
       result.id_ = id_;
       result.parentId_ = parentId_;
       result.traceId_ = traceId_;
@@ -1517,37 +1570,43 @@ public  final class Span extends
       result.outgoingHeader_ = internalGetOutgoingHeader();
       result.outgoingHeader_.makeImmutable();
       result.outgoingData_ = outgoingData_;
-      result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
     }
 
+    @Override
     public Builder clone() {
-      return (Builder) super.clone();
+      return super.clone();
     }
+    @Override
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         Object value) {
-      return (Builder) super.setField(field, value);
+      return super.setField(field, value);
     }
+    @Override
     public Builder clearField(
         com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return (Builder) super.clearField(field);
+      return super.clearField(field);
     }
+    @Override
     public Builder clearOneof(
         com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return (Builder) super.clearOneof(oneof);
+      return super.clearOneof(oneof);
     }
+    @Override
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         int index, Object value) {
-      return (Builder) super.setRepeatedField(field, index, value);
+      return super.setRepeatedField(field, index, value);
     }
+    @Override
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         Object value) {
-      return (Builder) super.addRepeatedField(field, value);
+      return super.addRepeatedField(field, value);
     }
+    @Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
       if (other instanceof Span) {
         return mergeFrom((Span)other);
@@ -1623,14 +1682,17 @@ public  final class Span extends
         outgoingData_ = other.outgoingData_;
         onChanged();
       }
+      this.mergeUnknownFields(other.unknownFields);
       onChanged();
       return this;
     }
 
+    @Override
     public final boolean isInitialized() {
       return true;
     }
 
+    @Override
     public Builder mergeFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1653,6 +1715,7 @@ public  final class Span extends
     private Object id_ = "";
     /**
      * <code>string id = 1;</code>
+     * @return The id.
      */
     public String getId() {
       Object ref = id_;
@@ -1668,6 +1731,7 @@ public  final class Span extends
     }
     /**
      * <code>string id = 1;</code>
+     * @return The bytes for id.
      */
     public com.google.protobuf.ByteString
         getIdBytes() {
@@ -1684,6 +1748,8 @@ public  final class Span extends
     }
     /**
      * <code>string id = 1;</code>
+     * @param value The id to set.
+     * @return This builder for chaining.
      */
     public Builder setId(
         String value) {
@@ -1697,6 +1763,7 @@ public  final class Span extends
     }
     /**
      * <code>string id = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearId() {
 
@@ -1706,6 +1773,8 @@ public  final class Span extends
     }
     /**
      * <code>string id = 1;</code>
+     * @param value The bytes for id to set.
+     * @return This builder for chaining.
      */
     public Builder setIdBytes(
         com.google.protobuf.ByteString value) {
@@ -1722,6 +1791,7 @@ public  final class Span extends
     private Object parentId_ = "";
     /**
      * <code>string parentId = 2;</code>
+     * @return The parentId.
      */
     public String getParentId() {
       Object ref = parentId_;
@@ -1737,6 +1807,7 @@ public  final class Span extends
     }
     /**
      * <code>string parentId = 2;</code>
+     * @return The bytes for parentId.
      */
     public com.google.protobuf.ByteString
         getParentIdBytes() {
@@ -1753,6 +1824,8 @@ public  final class Span extends
     }
     /**
      * <code>string parentId = 2;</code>
+     * @param value The parentId to set.
+     * @return This builder for chaining.
      */
     public Builder setParentId(
         String value) {
@@ -1766,6 +1839,7 @@ public  final class Span extends
     }
     /**
      * <code>string parentId = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearParentId() {
 
@@ -1775,6 +1849,8 @@ public  final class Span extends
     }
     /**
      * <code>string parentId = 2;</code>
+     * @param value The bytes for parentId to set.
+     * @return This builder for chaining.
      */
     public Builder setParentIdBytes(
         com.google.protobuf.ByteString value) {
@@ -1791,6 +1867,7 @@ public  final class Span extends
     private Object traceId_ = "";
     /**
      * <code>string traceId = 3;</code>
+     * @return The traceId.
      */
     public String getTraceId() {
       Object ref = traceId_;
@@ -1806,6 +1883,7 @@ public  final class Span extends
     }
     /**
      * <code>string traceId = 3;</code>
+     * @return The bytes for traceId.
      */
     public com.google.protobuf.ByteString
         getTraceIdBytes() {
@@ -1822,6 +1900,8 @@ public  final class Span extends
     }
     /**
      * <code>string traceId = 3;</code>
+     * @param value The traceId to set.
+     * @return This builder for chaining.
      */
     public Builder setTraceId(
         String value) {
@@ -1835,6 +1915,7 @@ public  final class Span extends
     }
     /**
      * <code>string traceId = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearTraceId() {
 
@@ -1844,6 +1925,8 @@ public  final class Span extends
     }
     /**
      * <code>string traceId = 3;</code>
+     * @param value The bytes for traceId to set.
+     * @return This builder for chaining.
      */
     public Builder setTraceIdBytes(
         com.google.protobuf.ByteString value) {
@@ -1860,6 +1943,7 @@ public  final class Span extends
     private Object conversationId_ = "";
     /**
      * <code>string conversationId = 4;</code>
+     * @return The conversationId.
      */
     public String getConversationId() {
       Object ref = conversationId_;
@@ -1875,6 +1959,7 @@ public  final class Span extends
     }
     /**
      * <code>string conversationId = 4;</code>
+     * @return The bytes for conversationId.
      */
     public com.google.protobuf.ByteString
         getConversationIdBytes() {
@@ -1891,6 +1976,8 @@ public  final class Span extends
     }
     /**
      * <code>string conversationId = 4;</code>
+     * @param value The conversationId to set.
+     * @return This builder for chaining.
      */
     public Builder setConversationId(
         String value) {
@@ -1904,6 +1991,7 @@ public  final class Span extends
     }
     /**
      * <code>string conversationId = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearConversationId() {
 
@@ -1913,6 +2001,8 @@ public  final class Span extends
     }
     /**
      * <code>string conversationId = 4;</code>
+     * @param value The bytes for conversationId to set.
+     * @return This builder for chaining.
      */
     public Builder setConversationIdBytes(
         com.google.protobuf.ByteString value) {
@@ -1929,6 +2019,7 @@ public  final class Span extends
     private Object name_ = "";
     /**
      * <code>string name = 5;</code>
+     * @return The name.
      */
     public String getName() {
       Object ref = name_;
@@ -1944,6 +2035,7 @@ public  final class Span extends
     }
     /**
      * <code>string name = 5;</code>
+     * @return The bytes for name.
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -1960,6 +2052,8 @@ public  final class Span extends
     }
     /**
      * <code>string name = 5;</code>
+     * @param value The name to set.
+     * @return This builder for chaining.
      */
     public Builder setName(
         String value) {
@@ -1973,6 +2067,7 @@ public  final class Span extends
     }
     /**
      * <code>string name = 5;</code>
+     * @return This builder for chaining.
      */
     public Builder clearName() {
 
@@ -1982,6 +2077,8 @@ public  final class Span extends
     }
     /**
      * <code>string name = 5;</code>
+     * @param value The bytes for name to set.
+     * @return This builder for chaining.
      */
     public Builder setNameBytes(
         com.google.protobuf.ByteString value) {
@@ -1998,6 +2095,7 @@ public  final class Span extends
     private Object status_ = "";
     /**
      * <code>string status = 6;</code>
+     * @return The status.
      */
     public String getStatus() {
       Object ref = status_;
@@ -2013,6 +2111,7 @@ public  final class Span extends
     }
     /**
      * <code>string status = 6;</code>
+     * @return The bytes for status.
      */
     public com.google.protobuf.ByteString
         getStatusBytes() {
@@ -2029,6 +2128,8 @@ public  final class Span extends
     }
     /**
      * <code>string status = 6;</code>
+     * @param value The status to set.
+     * @return This builder for chaining.
      */
     public Builder setStatus(
         String value) {
@@ -2042,6 +2143,7 @@ public  final class Span extends
     }
     /**
      * <code>string status = 6;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStatus() {
 
@@ -2051,6 +2153,8 @@ public  final class Span extends
     }
     /**
      * <code>string status = 6;</code>
+     * @param value The bytes for status to set.
+     * @return This builder for chaining.
      */
     public Builder setStatusBytes(
         com.google.protobuf.ByteString value) {
@@ -2067,12 +2171,15 @@ public  final class Span extends
     private long startTimestamp_ ;
     /**
      * <code>int64 startTimestamp = 7;</code>
+     * @return The startTimestamp.
      */
     public long getStartTimestamp() {
       return startTimestamp_;
     }
     /**
      * <code>int64 startTimestamp = 7;</code>
+     * @param value The startTimestamp to set.
+     * @return This builder for chaining.
      */
     public Builder setStartTimestamp(long value) {
 
@@ -2082,6 +2189,7 @@ public  final class Span extends
     }
     /**
      * <code>int64 startTimestamp = 7;</code>
+     * @return This builder for chaining.
      */
     public Builder clearStartTimestamp() {
 
@@ -2093,12 +2201,15 @@ public  final class Span extends
     private long endTimestamp_ ;
     /**
      * <code>int64 endTimestamp = 8;</code>
+     * @return The endTimestamp.
      */
     public long getEndTimestamp() {
       return endTimestamp_;
     }
     /**
      * <code>int64 endTimestamp = 8;</code>
+     * @param value The endTimestamp to set.
+     * @return This builder for chaining.
      */
     public Builder setEndTimestamp(long value) {
 
@@ -2108,6 +2219,7 @@ public  final class Span extends
     }
     /**
      * <code>int64 endTimestamp = 8;</code>
+     * @return This builder for chaining.
      */
     public Builder clearEndTimestamp() {
 
@@ -2119,12 +2231,15 @@ public  final class Span extends
     private long beginProcessingTimestamp_ ;
     /**
      * <code>int64 beginProcessingTimestamp = 9;</code>
+     * @return The beginProcessingTimestamp.
      */
     public long getBeginProcessingTimestamp() {
       return beginProcessingTimestamp_;
     }
     /**
      * <code>int64 beginProcessingTimestamp = 9;</code>
+     * @param value The beginProcessingTimestamp to set.
+     * @return This builder for chaining.
      */
     public Builder setBeginProcessingTimestamp(long value) {
 
@@ -2134,6 +2249,7 @@ public  final class Span extends
     }
     /**
      * <code>int64 beginProcessingTimestamp = 9;</code>
+     * @return This builder for chaining.
      */
     public Builder clearBeginProcessingTimestamp() {
 
@@ -2145,12 +2261,15 @@ public  final class Span extends
     private long finishProcessingTimestamp_ ;
     /**
      * <code>int64 finishProcessingTimestamp = 10;</code>
+     * @return The finishProcessingTimestamp.
      */
     public long getFinishProcessingTimestamp() {
       return finishProcessingTimestamp_;
     }
     /**
      * <code>int64 finishProcessingTimestamp = 10;</code>
+     * @param value The finishProcessingTimestamp to set.
+     * @return This builder for chaining.
      */
     public Builder setFinishProcessingTimestamp(long value) {
 
@@ -2160,6 +2279,7 @@ public  final class Span extends
     }
     /**
      * <code>int64 finishProcessingTimestamp = 10;</code>
+     * @return This builder for chaining.
      */
     public Builder clearFinishProcessingTimestamp() {
 
@@ -2414,17 +2534,19 @@ public  final class Span extends
       return this;
     }
 
-    private Endpoint incomingEndpoint_ = null;
+    private Endpoint incomingEndpoint_;
     private com.google.protobuf.SingleFieldBuilderV3<
             Endpoint, Endpoint.Builder, EndpointOrBuilder> incomingEndpointBuilder_;
     /**
      * <code>.com.trasier.api.client.protobuf.Endpoint incomingEndpoint = 13;</code>
+     * @return Whether the incomingEndpoint field is set.
      */
     public boolean hasIncomingEndpoint() {
       return incomingEndpointBuilder_ != null || incomingEndpoint_ != null;
     }
     /**
      * <code>.com.trasier.api.client.protobuf.Endpoint incomingEndpoint = 13;</code>
+     * @return The incomingEndpoint.
      */
     public Endpoint getIncomingEndpoint() {
       if (incomingEndpointBuilder_ == null) {
@@ -2534,12 +2656,15 @@ public  final class Span extends
     private int incomingContentType_ = 0;
     /**
      * <code>.com.trasier.api.client.protobuf.ContentType incomingContentType = 14;</code>
+     * @return The enum numeric value on the wire for incomingContentType.
      */
     public int getIncomingContentTypeValue() {
       return incomingContentType_;
     }
     /**
      * <code>.com.trasier.api.client.protobuf.ContentType incomingContentType = 14;</code>
+     * @param value The enum numeric value on the wire for incomingContentType to set.
+     * @return This builder for chaining.
      */
     public Builder setIncomingContentTypeValue(int value) {
       incomingContentType_ = value;
@@ -2548,13 +2673,17 @@ public  final class Span extends
     }
     /**
      * <code>.com.trasier.api.client.protobuf.ContentType incomingContentType = 14;</code>
+     * @return The incomingContentType.
      */
     public ContentType getIncomingContentType() {
+      @SuppressWarnings("deprecation")
       ContentType result = ContentType.valueOf(incomingContentType_);
       return result == null ? ContentType.UNRECOGNIZED : result;
     }
     /**
      * <code>.com.trasier.api.client.protobuf.ContentType incomingContentType = 14;</code>
+     * @param value The incomingContentType to set.
+     * @return This builder for chaining.
      */
     public Builder setIncomingContentType(ContentType value) {
       if (value == null) {
@@ -2567,6 +2696,7 @@ public  final class Span extends
     }
     /**
      * <code>.com.trasier.api.client.protobuf.ContentType incomingContentType = 14;</code>
+     * @return This builder for chaining.
      */
     public Builder clearIncomingContentType() {
 
@@ -2701,6 +2831,7 @@ public  final class Span extends
     private Object incomingData_ = "";
     /**
      * <code>string incomingData = 16;</code>
+     * @return The incomingData.
      */
     public String getIncomingData() {
       Object ref = incomingData_;
@@ -2716,6 +2847,7 @@ public  final class Span extends
     }
     /**
      * <code>string incomingData = 16;</code>
+     * @return The bytes for incomingData.
      */
     public com.google.protobuf.ByteString
         getIncomingDataBytes() {
@@ -2732,6 +2864,8 @@ public  final class Span extends
     }
     /**
      * <code>string incomingData = 16;</code>
+     * @param value The incomingData to set.
+     * @return This builder for chaining.
      */
     public Builder setIncomingData(
         String value) {
@@ -2745,6 +2879,7 @@ public  final class Span extends
     }
     /**
      * <code>string incomingData = 16;</code>
+     * @return This builder for chaining.
      */
     public Builder clearIncomingData() {
 
@@ -2754,6 +2889,8 @@ public  final class Span extends
     }
     /**
      * <code>string incomingData = 16;</code>
+     * @param value The bytes for incomingData to set.
+     * @return This builder for chaining.
      */
     public Builder setIncomingDataBytes(
         com.google.protobuf.ByteString value) {
@@ -2767,17 +2904,19 @@ public  final class Span extends
       return this;
     }
 
-    private Endpoint outgoingEndpoint_ = null;
+    private Endpoint outgoingEndpoint_;
     private com.google.protobuf.SingleFieldBuilderV3<
             Endpoint, Endpoint.Builder, EndpointOrBuilder> outgoingEndpointBuilder_;
     /**
      * <code>.com.trasier.api.client.protobuf.Endpoint outgoingEndpoint = 17;</code>
+     * @return Whether the outgoingEndpoint field is set.
      */
     public boolean hasOutgoingEndpoint() {
       return outgoingEndpointBuilder_ != null || outgoingEndpoint_ != null;
     }
     /**
      * <code>.com.trasier.api.client.protobuf.Endpoint outgoingEndpoint = 17;</code>
+     * @return The outgoingEndpoint.
      */
     public Endpoint getOutgoingEndpoint() {
       if (outgoingEndpointBuilder_ == null) {
@@ -2887,12 +3026,15 @@ public  final class Span extends
     private int outgoingContentType_ = 0;
     /**
      * <code>.com.trasier.api.client.protobuf.ContentType outgoingContentType = 18;</code>
+     * @return The enum numeric value on the wire for outgoingContentType.
      */
     public int getOutgoingContentTypeValue() {
       return outgoingContentType_;
     }
     /**
      * <code>.com.trasier.api.client.protobuf.ContentType outgoingContentType = 18;</code>
+     * @param value The enum numeric value on the wire for outgoingContentType to set.
+     * @return This builder for chaining.
      */
     public Builder setOutgoingContentTypeValue(int value) {
       outgoingContentType_ = value;
@@ -2901,13 +3043,17 @@ public  final class Span extends
     }
     /**
      * <code>.com.trasier.api.client.protobuf.ContentType outgoingContentType = 18;</code>
+     * @return The outgoingContentType.
      */
     public ContentType getOutgoingContentType() {
+      @SuppressWarnings("deprecation")
       ContentType result = ContentType.valueOf(outgoingContentType_);
       return result == null ? ContentType.UNRECOGNIZED : result;
     }
     /**
      * <code>.com.trasier.api.client.protobuf.ContentType outgoingContentType = 18;</code>
+     * @param value The outgoingContentType to set.
+     * @return This builder for chaining.
      */
     public Builder setOutgoingContentType(ContentType value) {
       if (value == null) {
@@ -2920,6 +3066,7 @@ public  final class Span extends
     }
     /**
      * <code>.com.trasier.api.client.protobuf.ContentType outgoingContentType = 18;</code>
+     * @return This builder for chaining.
      */
     public Builder clearOutgoingContentType() {
 
@@ -3054,6 +3201,7 @@ public  final class Span extends
     private Object outgoingData_ = "";
     /**
      * <code>string outgoingData = 20;</code>
+     * @return The outgoingData.
      */
     public String getOutgoingData() {
       Object ref = outgoingData_;
@@ -3069,6 +3217,7 @@ public  final class Span extends
     }
     /**
      * <code>string outgoingData = 20;</code>
+     * @return The bytes for outgoingData.
      */
     public com.google.protobuf.ByteString
         getOutgoingDataBytes() {
@@ -3085,6 +3234,8 @@ public  final class Span extends
     }
     /**
      * <code>string outgoingData = 20;</code>
+     * @param value The outgoingData to set.
+     * @return This builder for chaining.
      */
     public Builder setOutgoingData(
         String value) {
@@ -3098,6 +3249,7 @@ public  final class Span extends
     }
     /**
      * <code>string outgoingData = 20;</code>
+     * @return This builder for chaining.
      */
     public Builder clearOutgoingData() {
 
@@ -3107,6 +3259,8 @@ public  final class Span extends
     }
     /**
      * <code>string outgoingData = 20;</code>
+     * @param value The bytes for outgoingData to set.
+     * @return This builder for chaining.
      */
     public Builder setOutgoingDataBytes(
         com.google.protobuf.ByteString value) {
@@ -3119,14 +3273,16 @@ public  final class Span extends
       onChanged();
       return this;
     }
+    @Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return this;
+      return super.setUnknownFields(unknownFields);
     }
 
+    @Override
     public final Builder mergeUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return this;
+      return super.mergeUnknownFields(unknownFields);
     }
 
 
@@ -3145,11 +3301,12 @@ public  final class Span extends
 
   private static final com.google.protobuf.Parser<Span>
       PARSER = new com.google.protobuf.AbstractParser<Span>() {
+    @Override
     public Span parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Span(input, extensionRegistry);
+      return new Span(input, extensionRegistry);
     }
   };
 
@@ -3162,6 +3319,7 @@ public  final class Span extends
     return PARSER;
   }
 
+  @Override
   public Span getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }

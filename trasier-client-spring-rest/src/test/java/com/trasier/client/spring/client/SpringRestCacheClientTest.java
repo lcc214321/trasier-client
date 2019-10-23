@@ -2,7 +2,7 @@ package com.trasier.client.spring.client;
 
 import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.spring.TrasierSpringClientQueueConfiguration;
+import com.trasier.client.spring.rest.TrasierSpringClientQueueConfiguration;
 import com.trasier.client.spring.rest.TrasierSpringRestCacheClient;
 import com.trasier.client.spring.rest.TrasierSpringRestClient;
 import org.junit.Test;

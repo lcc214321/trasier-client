@@ -9,7 +9,8 @@ package com.trasier.api.client.protobuf;
 public  final class SpanRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:com.trasier.api.client.protobuf.SpanRequest)
-    SpanRequestOrBuilder {
+        SpanRequestOrBuilder {
+private static final long serialVersionUID = 0L;
   // Use SpanRequest.newBuilder() to construct.
   private SpanRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -21,16 +22,28 @@ public  final class SpanRequest extends
   }
 
   @Override
+  @SuppressWarnings({"unused"})
+  protected Object newInstance(
+      UnusedPrivateParameter unused) {
+    return new SpanRequest();
+  }
+
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
-    return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    return this.unknownFields;
   }
   private SpanRequest(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     this();
+    if (extensionRegistry == null) {
+      throw new NullPointerException();
+    }
     int mutable_bitField0_ = 0;
+    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+        com.google.protobuf.UnknownFieldSet.newBuilder();
     try {
       boolean done = false;
       while (!done) {
@@ -39,12 +52,6 @@ public  final class SpanRequest extends
           case 0:
             done = true;
             break;
-          default: {
-            if (!input.skipField(tag)) {
-              done = true;
-            }
-            break;
-          }
           case 10: {
             String s = input.readStringRequireUtf8();
 
@@ -58,12 +65,19 @@ public  final class SpanRequest extends
             break;
           }
           case 26: {
-            if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+            if (!((mutable_bitField0_ & 0x00000001) != 0)) {
               spans_ = new java.util.ArrayList<Span>();
-              mutable_bitField0_ |= 0x00000004;
+              mutable_bitField0_ |= 0x00000001;
             }
             spans_.add(
                 input.readMessage(Span.parser(), extensionRegistry));
+            break;
+          }
+          default: {
+            if (!parseUnknownField(
+                input, unknownFields, extensionRegistry, tag)) {
+              done = true;
+            }
             break;
           }
         }
@@ -74,9 +88,10 @@ public  final class SpanRequest extends
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
-      if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+      if (((mutable_bitField0_ & 0x00000001) != 0)) {
         spans_ = java.util.Collections.unmodifiableList(spans_);
       }
+      this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
   }
@@ -85,6 +100,7 @@ public  final class SpanRequest extends
     return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_SpanRequest_descriptor;
   }
 
+  @Override
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
     return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_SpanRequest_fieldAccessorTable
@@ -92,11 +108,11 @@ public  final class SpanRequest extends
             SpanRequest.class, SpanRequest.Builder.class);
   }
 
-  private int bitField0_;
   public static final int ACCOUNTID_FIELD_NUMBER = 1;
   private volatile Object accountId_;
   /**
    * <code>string accountId = 1;</code>
+   * @return The accountId.
    */
   public String getAccountId() {
     Object ref = accountId_;
@@ -112,6 +128,7 @@ public  final class SpanRequest extends
   }
   /**
    * <code>string accountId = 1;</code>
+   * @return The bytes for accountId.
    */
   public com.google.protobuf.ByteString
       getAccountIdBytes() {
@@ -131,6 +148,7 @@ public  final class SpanRequest extends
   private volatile Object spaceKey_;
   /**
    * <code>string spaceKey = 2;</code>
+   * @return The spaceKey.
    */
   public String getSpaceKey() {
     Object ref = spaceKey_;
@@ -146,6 +164,7 @@ public  final class SpanRequest extends
   }
   /**
    * <code>string spaceKey = 2;</code>
+   * @return The bytes for spaceKey.
    */
   public com.google.protobuf.ByteString
       getSpaceKeyBytes() {
@@ -197,6 +216,7 @@ public  final class SpanRequest extends
   }
 
   private byte memoizedIsInitialized = -1;
+  @Override
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
     if (isInitialized == 1) return true;
@@ -206,6 +226,7 @@ public  final class SpanRequest extends
     return true;
   }
 
+  @Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
     if (!getAccountIdBytes().isEmpty()) {
@@ -217,8 +238,10 @@ public  final class SpanRequest extends
     for (int i = 0; i < spans_.size(); i++) {
       output.writeMessage(3, spans_.get(i));
     }
+    unknownFields.writeTo(output);
   }
 
+  @Override
   public int getSerializedSize() {
     int size = memoizedSize;
     if (size != -1) return size;
@@ -234,11 +257,11 @@ public  final class SpanRequest extends
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(3, spans_.get(i));
     }
+    size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
   }
 
-  private static final long serialVersionUID = 0L;
   @Override
   public boolean equals(final Object obj) {
     if (obj == this) {
@@ -249,14 +272,14 @@ public  final class SpanRequest extends
     }
     SpanRequest other = (SpanRequest) obj;
 
-    boolean result = true;
-    result = result && getAccountId()
-        .equals(other.getAccountId());
-    result = result && getSpaceKey()
-        .equals(other.getSpaceKey());
-    result = result && getSpansList()
-        .equals(other.getSpansList());
-    return result;
+    if (!getAccountId()
+        .equals(other.getAccountId())) return false;
+    if (!getSpaceKey()
+        .equals(other.getSpaceKey())) return false;
+    if (!getSpansList()
+        .equals(other.getSpansList())) return false;
+    if (!unknownFields.equals(other.unknownFields)) return false;
+    return true;
   }
 
   @Override
@@ -349,6 +372,7 @@ public  final class SpanRequest extends
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
 
+  @Override
   public Builder newBuilderForType() { return newBuilder(); }
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
@@ -356,6 +380,7 @@ public  final class SpanRequest extends
   public static Builder newBuilder(SpanRequest prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
+  @Override
   public Builder toBuilder() {
     return this == DEFAULT_INSTANCE
         ? new Builder() : new Builder().mergeFrom(this);
@@ -373,12 +398,13 @@ public  final class SpanRequest extends
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:com.trasier.api.client.protobuf.SpanRequest)
-      SpanRequestOrBuilder {
+          SpanRequestOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_SpanRequest_descriptor;
     }
 
+    @Override
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_SpanRequest_fieldAccessorTable
@@ -402,6 +428,7 @@ public  final class SpanRequest extends
         getSpansFieldBuilder();
       }
     }
+    @Override
     public Builder clear() {
       super.clear();
       accountId_ = "";
@@ -410,22 +437,25 @@ public  final class SpanRequest extends
 
       if (spansBuilder_ == null) {
         spans_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000001);
       } else {
         spansBuilder_.clear();
       }
       return this;
     }
 
+    @Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_SpanRequest_descriptor;
     }
 
+    @Override
     public SpanRequest getDefaultInstanceForType() {
       return SpanRequest.getDefaultInstance();
     }
 
+    @Override
     public SpanRequest build() {
       SpanRequest result = buildPartial();
       if (!result.isInitialized()) {
@@ -434,52 +464,58 @@ public  final class SpanRequest extends
       return result;
     }
 
+    @Override
     public SpanRequest buildPartial() {
       SpanRequest result = new SpanRequest(this);
       int from_bitField0_ = bitField0_;
-      int to_bitField0_ = 0;
       result.accountId_ = accountId_;
       result.spaceKey_ = spaceKey_;
       if (spansBuilder_ == null) {
-        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        if (((bitField0_ & 0x00000001) != 0)) {
           spans_ = java.util.Collections.unmodifiableList(spans_);
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.spans_ = spans_;
       } else {
         result.spans_ = spansBuilder_.build();
       }
-      result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
     }
 
+    @Override
     public Builder clone() {
-      return (Builder) super.clone();
+      return super.clone();
     }
+    @Override
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         Object value) {
-      return (Builder) super.setField(field, value);
+      return super.setField(field, value);
     }
+    @Override
     public Builder clearField(
         com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return (Builder) super.clearField(field);
+      return super.clearField(field);
     }
+    @Override
     public Builder clearOneof(
         com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return (Builder) super.clearOneof(oneof);
+      return super.clearOneof(oneof);
     }
+    @Override
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         int index, Object value) {
-      return (Builder) super.setRepeatedField(field, index, value);
+      return super.setRepeatedField(field, index, value);
     }
+    @Override
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         Object value) {
-      return (Builder) super.addRepeatedField(field, value);
+      return super.addRepeatedField(field, value);
     }
+    @Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
       if (other instanceof SpanRequest) {
         return mergeFrom((SpanRequest)other);
@@ -503,7 +539,7 @@ public  final class SpanRequest extends
         if (!other.spans_.isEmpty()) {
           if (spans_.isEmpty()) {
             spans_ = other.spans_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000001);
           } else {
             ensureSpansIsMutable();
             spans_.addAll(other.spans_);
@@ -516,7 +552,7 @@ public  final class SpanRequest extends
             spansBuilder_.dispose();
             spansBuilder_ = null;
             spans_ = other.spans_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000001);
             spansBuilder_ =
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getSpansFieldBuilder() : null;
@@ -525,14 +561,17 @@ public  final class SpanRequest extends
           }
         }
       }
+      this.mergeUnknownFields(other.unknownFields);
       onChanged();
       return this;
     }
 
+    @Override
     public final boolean isInitialized() {
       return true;
     }
 
+    @Override
     public Builder mergeFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -555,6 +594,7 @@ public  final class SpanRequest extends
     private Object accountId_ = "";
     /**
      * <code>string accountId = 1;</code>
+     * @return The accountId.
      */
     public String getAccountId() {
       Object ref = accountId_;
@@ -570,6 +610,7 @@ public  final class SpanRequest extends
     }
     /**
      * <code>string accountId = 1;</code>
+     * @return The bytes for accountId.
      */
     public com.google.protobuf.ByteString
         getAccountIdBytes() {
@@ -586,6 +627,8 @@ public  final class SpanRequest extends
     }
     /**
      * <code>string accountId = 1;</code>
+     * @param value The accountId to set.
+     * @return This builder for chaining.
      */
     public Builder setAccountId(
         String value) {
@@ -599,6 +642,7 @@ public  final class SpanRequest extends
     }
     /**
      * <code>string accountId = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearAccountId() {
 
@@ -608,6 +652,8 @@ public  final class SpanRequest extends
     }
     /**
      * <code>string accountId = 1;</code>
+     * @param value The bytes for accountId to set.
+     * @return This builder for chaining.
      */
     public Builder setAccountIdBytes(
         com.google.protobuf.ByteString value) {
@@ -624,6 +670,7 @@ public  final class SpanRequest extends
     private Object spaceKey_ = "";
     /**
      * <code>string spaceKey = 2;</code>
+     * @return The spaceKey.
      */
     public String getSpaceKey() {
       Object ref = spaceKey_;
@@ -639,6 +686,7 @@ public  final class SpanRequest extends
     }
     /**
      * <code>string spaceKey = 2;</code>
+     * @return The bytes for spaceKey.
      */
     public com.google.protobuf.ByteString
         getSpaceKeyBytes() {
@@ -655,6 +703,8 @@ public  final class SpanRequest extends
     }
     /**
      * <code>string spaceKey = 2;</code>
+     * @param value The spaceKey to set.
+     * @return This builder for chaining.
      */
     public Builder setSpaceKey(
         String value) {
@@ -668,6 +718,7 @@ public  final class SpanRequest extends
     }
     /**
      * <code>string spaceKey = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSpaceKey() {
 
@@ -677,6 +728,8 @@ public  final class SpanRequest extends
     }
     /**
      * <code>string spaceKey = 2;</code>
+     * @param value The bytes for spaceKey to set.
+     * @return This builder for chaining.
      */
     public Builder setSpaceKeyBytes(
         com.google.protobuf.ByteString value) {
@@ -693,14 +746,14 @@ public  final class SpanRequest extends
     private java.util.List<Span> spans_ =
       java.util.Collections.emptyList();
     private void ensureSpansIsMutable() {
-      if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (!((bitField0_ & 0x00000001) != 0)) {
         spans_ = new java.util.ArrayList<Span>(spans_);
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000001;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        Span, Span.Builder, SpanOrBuilder> spansBuilder_;
+            Span, Span.Builder, SpanOrBuilder> spansBuilder_;
 
     /**
      * <code>repeated .com.trasier.api.client.protobuf.Span spans = 3;</code>
@@ -845,7 +898,7 @@ public  final class SpanRequest extends
     public Builder clearSpans() {
       if (spansBuilder_ == null) {
         spans_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
       } else {
         spansBuilder_.clear();
@@ -916,27 +969,29 @@ public  final class SpanRequest extends
       return getSpansFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        Span, Span.Builder, SpanOrBuilder>
+            Span, Span.Builder, SpanOrBuilder>
         getSpansFieldBuilder() {
       if (spansBuilder_ == null) {
         spansBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-            Span, Span.Builder, SpanOrBuilder>(
+                Span, Span.Builder, SpanOrBuilder>(
                 spans_,
-                ((bitField0_ & 0x00000004) == 0x00000004),
+                ((bitField0_ & 0x00000001) != 0),
                 getParentForChildren(),
                 isClean());
         spans_ = null;
       }
       return spansBuilder_;
     }
+    @Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return this;
+      return super.setUnknownFields(unknownFields);
     }
 
+    @Override
     public final Builder mergeUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return this;
+      return super.mergeUnknownFields(unknownFields);
     }
 
 
@@ -955,11 +1010,12 @@ public  final class SpanRequest extends
 
   private static final com.google.protobuf.Parser<SpanRequest>
       PARSER = new com.google.protobuf.AbstractParser<SpanRequest>() {
+    @Override
     public SpanRequest parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SpanRequest(input, extensionRegistry);
+      return new SpanRequest(input, extensionRegistry);
     }
   };
 
@@ -972,6 +1028,7 @@ public  final class SpanRequest extends
     return PARSER;
   }
 
+  @Override
   public SpanRequest getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }

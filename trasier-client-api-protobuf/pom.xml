@@ -10,18 +10,18 @@
     <artifactId>trasier-client-api-protobuf</artifactId>
 
     <properties>
-        <grpc.version>1.16.1</grpc.version>
+        <grpc.version>1.24.0</grpc.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.grpc</groupId>
-            <artifactId>grpc-protobuf</artifactId>
+            <artifactId>grpc-netty-shaded</artifactId>
             <version>${grpc.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
-            <artifactId>grpc-netty</artifactId>
+            <artifactId>grpc-protobuf</artifactId>
             <version>${grpc.version}</version>
         </dependency>
         <dependency>

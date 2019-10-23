@@ -3,7 +3,6 @@ package com.trasier.client.spring.rest;
 import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.spring.TrasierCompressSpanInterceptor;
-import com.trasier.client.spring.TrasierSpringClientQueueConfiguration;
 import com.trasier.client.spring.client.TrasierSpringClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

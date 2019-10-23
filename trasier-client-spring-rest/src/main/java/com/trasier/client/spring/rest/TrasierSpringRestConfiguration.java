@@ -1,4 +1,4 @@
-package com.trasier.client.spring;
+package com.trasier.client.spring.rest;
 
 import com.trasier.client.spring.auth.OAuthToken;
 import com.trasier.client.spring.auth.OAuthTokenSafe;

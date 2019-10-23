@@ -9,26 +9,37 @@ package com.trasier.api.client.protobuf;
 public  final class SpanResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:com.trasier.api.client.protobuf.SpanResponse)
-    SpanResponseOrBuilder {
+        SpanResponseOrBuilder {
+private static final long serialVersionUID = 0L;
   // Use SpanResponse.newBuilder() to construct.
   private SpanResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
   private SpanResponse() {
-    count_ = 0;
+  }
+
+  @Override
+  @SuppressWarnings({"unused"})
+  protected Object newInstance(
+      UnusedPrivateParameter unused) {
+    return new SpanResponse();
   }
 
   @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
-    return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    return this.unknownFields;
   }
   private SpanResponse(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     this();
-    int mutable_bitField0_ = 0;
+    if (extensionRegistry == null) {
+      throw new NullPointerException();
+    }
+    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+        com.google.protobuf.UnknownFieldSet.newBuilder();
     try {
       boolean done = false;
       while (!done) {
@@ -37,15 +48,16 @@ public  final class SpanResponse extends
           case 0:
             done = true;
             break;
-          default: {
-            if (!input.skipField(tag)) {
-              done = true;
-            }
-            break;
-          }
           case 8: {
 
             count_ = input.readInt32();
+            break;
+          }
+          default: {
+            if (!parseUnknownField(
+                input, unknownFields, extensionRegistry, tag)) {
+              done = true;
+            }
             break;
           }
         }
@@ -56,6 +68,7 @@ public  final class SpanResponse extends
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
+      this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
   }
@@ -64,6 +77,7 @@ public  final class SpanResponse extends
     return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_SpanResponse_descriptor;
   }
 
+  @Override
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
     return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_SpanResponse_fieldAccessorTable
@@ -75,12 +89,14 @@ public  final class SpanResponse extends
   private int count_;
   /**
    * <code>int32 count = 1;</code>
+   * @return The count.
    */
   public int getCount() {
     return count_;
   }
 
   private byte memoizedIsInitialized = -1;
+  @Override
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
     if (isInitialized == 1) return true;
@@ -90,13 +106,16 @@ public  final class SpanResponse extends
     return true;
   }
 
+  @Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
     if (count_ != 0) {
       output.writeInt32(1, count_);
     }
+    unknownFields.writeTo(output);
   }
 
+  @Override
   public int getSerializedSize() {
     int size = memoizedSize;
     if (size != -1) return size;
@@ -106,11 +125,11 @@ public  final class SpanResponse extends
       size += com.google.protobuf.CodedOutputStream
         .computeInt32Size(1, count_);
     }
+    size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
   }
 
-  private static final long serialVersionUID = 0L;
   @Override
   public boolean equals(final Object obj) {
     if (obj == this) {
@@ -121,10 +140,10 @@ public  final class SpanResponse extends
     }
     SpanResponse other = (SpanResponse) obj;
 
-    boolean result = true;
-    result = result && (getCount()
-        == other.getCount());
-    return result;
+    if (getCount()
+        != other.getCount()) return false;
+    if (!unknownFields.equals(other.unknownFields)) return false;
+    return true;
   }
 
   @Override
@@ -211,6 +230,7 @@ public  final class SpanResponse extends
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
 
+  @Override
   public Builder newBuilderForType() { return newBuilder(); }
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
@@ -218,6 +238,7 @@ public  final class SpanResponse extends
   public static Builder newBuilder(SpanResponse prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
+  @Override
   public Builder toBuilder() {
     return this == DEFAULT_INSTANCE
         ? new Builder() : new Builder().mergeFrom(this);
@@ -235,12 +256,13 @@ public  final class SpanResponse extends
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:com.trasier.api.client.protobuf.SpanResponse)
-      SpanResponseOrBuilder {
+          SpanResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_SpanResponse_descriptor;
     }
 
+    @Override
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_SpanResponse_fieldAccessorTable
@@ -263,6 +285,7 @@ public  final class SpanResponse extends
               .alwaysUseFieldBuilders) {
       }
     }
+    @Override
     public Builder clear() {
       super.clear();
       count_ = 0;
@@ -270,15 +293,18 @@ public  final class SpanResponse extends
       return this;
     }
 
+    @Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_SpanResponse_descriptor;
     }
 
+    @Override
     public SpanResponse getDefaultInstanceForType() {
       return SpanResponse.getDefaultInstance();
     }
 
+    @Override
     public SpanResponse build() {
       SpanResponse result = buildPartial();
       if (!result.isInitialized()) {
@@ -287,6 +313,7 @@ public  final class SpanResponse extends
       return result;
     }
 
+    @Override
     public SpanResponse buildPartial() {
       SpanResponse result = new SpanResponse(this);
       result.count_ = count_;
@@ -294,32 +321,39 @@ public  final class SpanResponse extends
       return result;
     }
 
+    @Override
     public Builder clone() {
-      return (Builder) super.clone();
+      return super.clone();
     }
+    @Override
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         Object value) {
-      return (Builder) super.setField(field, value);
+      return super.setField(field, value);
     }
+    @Override
     public Builder clearField(
         com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return (Builder) super.clearField(field);
+      return super.clearField(field);
     }
+    @Override
     public Builder clearOneof(
         com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return (Builder) super.clearOneof(oneof);
+      return super.clearOneof(oneof);
     }
+    @Override
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         int index, Object value) {
-      return (Builder) super.setRepeatedField(field, index, value);
+      return super.setRepeatedField(field, index, value);
     }
+    @Override
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         Object value) {
-      return (Builder) super.addRepeatedField(field, value);
+      return super.addRepeatedField(field, value);
     }
+    @Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
       if (other instanceof SpanResponse) {
         return mergeFrom((SpanResponse)other);
@@ -334,14 +368,17 @@ public  final class SpanResponse extends
       if (other.getCount() != 0) {
         setCount(other.getCount());
       }
+      this.mergeUnknownFields(other.unknownFields);
       onChanged();
       return this;
     }
 
+    @Override
     public final boolean isInitialized() {
       return true;
     }
 
+    @Override
     public Builder mergeFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -363,12 +400,15 @@ public  final class SpanResponse extends
     private int count_ ;
     /**
      * <code>int32 count = 1;</code>
+     * @return The count.
      */
     public int getCount() {
       return count_;
     }
     /**
      * <code>int32 count = 1;</code>
+     * @param value The count to set.
+     * @return This builder for chaining.
      */
     public Builder setCount(int value) {
 
@@ -378,6 +418,7 @@ public  final class SpanResponse extends
     }
     /**
      * <code>int32 count = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearCount() {
 
@@ -385,14 +426,16 @@ public  final class SpanResponse extends
       onChanged();
       return this;
     }
+    @Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return this;
+      return super.setUnknownFields(unknownFields);
     }
 
+    @Override
     public final Builder mergeUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return this;
+      return super.mergeUnknownFields(unknownFields);
     }
 
 
@@ -411,11 +454,12 @@ public  final class SpanResponse extends
 
   private static final com.google.protobuf.Parser<SpanResponse>
       PARSER = new com.google.protobuf.AbstractParser<SpanResponse>() {
+    @Override
     public SpanResponse parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SpanResponse(input, extensionRegistry);
+      return new SpanResponse(input, extensionRegistry);
     }
   };
 
@@ -428,6 +472,7 @@ public  final class SpanResponse extends
     return PARSER;
   }
 
+  @Override
   public SpanResponse getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }

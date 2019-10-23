@@ -1,4 +1,4 @@
-package com.trasier.client.spring;
+package com.trasier.client.spring.rest;
 
 import org.springframework.stereotype.Component;
 

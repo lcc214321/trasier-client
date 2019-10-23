@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.trasier.client.spring.TrasierSpringRestConfiguration
+com.trasier.client.spring.rest.TrasierSpringRestConfiguration
