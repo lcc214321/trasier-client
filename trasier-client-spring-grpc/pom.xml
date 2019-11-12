@@ -10,7 +10,7 @@
     <properties>
         <lombok.version>1.16.16</lombok.version>
         <netty-tcnative-boringssl-static.version>2.0.17.Final</netty-tcnative-boringssl-static.version>
-        <google-auth-library-oauth2-http.version>0.15.0</google-auth-library-oauth2-http.version>
+<!--        <google-auth-library-oauth2-http.version>0.15.0</google-auth-library-oauth2-http.version>-->
     </properties>
 
     <artifactId>trasier-client-spring-grpc</artifactId>
@@ -34,11 +34,12 @@
             <groupId>org.iq80.snappy</groupId>
             <artifactId>snappy</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.auth</groupId>
-            <artifactId>google-auth-library-oauth2-http</artifactId>
-            <version>${google-auth-library-oauth2-http.version}</version>
-        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.google.auth</groupId>-->
+<!--            <artifactId>google-auth-library-oauth2-http</artifactId>-->
+<!--            <version>${google-auth-library-oauth2-http.version}</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework</groupId>
