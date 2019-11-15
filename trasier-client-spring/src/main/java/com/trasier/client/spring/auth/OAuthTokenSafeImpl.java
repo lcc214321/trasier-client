@@ -1,42 +1,60 @@
 package com.trasier.client.spring.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Base64;
 
 @Component
 public class OAuthTokenSafeImpl implements OAuthTokenSafe {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OAuthTokenSafeImpl.class);
     private static final int EXPIRES_IN_TOLERANCE = 60;
 
-    private final TrasierEndpointConfiguration appConfig;
-    private final TrasierClientConfiguration springConfig;
-    private final RestTemplate restTemplate;
+    private final TrasierClientConfiguration clientConfig;
+
+    private final ObjectMapper mapper;
+    private final URL url;
+    private final TrustManager[] trustAllCerts;
 
     private OAuthToken token;
     private long tokenExpiresAt;
     private long refreshTokenExpiresAt;
 
     @Autowired
-    public OAuthTokenSafeImpl(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig) {
-        this(appConfig, springConfig, new RestTemplate());
-    }
+    public OAuthTokenSafeImpl(TrasierEndpointConfiguration endpointConfig, TrasierClientConfiguration clientConfig) throws MalformedURLException {
+        this.clientConfig = clientConfig;
+        this.mapper = new ObjectMapper();
+        this.url = new URL(endpointConfig.getAuthEndpoint());
+        this.trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
 
-    public OAuthTokenSafeImpl(TrasierEndpointConfiguration appConfig, TrasierClientConfiguration springConfig, RestTemplate restTemplate) {
-        this.appConfig = appConfig;
-        this.springConfig = springConfig;
-        this.restTemplate = restTemplate;
-        this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                    public void checkClientTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkServerTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType) {
+                    }
+                }
+        };
     }
 
     public String getToken() {
@@ -49,34 +67,62 @@ public class OAuthTokenSafeImpl implements OAuthTokenSafe {
     private synchronized void refreshToken() {
         if (isTokenInvalid()) {
             long tokenIssued = System.currentTimeMillis();
-            HttpEntity<MultiValueMap<String, String>> requestEntity = createTokenRequestEntity();
-            ResponseEntity<OAuthToken> exchange = restTemplate.postForEntity(appConfig.getAuthEndpoint(), requestEntity, OAuthToken.class);
-            this.token = exchange.getBody();
-
-            this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
-            this.refreshTokenExpiresAt = tokenIssued + ((Long.parseLong(token.getRefreshExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
+            try {
+                OAuthToken newToken = fetchToken();
+                if (newToken != null) {
+                    this.token = newToken;
+                    this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
+                    this.refreshTokenExpiresAt = tokenIssued + ((Long.parseLong(token.getRefreshExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
+                }
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 
-    HttpEntity<MultiValueMap<String, String>> createTokenRequestEntity() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        String basicAuth = Base64.getEncoder().encodeToString((springConfig.getClientId() + ":" + springConfig.getClientSecret()).getBytes());
-        headers.add("Authorization", "Basic " + basicAuth);
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    private OAuthToken fetchToken() throws IOException {
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            connection.setSSLSocketFactory(sc.getSocketFactory());
+            connection.setRequestMethod("POST");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            connection.setRequestProperty("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+            String basicAuth = Base64.getEncoder().encodeToString((clientConfig.getClientId() + ":" + clientConfig.getClientSecret()).getBytes());
+            connection.setRequestProperty("Authorization", basicAuth);
+            connection.setInstanceFollowRedirects(true);
+            connection.setDoOutput(true);
+            connection.setUseCaches(false);
 
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("scope", "");
-        map.add("client_id", springConfig.getClientId());
+            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+            out.write("scope=");
+            out.write("&client_id=" + clientConfig.getClientId());
 
-        if (isRefreshTokenInvalid()) {
-            map.add("grant_type", "client_credentials");
-        } else {
-            map.add("grant_type", "refresh_token");
-            map.add("refresh_token", token.getRefreshToken());
+            if (isRefreshTokenInvalid()) {
+                out.write("&grant_type=client_credentials");
+            } else {
+                out.write("&grant_type=refresh_token");
+                out.write("&refresh_token=" + token.getRefreshToken());
+            }
+            out.flush();
+            out.close();
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                return mapper.readValue(connection.getInputStream(), OAuthToken.class);
+            } else {
+                LOGGER.error("Could not fetch token. " + responseCode);
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        } finally {
+            connection.disconnect();
         }
-
-        return new HttpEntity<>(map, headers);
+        return null;
     }
 
     private boolean isTokenInvalid() {
@@ -87,7 +133,4 @@ public class OAuthTokenSafeImpl implements OAuthTokenSafe {
         return token == null || token.getRefreshToken() == null || refreshTokenExpiresAt < System.currentTimeMillis();
     }
 
-    public RestTemplate getRestTemplate() {
-        return restTemplate;
-    }
 }
