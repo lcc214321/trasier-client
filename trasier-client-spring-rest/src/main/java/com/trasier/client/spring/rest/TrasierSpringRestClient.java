@@ -21,39 +21,39 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
 
     @Autowired(required = false)
     private final List<TrasierSpanInterceptor> spanInterceptors = new ArrayList<>();
-    private final TrasierHttpClient trasierHttpClient;
+    private final TrasierHttpClient client;
 
     @Autowired
     public TrasierSpringRestClient(TrasierEndpointConfiguration endpointConfiguration, TrasierClientConfiguration clientConfiguration) {
         AsyncHttpClient client = AsyncHttpClientFactory.createDefaultClient();
         OAuthTokenSafe tokenSafe = new OAuthTokenSafe(clientConfiguration, endpointConfiguration.getAuthEndpoint(), client);
         TrasierHttpClient trasierHttpClient = new TrasierHttpClient(clientConfiguration, endpointConfiguration, tokenSafe, client);
-        this.trasierHttpClient = trasierHttpClient;
+        this.client = trasierHttpClient;
     }
 
-    public TrasierSpringRestClient(TrasierHttpClient trasierHttpClient) {
-        this.trasierHttpClient = trasierHttpClient;
+    public TrasierSpringRestClient(TrasierHttpClient client) {
+        this.client = client;
 
     }
 
     @PostConstruct
     public void init() {
-        spanInterceptors.forEach(this.trasierHttpClient::addSpanInterceptor);
+        spanInterceptors.forEach(this.client::addSpanInterceptor);
     }
 
     @Override
     public boolean sendSpan(Span span) {
-        return this.sendSpan(span);
+        return client.sendSpan(span);
     }
 
     @Override
     public boolean sendSpans(List<Span> spans) {
-        return this.sendSpans(spans);
+        return client.sendSpans(spans);
     }
 
     @Override
     public void close() {
-        trasierHttpClient.close();
+        client.close();
     }
 
 }
