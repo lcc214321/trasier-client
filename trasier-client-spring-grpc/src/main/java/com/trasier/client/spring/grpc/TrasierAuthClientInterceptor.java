@@ -1,7 +1,9 @@
 package com.trasier.client.spring.grpc;
 
+import com.trasier.client.auth.OAuthTokenSafe;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.spring.auth.OAuthTokenSafe;
+import com.trasier.client.configuration.TrasierEndpointConfiguration;
+import com.trasier.client.http.AsyncHttpClientFactory;
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientCall;
@@ -9,6 +11,7 @@ import io.grpc.ClientInterceptor;
 import io.grpc.ClientInterceptors;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
+import org.asynchttpclient.AsyncHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +22,15 @@ public class TrasierAuthClientInterceptor implements ClientInterceptor {
     private final OAuthTokenSafe oAuthTokenSafe;
 
     @Autowired
-    public TrasierAuthClientInterceptor(final TrasierClientConfiguration clientConfiguration, final OAuthTokenSafe oAuthTokenSafe) {
+    public TrasierAuthClientInterceptor(TrasierClientConfiguration clientConfiguration, TrasierEndpointConfiguration endpointConfiguration) {
         this.clientConfiguration = clientConfiguration;
-        this.oAuthTokenSafe = oAuthTokenSafe;
+        AsyncHttpClient client = AsyncHttpClientFactory.createDefaultClient();
+        this.oAuthTokenSafe = new OAuthTokenSafe(clientConfiguration, endpointConfiguration.getAuthEndpoint(), client);
+    }
+
+    public TrasierAuthClientInterceptor(TrasierClientConfiguration clientConfiguration, OAuthTokenSafe tokenSafe) {
+        this.clientConfiguration = clientConfiguration;
+        this.oAuthTokenSafe = tokenSafe;
     }
 
     @Override
