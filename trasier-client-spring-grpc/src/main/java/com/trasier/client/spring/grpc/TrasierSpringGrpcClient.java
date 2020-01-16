@@ -63,16 +63,6 @@ public class TrasierSpringGrpcClient implements TrasierSpringClient {
 
     @Override
     public boolean sendSpan(Span span) {
-        return sendSpan(clientConfiguration.getAccountId(), clientConfiguration.getSpaceKey(), span);
-    }
-
-    @Override
-    public boolean sendSpans(List<Span> spans) {
-        return sendSpans(clientConfiguration.getAccountId(), clientConfiguration.getSpaceKey(), spans);
-    }
-
-    @Override
-    public boolean sendSpan(String accountId, String spaceKey, Span span) {
         if (!clientConfiguration.isActivated()) {
             return false;
         }
@@ -90,8 +80,8 @@ public class TrasierSpringGrpcClient implements TrasierSpringClient {
         compressSpanInterceptor.intercept(span);
 
         SpanRequest.Builder builder = SpanRequest.newBuilder();
-        builder.setAccountId(accountId);
-        builder.setSpaceKey(spaceKey);
+        builder.setAccountId(clientConfiguration.getAccountId());
+        builder.setSpaceKey(clientConfiguration.getSpaceKey());
         builder.addSpans(converter.convert(span));
 
         sendStreams(builder.build());
@@ -127,14 +117,14 @@ public class TrasierSpringGrpcClient implements TrasierSpringClient {
     }
 
     @Override
-    public boolean sendSpans(String accountId, String spaceKey, List<Span> spans) {
+    public boolean sendSpans(List<Span> spans) {
         if (!clientConfiguration.isActivated()) {
             return false;
         }
 
         SpanRequest.Builder builder = SpanRequest.newBuilder();
-        builder.setAccountId(accountId);
-        builder.setSpaceKey(spaceKey);
+        builder.setAccountId(clientConfiguration.getAccountId());
+        builder.setSpaceKey(clientConfiguration.getSpaceKey());
 
         spans.stream()
                 .filter(span -> !span.isCancel())

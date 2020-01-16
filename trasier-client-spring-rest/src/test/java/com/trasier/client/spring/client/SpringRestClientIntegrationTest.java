@@ -44,8 +44,8 @@ public class SpringRestClientIntegrationTest {
         spanBuilder.status("ERROR");
         spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
-        client.sendSpan("170520", "test-1", spanBuilder.build());
-        client.sendSpan("170520", "test-1", spanBuilder.status(Boolean.TRUE.toString()).build());
+        client.sendSpan(spanBuilder.build());
+        client.sendSpan(spanBuilder.status(Boolean.TRUE.toString()).build());
         java.lang.System.out.println("RS: " + spanBuilder.build());
     }
 
@@ -76,6 +76,6 @@ public class SpringRestClientIntegrationTest {
 
         java.lang.System.out.println("Sending spans: " + spans);
 
-        client.sendSpans("170520", "test-1", spans);
+        client.sendSpans(spans);
     }
 }
