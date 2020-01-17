@@ -76,7 +76,7 @@ public class TrasierSpringRestClientTest {
 
         // then
         verify(httpClient, times(0)).preparePost(anyString());
-        verify(httpClient, times(0)).executeRequest(any(Request.class));
+        verify(httpClient, times(0)).executeRequest(any(Request.class), any());
     }
 
     @Test
@@ -91,7 +91,7 @@ public class TrasierSpringRestClientTest {
         // then
         assertNotNull(span.getTags().get("trasier_client.-"));
         verify(httpClient, times(1)).preparePost(anyString());
-        verify(httpClient, times(1)).executeRequest(any(Request.class));
+        verify(httpClient, times(1)).executeRequest(any(Request.class), any());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class TrasierSpringRestClientTest {
 
         // then
         assertNotNull(span.getTags().get("trasier_client.server"));
-        verify(httpClient, times(1)).executeRequest(any(Request.class));
+        verify(httpClient, times(1)).executeRequest(any(Request.class), any());
     }
 
     @Test
@@ -120,7 +120,7 @@ public class TrasierSpringRestClientTest {
 
         // then
         verify(httpClient, times(0)).preparePost(anyString());
-        verify(httpClient, times(0)).executeRequest(any(Request.class));
+        verify(httpClient, times(0)).executeRequest(any(Request.class), any());
     }
 
 }
