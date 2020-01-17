@@ -25,6 +25,7 @@ public class SpringRestClientIntegrationTest {
     private TrasierSpringRestClient client;
 
     @Test
+    @Ignore
     public void sendSpanOneByOne() throws InterruptedException {
         Span.SpanBuilder spanBuilder = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "GIVE_50_CHF").startTimestamp(System.currentTimeMillis());
 
@@ -52,7 +53,6 @@ public class SpringRestClientIntegrationTest {
     @Test
     @Ignore
     public void sendSpansBulk() throws InterruptedException {
-
         Span.SpanBuilder spanBuilder = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "GIVE_50_CHF").endTimestamp(System.currentTimeMillis());
 
         spanBuilder.incomingEndpoint(new Endpoint("Frank"));

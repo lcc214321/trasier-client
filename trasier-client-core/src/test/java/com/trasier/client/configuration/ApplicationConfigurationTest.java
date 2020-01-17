@@ -2,7 +2,6 @@ package com.trasier.client.configuration;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
@@ -16,16 +15,6 @@ public class ApplicationConfigurationTest {
         // when / then
         assertTrue(sut.getAuthEndpoint().length() > 1);
         assertTrue(sut.getHttpEndpoint().length() > 1);
-
-        // and when
-        System.setProperty("trasier.endpoint.authEndpoint", "auth_endpoint");
-        System.setProperty( "trasier.endpoint.httpEndpoint", "write_endpoint");
-
-        sut = new TrasierEndpointConfiguration();
-
-        // then
-        assertEquals("auth_endpoint", sut.getAuthEndpoint());
-        assertEquals("write_endpoint", sut.getHttpEndpoint());
     }
 
 }

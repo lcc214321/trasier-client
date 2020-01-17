@@ -30,6 +30,7 @@ public class TrasierHttpClient implements Client {
     private final OAuthTokenSafe tokenSafe;
     private final List<TrasierSpanInterceptor> spanInterceptors;
     private final String writerEndpointUrl;
+    private final TrasierHttpClientHandler handler;
 
     public TrasierHttpClient(TrasierClientConfiguration clientConfiguration, TrasierEndpointConfiguration endpointConfiguration, OAuthTokenSafe tokenSafe, AsyncHttpClient client) {
         this.clientConfiguration = clientConfiguration;
@@ -37,15 +38,13 @@ public class TrasierHttpClient implements Client {
         this.client = client;
         this.mapper = createObjectMapper();
         this.spanInterceptors = new ArrayList<>();
-        this.writerEndpointUrl = endpointConfiguration.getHttpEndpoint()
-                .replace("{accountId}", clientConfiguration.getAccountId())
-                .replace("{spaceKey}", clientConfiguration.getSpaceKey());
+        this.writerEndpointUrl = createWriterEndpointUrl(clientConfiguration, endpointConfiguration);
+        this.handler = new TrasierHttpClientHandler();
     }
 
     protected ObjectMapper createObjectMapper() {
         return new ObjectMapper();
     }
-
 
     @Override
     public boolean sendSpan(Span span) {
@@ -75,10 +74,10 @@ public class TrasierHttpClient implements Client {
         BoundRequestBuilder requestBuilder = client
                 .preparePost(writerEndpointUrl)
                 .setHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Bearer " + tokenSafe.getToken())
+                .setHeader("Authorization", "Bearer " + tokenSafe.getToken())
                 .setBody(mapper.writeValueAsBytes(spans));
         Request request = requestBuilder.build();
-        client.executeRequest(request);
+        client.executeRequest(request, handler);
         return true;
     }
 
@@ -93,6 +92,17 @@ public class TrasierHttpClient implements Client {
 
     public void addSpanInterceptor(TrasierSpanInterceptor interceptor) {
         this.spanInterceptors.add(interceptor);
+    }
+
+    private String createWriterEndpointUrl(TrasierClientConfiguration clientConfiguration, TrasierEndpointConfiguration endpointConfiguration) {
+        String httpEndpoint = endpointConfiguration.getHttpEndpoint();
+        if (clientConfiguration.getAccountId() != null) {
+            httpEndpoint = httpEndpoint.replace("{accountId}", clientConfiguration.getAccountId());
+        }
+        if (clientConfiguration.getSpaceKey() != null) {
+            httpEndpoint = httpEndpoint.replace("{spaceKey}", clientConfiguration.getSpaceKey());
+        }
+        return httpEndpoint;
     }
 
     private void applyInterceptors(List<Span> spans) {

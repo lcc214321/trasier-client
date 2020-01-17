@@ -64,16 +64,7 @@ public class OAuthTokenSafe {
     private OAuthToken fetchToken() throws InterruptedException, ExecutionException, TimeoutException, IOException {
         String basicAuth = Base64.getEncoder().encodeToString((clientConfiguration.getClientId() + ":" + clientConfiguration.getClientSecret()).getBytes());
         String tokenRequest = createTokenRequest();
-        BoundRequestBuilder requestBuilder = client
-                .preparePost(authUrl)
-                .setReadTimeout(5000)
-                .setRequestTimeout(5000)
-                .setCharset(StandardCharsets.UTF_8)
-                .setHeader("Authorization", "Basic " + basicAuth)
-                //.setFormParams(formParams) // TODO
-                .setHeader("Content-Type", "application/x-www-form-urlencoded")
-                .setBody(tokenRequest);
-        Request request = requestBuilder.build();
+        Request request = createRequest(basicAuth, tokenRequest);
         ListenableFuture<Response> future = client.executeRequest(request);
         Response response = future.get(5, TimeUnit.SECONDS);
 
@@ -83,6 +74,19 @@ public class OAuthTokenSafe {
         } else {
             throw new IOException("Could not fetch token. " + responseCode);
         }
+    }
+
+    Request createRequest(String basicAuth, String tokenRequest) {
+        BoundRequestBuilder requestBuilder = client
+                .preparePost(authUrl)
+                .setReadTimeout(5000)
+                .setRequestTimeout(5000)
+                .setCharset(StandardCharsets.UTF_8)
+                .setHeader("Authorization", "Basic " + basicAuth)
+                //.setFormParams(formParams) // TODO Use formParams instead of concatenated body
+                .setHeader("Content-Type", "application/x-www-form-urlencoded")
+                .setBody(tokenRequest);
+        return requestBuilder.build();
     }
 
     String createTokenRequest() {
