@@ -39,7 +39,7 @@ public class TrasierHttpClient implements Client {
         this.mapper = createObjectMapper();
         this.spanInterceptors = new ArrayList<>();
         this.writerEndpointUrl = createWriterEndpointUrl(clientConfiguration, endpointConfiguration);
-        this.handler = new TrasierHttpClientHandler();
+        this.handler = new TrasierHttpClientHandler(clientConfiguration.getLogMetricsInterval());
     }
 
     protected ObjectMapper createObjectMapper() {

@@ -11,12 +11,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class TrasierHttpClientHandler extends AsyncCompletionHandlerBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrasierHttpClientHandler.class);
 
-    private long nextLog = 0;
-    private long logInterval = 10000; //10 * 60 * 1000;
-
+    private final long logInterval;
     private final AtomicLong success = new AtomicLong();
     private final AtomicLong failure = new AtomicLong();
     private final AtomicLong error = new AtomicLong();
+    private long nextLog = 0;
+
+    public TrasierHttpClientHandler(final long logInterval) {
+        this.logInterval = logInterval;
+    }
 
     @Override
     public State onStatusReceived(HttpResponseStatus status) throws Exception {

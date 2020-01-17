@@ -9,6 +9,7 @@ public class TrasierClientConfiguration {
 
     private boolean activated = true;
     private boolean payloadTracingDisabled = false;
+    private long logMetricsInterval = 10 * 60 * 1000;
 
     public String getAccountId() {
         return accountId;
@@ -64,6 +65,14 @@ public class TrasierClientConfiguration {
 
     public boolean isPayloadTracingDisabled() {
         return payloadTracingDisabled;
+    }
+
+    public long getLogMetricsInterval() {
+        return logMetricsInterval;
+    }
+
+    public void setLogMetricsInterval(final long logMetricsInterval) {
+        this.logMetricsInterval = logMetricsInterval;
     }
 
 }
