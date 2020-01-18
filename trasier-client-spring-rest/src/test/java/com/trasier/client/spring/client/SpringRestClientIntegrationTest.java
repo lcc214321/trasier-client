@@ -5,8 +5,8 @@ import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
-import com.trasier.client.spring.TrasierSpringRestConfiguration;
 import com.trasier.client.spring.rest.TrasierSpringRestClient;
+import com.trasier.client.spring.rest.TrasierSpringRestConfiguration;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +25,7 @@ public class SpringRestClientIntegrationTest {
     private TrasierSpringRestClient client;
 
     @Test
+    @Ignore
     public void sendSpanOneByOne() throws InterruptedException {
         Span.SpanBuilder spanBuilder = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "GIVE_50_CHF").startTimestamp(System.currentTimeMillis());
 
@@ -44,15 +45,14 @@ public class SpringRestClientIntegrationTest {
         spanBuilder.status("ERROR");
         spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
-        client.sendSpan("170520", "test-1", spanBuilder.build());
-        client.sendSpan("170520", "test-1", spanBuilder.status(Boolean.TRUE.toString()).build());
+        client.sendSpan(spanBuilder.build());
+        client.sendSpan(spanBuilder.status(Boolean.TRUE.toString()).build());
         java.lang.System.out.println("RS: " + spanBuilder.build());
     }
 
     @Test
     @Ignore
     public void sendSpansBulk() throws InterruptedException {
-
         Span.SpanBuilder spanBuilder = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "GIVE_50_CHF").endTimestamp(System.currentTimeMillis());
 
         spanBuilder.incomingEndpoint(new Endpoint("Frank"));
@@ -76,6 +76,6 @@ public class SpringRestClientIntegrationTest {
 
         java.lang.System.out.println("Sending spans: " + spans);
 
-        client.sendSpans("170520", "test-1", spans);
+        client.sendSpans(spans);
     }
 }

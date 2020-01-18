@@ -9,81 +9,97 @@ public interface SpanOrBuilder extends
 
   /**
    * <code>string id = 1;</code>
+   * @return The id.
    */
   String getId();
   /**
    * <code>string id = 1;</code>
+   * @return The bytes for id.
    */
   com.google.protobuf.ByteString
       getIdBytes();
 
   /**
    * <code>string parentId = 2;</code>
+   * @return The parentId.
    */
   String getParentId();
   /**
    * <code>string parentId = 2;</code>
+   * @return The bytes for parentId.
    */
   com.google.protobuf.ByteString
       getParentIdBytes();
 
   /**
    * <code>string traceId = 3;</code>
+   * @return The traceId.
    */
   String getTraceId();
   /**
    * <code>string traceId = 3;</code>
+   * @return The bytes for traceId.
    */
   com.google.protobuf.ByteString
       getTraceIdBytes();
 
   /**
    * <code>string conversationId = 4;</code>
+   * @return The conversationId.
    */
   String getConversationId();
   /**
    * <code>string conversationId = 4;</code>
+   * @return The bytes for conversationId.
    */
   com.google.protobuf.ByteString
       getConversationIdBytes();
 
   /**
    * <code>string name = 5;</code>
+   * @return The name.
    */
   String getName();
   /**
    * <code>string name = 5;</code>
+   * @return The bytes for name.
    */
   com.google.protobuf.ByteString
       getNameBytes();
 
   /**
    * <code>string status = 6;</code>
+   * @return The status.
    */
   String getStatus();
   /**
    * <code>string status = 6;</code>
+   * @return The bytes for status.
    */
   com.google.protobuf.ByteString
       getStatusBytes();
 
   /**
    * <code>int64 startTimestamp = 7;</code>
+   * @return The startTimestamp.
    */
   long getStartTimestamp();
 
   /**
    * <code>int64 endTimestamp = 8;</code>
+   * @return The endTimestamp.
    */
   long getEndTimestamp();
 
   /**
    * <code>int64 beginProcessingTimestamp = 9;</code>
+   * @return The beginProcessingTimestamp.
    */
   long getBeginProcessingTimestamp();
 
   /**
    * <code>int64 finishProcessingTimestamp = 10;</code>
+   * @return The finishProcessingTimestamp.
    */
   long getFinishProcessingTimestamp();
 
@@ -157,10 +173,12 @@ public interface SpanOrBuilder extends
 
   /**
    * <code>.com.trasier.api.client.protobuf.Endpoint incomingEndpoint = 13;</code>
+   * @return Whether the incomingEndpoint field is set.
    */
   boolean hasIncomingEndpoint();
   /**
    * <code>.com.trasier.api.client.protobuf.Endpoint incomingEndpoint = 13;</code>
+   * @return The incomingEndpoint.
    */
   Endpoint getIncomingEndpoint();
   /**
@@ -170,10 +188,12 @@ public interface SpanOrBuilder extends
 
   /**
    * <code>.com.trasier.api.client.protobuf.ContentType incomingContentType = 14;</code>
+   * @return The enum numeric value on the wire for incomingContentType.
    */
   int getIncomingContentTypeValue();
   /**
    * <code>.com.trasier.api.client.protobuf.ContentType incomingContentType = 14;</code>
+   * @return The incomingContentType.
    */
   ContentType getIncomingContentType();
 
@@ -213,20 +233,24 @@ public interface SpanOrBuilder extends
 
   /**
    * <code>string incomingData = 16;</code>
+   * @return The incomingData.
    */
   String getIncomingData();
   /**
    * <code>string incomingData = 16;</code>
+   * @return The bytes for incomingData.
    */
   com.google.protobuf.ByteString
       getIncomingDataBytes();
 
   /**
    * <code>.com.trasier.api.client.protobuf.Endpoint outgoingEndpoint = 17;</code>
+   * @return Whether the outgoingEndpoint field is set.
    */
   boolean hasOutgoingEndpoint();
   /**
    * <code>.com.trasier.api.client.protobuf.Endpoint outgoingEndpoint = 17;</code>
+   * @return The outgoingEndpoint.
    */
   Endpoint getOutgoingEndpoint();
   /**
@@ -236,10 +260,12 @@ public interface SpanOrBuilder extends
 
   /**
    * <code>.com.trasier.api.client.protobuf.ContentType outgoingContentType = 18;</code>
+   * @return The enum numeric value on the wire for outgoingContentType.
    */
   int getOutgoingContentTypeValue();
   /**
    * <code>.com.trasier.api.client.protobuf.ContentType outgoingContentType = 18;</code>
+   * @return The outgoingContentType.
    */
   ContentType getOutgoingContentType();
 
@@ -279,10 +305,12 @@ public interface SpanOrBuilder extends
 
   /**
    * <code>string outgoingData = 20;</code>
+   * @return The outgoingData.
    */
   String getOutgoingData();
   /**
    * <code>string outgoingData = 20;</code>
+   * @return The bytes for outgoingData.
    */
   com.google.protobuf.ByteString
       getOutgoingDataBytes();

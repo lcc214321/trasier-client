@@ -6,7 +6,7 @@ import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.opentracing.TrasierScopeManager;
 import com.trasier.client.opentracing.TrasierTracer;
 import com.trasier.client.opentracing.spring.boot.TrasierOpentracingConfiguration;
-import com.trasier.client.spring.TrasierSpringRestConfiguration;
+import com.trasier.client.spring.rest.TrasierSpringRestConfiguration;
 import com.trasier.opentracing.spring.interceptor.InterceptorWebConfiguration;
 import com.trasier.opentracing.spring.testsupport.ClientCollector;
 import org.junit.After;

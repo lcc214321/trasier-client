@@ -3,6 +3,7 @@ package com.trasier.client.spring.grpc;
 import com.trasier.client.api.ContentType;
 import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.Span;
+import com.trasier.client.auth.OAuthTokenSafe;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import org.junit.Ignore;
@@ -31,7 +32,7 @@ public class SpringGrpcClientIntegrationTest {
         clientConfig.setClientSecret("abcd1234");
 
         final String token = "secret-token";
-        TrasierAuthClientInterceptor authClientInterceptor = new TrasierAuthClientInterceptor(clientConfig, () -> token);
+        TrasierAuthClientInterceptor authClientInterceptor = new TrasierAuthClientInterceptor(clientConfig, (OAuthTokenSafe) null);
         TrasierSpringGrpcClient client = new TrasierSpringGrpcClient(clientConfig, appConfig, authClientInterceptor);
 
         Span.SpanBuilder spanBuilder = Span.newSpan("op", UUID.randomUUID().toString(), UUID.randomUUID().toString(), "GIVE_50_CHF").startTimestamp(System.currentTimeMillis());
@@ -52,8 +53,8 @@ public class SpringGrpcClientIntegrationTest {
         spanBuilder.status("ERROR");
         spanBuilder.outgoingData("<response>Sorry, I'm broke!</response>");
 
-        client.sendSpan("170520", "test-1", spanBuilder.build());
-        client.sendSpan("170520", "test-1", spanBuilder.status(Boolean.TRUE.toString()).build());
+        client.sendSpan(spanBuilder.build());
+        client.sendSpan(spanBuilder.status(Boolean.TRUE.toString()).build());
         System.out.println("RS: " + spanBuilder.build());
 
         TimeUnit.SECONDS.sleep(3);

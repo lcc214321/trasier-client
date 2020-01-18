@@ -1,15 +1,16 @@
 package com.trasier.client.configuration;
 
-public class TrasierClientConfiguration implements ClientConfiguration {
+public class TrasierClientConfiguration {
     private String accountId;
     private String spaceKey;
     private String clientId;
     private String clientSecret;
     private String systemName;
-    private boolean activated = true;
-    private boolean payloadTracingDisabled;
 
-    @Override
+    private boolean activated = true;
+    private boolean payloadTracingDisabled = false;
+    private long logMetricsInterval = 10 * 60 * 1000;
+
     public String getAccountId() {
         return accountId;
     }
@@ -18,7 +19,6 @@ public class TrasierClientConfiguration implements ClientConfiguration {
         this.accountId = accountId;
     }
 
-    @Override
     public String getSpaceKey() {
         return spaceKey;
     }
@@ -27,7 +27,6 @@ public class TrasierClientConfiguration implements ClientConfiguration {
         this.spaceKey = spaceKey;
     }
 
-    @Override
     public String getClientId() {
         return clientId;
     }
@@ -36,7 +35,6 @@ public class TrasierClientConfiguration implements ClientConfiguration {
         this.clientId = clientId;
     }
 
-    @Override
     public String getClientSecret() {
         return clientSecret;
     }
@@ -45,7 +43,6 @@ public class TrasierClientConfiguration implements ClientConfiguration {
         this.clientSecret = clientSecret;
     }
 
-    @Override
     public String getSystemName() {
         return systemName;
     }
@@ -54,7 +51,6 @@ public class TrasierClientConfiguration implements ClientConfiguration {
         this.systemName = systemName;
     }
 
-    @Override
     public boolean isActivated() {
         return activated;
     }
@@ -67,9 +63,16 @@ public class TrasierClientConfiguration implements ClientConfiguration {
         this.payloadTracingDisabled = payloadTracingDisabled;
     }
 
-    @Override
     public boolean isPayloadTracingDisabled() {
         return payloadTracingDisabled;
+    }
+
+    public long getLogMetricsInterval() {
+        return logMetricsInterval;
+    }
+
+    public void setLogMetricsInterval(final long logMetricsInterval) {
+        this.logMetricsInterval = logMetricsInterval;
     }
 
 }

@@ -41,7 +41,7 @@ public class TrasierSpan implements Span {
 
     @Override
     public Span setTag(String key, Number value) {
-        if(value != null) {
+        if (value != null) {
             wrapped.getTags().put(key, value.toString());
         }
         return this;
@@ -49,7 +49,7 @@ public class TrasierSpan implements Span {
 
     @Override
     public <T> Span setTag(Tag<T> tag, T value) {
-        if(tag != null && value != null) {
+        if (tag != null && value != null) {
             wrapped.getTags().put(tag.getKey(), value.toString());
         }
         return this;
@@ -107,10 +107,10 @@ public class TrasierSpan implements Span {
 
     @Override
     public void finish(long endTimestamp) {
-        if(!finished) {
+        if (!finished) {
             wrapped.setEndTimestamp(endTimestamp);
             finished = true;
-            client.sendSpan(configuration.getAccountId(), configuration.getSpaceKey(), unwrap());
+            client.sendSpan(unwrap());
         }
     }
 
