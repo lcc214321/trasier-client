@@ -35,12 +35,6 @@
             <artifactId>snappy</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.google.auth</groupId>-->
-<!--            <artifactId>google-auth-library-oauth2-http</artifactId>-->
-<!--            <version>${google-auth-library-oauth2-http.version}</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>

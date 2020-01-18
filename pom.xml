@@ -32,7 +32,7 @@
         <slf4j.version>1.7.25</slf4j.version>
         <async-http-client.version>2.10.4</async-http-client.version>
         <commons-io.version>2.6</commons-io.version>
-        <grpc.version>1.16.1</grpc.version>
+        <grpc.version>1.24.0</grpc.version>
         <feign-core.version>9.5.0</feign-core.version>
 
         <opentracing.version>0.33.0</opentracing.version>
@@ -182,7 +182,7 @@
 
             <dependency>
                 <groupId>io.grpc</groupId>
-                <artifactId>grpc-netty</artifactId>
+                <artifactId>grpc-netty-shaded</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
             <dependency>
