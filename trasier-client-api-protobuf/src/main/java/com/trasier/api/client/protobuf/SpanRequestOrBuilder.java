@@ -9,20 +9,24 @@ public interface SpanRequestOrBuilder extends
 
   /**
    * <code>string accountId = 1;</code>
+   * @return The accountId.
    */
   String getAccountId();
   /**
    * <code>string accountId = 1;</code>
+   * @return The bytes for accountId.
    */
   com.google.protobuf.ByteString
       getAccountIdBytes();
 
   /**
    * <code>string spaceKey = 2;</code>
+   * @return The spaceKey.
    */
   String getSpaceKey();
   /**
    * <code>string spaceKey = 2;</code>
+   * @return The bytes for spaceKey.
    */
   com.google.protobuf.ByteString
       getSpaceKeyBytes();
