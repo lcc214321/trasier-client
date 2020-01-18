@@ -39,20 +39,23 @@ public class TrasierHttpClientHandler extends AsyncCompletionHandlerBase {
         long currentTime = System.currentTimeMillis();
         if (nextLog < currentTime) {
             if (lock.tryLock()) {
-                if (nextLog < currentTime) {
-                    nextLog = currentTime + logInterval;
-                    long success = this.success.getAndSet(0);
-                    long failure = this.failure.getAndSet(0);
-                    long error = this.error.getAndSet(0);
-                    String metricsLog = "Trasier metrics (" + logInterval + "ms) - success: " + success + " - failure: " + failure + " - error: " + error;
+                try {
+                    if (nextLog < currentTime) {
+                        nextLog = currentTime + logInterval;
+                        long success = this.success.getAndSet(0);
+                        long failure = this.failure.getAndSet(0);
+                        long error = this.error.getAndSet(0);
+                        String metricsLog = "Trasier metrics (" + logInterval + "ms) - success: " + success + " - failure: " + failure + " - error: " + error;
 
-                    if (error == 0 && failure == 0) {
-                        LOGGER.info(metricsLog);
-                    } else {
-                        LOGGER.warn(metricsLog);
+                        if (error == 0 && failure == 0) {
+                            LOGGER.info(metricsLog);
+                        } else {
+                            LOGGER.warn(metricsLog);
+                        }
                     }
+                } finally {
+                    lock.unlock();
                 }
-                lock.unlock();
             }
         }
         return super.onCompleted(response);
