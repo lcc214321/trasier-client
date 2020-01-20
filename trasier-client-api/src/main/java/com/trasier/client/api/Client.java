@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface Client {
 
-    boolean sendSpan(String accountId, String spaceKey, Span span);
+    boolean sendSpan(Span span);
 
-    boolean sendSpans(String accountId, String spaceKey, List<Span> spans);
+    boolean sendSpans(List<Span> spans);
 
     void close();
 }

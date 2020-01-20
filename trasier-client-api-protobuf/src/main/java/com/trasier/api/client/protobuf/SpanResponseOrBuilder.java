@@ -9,6 +9,7 @@ public interface SpanResponseOrBuilder extends
 
   /**
    * <code>int32 count = 1;</code>
+   * @return The count.
    */
   int getCount();
 }

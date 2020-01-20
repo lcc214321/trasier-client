@@ -11,13 +11,13 @@ public class ClientCollector implements Client {
     private List<Span> sendSpans = new ArrayList<>();
 
     @Override
-    public boolean sendSpan(String accountId, String spaceKey, Span span) {
+    public boolean sendSpan(Span span) {
         sendSpans.add(span);
         return true;
     }
 
     @Override
-    public boolean sendSpans(String accountId, String spaceKey, List<Span> spans) {
+    public boolean sendSpans(List<Span> spans) {
         sendSpans.addAll(spans);
         return true;
     }

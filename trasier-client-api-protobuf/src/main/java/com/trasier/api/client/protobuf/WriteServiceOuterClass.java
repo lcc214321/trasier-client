@@ -72,7 +72,7 @@ public final class WriteServiceOuterClass {
       "\030\003 \001(\t\022\026\n\016conversationId\030\004 \001(\t\022\014\n\004name\030\005" +
       " \001(\t\022\016\n\006status\030\006 \001(\t\022\026\n\016startTimestamp\030\007" +
       " \001(\003\022\024\n\014endTimestamp\030\010 \001(\003\022 \n\030beginProce" +
-      "ssingTimestamp\030\t \001(\003\022!\n\031finishProcessing",
+      "ssingTimestamp\030\t \001(\003\022!\n\031finishProcessing" +
       "Timestamp\030\n \001(\003\022=\n\004tags\030\013 \003(\0132/.com.tras" +
       "ier.api.client.protobuf.Span.TagsEntry\022E" +
       "\n\010features\030\014 \003(\01323.com.trasier.api.clien" +
@@ -82,7 +82,7 @@ public final class WriteServiceOuterClass {
       "e\030\016 \001(\0162,.com.trasier.api.client.protobu" +
       "f.ContentType\022Q\n\016incomingHeader\030\017 \003(\01329." +
       "com.trasier.api.client.protobuf.Span.Inc" +
-      "omingHeaderEntry\022\024\n\014incomingData\030\020 \001(\t\022C",
+      "omingHeaderEntry\022\024\n\014incomingData\030\020 \001(\t\022C" +
       "\n\020outgoingEndpoint\030\021 \001(\0132).com.trasier.a" +
       "pi.client.protobuf.Endpoint\022I\n\023outgoingC" +
       "ontentType\030\022 \001(\0162,.com.trasier.api.clien" +
@@ -92,7 +92,7 @@ public final class WriteServiceOuterClass {
       "a\030\024 \001(\t\032+\n\tTagsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005val" +
       "ue\030\002 \001(\t:\0028\001\032/\n\rFeaturesEntry\022\013\n\003key\030\001 \001" +
       "(\t\022\r\n\005value\030\002 \001(\t:\0028\001\0325\n\023IncomingHeaderE" +
-      "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\0325\n\023",
+      "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\0325\n\023" +
       "OutgoingHeaderEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005valu" +
       "e\030\002 \001(\t:\0028\001\"K\n\010Endpoint\022\014\n\004name\030\001 \001(\t\022\021\n" +
       "\tipAddress\030\002 \001(\t\022\014\n\004port\030\003 \001(\t\022\020\n\010hostna" +
@@ -103,18 +103,10 @@ public final class WriteServiceOuterClass {
       ".com.trasier.api.client.protobuf.SpanRes" +
       "ponse(\0010\001B\002P\001b\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
+        });
     internal_static_com_trasier_api_client_protobuf_SpanResponse_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_com_trasier_api_client_protobuf_SpanResponse_fieldAccessorTable = new

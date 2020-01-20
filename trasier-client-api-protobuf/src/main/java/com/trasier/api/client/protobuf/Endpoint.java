@@ -9,7 +9,8 @@ package com.trasier.api.client.protobuf;
 public  final class Endpoint extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:com.trasier.api.client.protobuf.Endpoint)
-    EndpointOrBuilder {
+        EndpointOrBuilder {
+private static final long serialVersionUID = 0L;
   // Use Endpoint.newBuilder() to construct.
   private Endpoint(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
@@ -22,16 +23,27 @@ public  final class Endpoint extends
   }
 
   @Override
+  @SuppressWarnings({"unused"})
+  protected Object newInstance(
+      UnusedPrivateParameter unused) {
+    return new Endpoint();
+  }
+
+  @Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
-    return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+    return this.unknownFields;
   }
   private Endpoint(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     this();
-    int mutable_bitField0_ = 0;
+    if (extensionRegistry == null) {
+      throw new NullPointerException();
+    }
+    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+        com.google.protobuf.UnknownFieldSet.newBuilder();
     try {
       boolean done = false;
       while (!done) {
@@ -40,12 +52,6 @@ public  final class Endpoint extends
           case 0:
             done = true;
             break;
-          default: {
-            if (!input.skipField(tag)) {
-              done = true;
-            }
-            break;
-          }
           case 10: {
             String s = input.readStringRequireUtf8();
 
@@ -70,6 +76,13 @@ public  final class Endpoint extends
             hostname_ = s;
             break;
           }
+          default: {
+            if (!parseUnknownField(
+                input, unknownFields, extensionRegistry, tag)) {
+              done = true;
+            }
+            break;
+          }
         }
       }
     } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -78,6 +91,7 @@ public  final class Endpoint extends
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
+      this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
   }
@@ -86,6 +100,7 @@ public  final class Endpoint extends
     return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_Endpoint_descriptor;
   }
 
+  @Override
   protected FieldAccessorTable
       internalGetFieldAccessorTable() {
     return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_Endpoint_fieldAccessorTable
@@ -97,6 +112,7 @@ public  final class Endpoint extends
   private volatile Object name_;
   /**
    * <code>string name = 1;</code>
+   * @return The name.
    */
   public String getName() {
     Object ref = name_;
@@ -112,6 +128,7 @@ public  final class Endpoint extends
   }
   /**
    * <code>string name = 1;</code>
+   * @return The bytes for name.
    */
   public com.google.protobuf.ByteString
       getNameBytes() {
@@ -131,6 +148,7 @@ public  final class Endpoint extends
   private volatile Object ipAddress_;
   /**
    * <code>string ipAddress = 2;</code>
+   * @return The ipAddress.
    */
   public String getIpAddress() {
     Object ref = ipAddress_;
@@ -146,6 +164,7 @@ public  final class Endpoint extends
   }
   /**
    * <code>string ipAddress = 2;</code>
+   * @return The bytes for ipAddress.
    */
   public com.google.protobuf.ByteString
       getIpAddressBytes() {
@@ -165,6 +184,7 @@ public  final class Endpoint extends
   private volatile Object port_;
   /**
    * <code>string port = 3;</code>
+   * @return The port.
    */
   public String getPort() {
     Object ref = port_;
@@ -180,6 +200,7 @@ public  final class Endpoint extends
   }
   /**
    * <code>string port = 3;</code>
+   * @return The bytes for port.
    */
   public com.google.protobuf.ByteString
       getPortBytes() {
@@ -199,6 +220,7 @@ public  final class Endpoint extends
   private volatile Object hostname_;
   /**
    * <code>string hostname = 4;</code>
+   * @return The hostname.
    */
   public String getHostname() {
     Object ref = hostname_;
@@ -214,6 +236,7 @@ public  final class Endpoint extends
   }
   /**
    * <code>string hostname = 4;</code>
+   * @return The bytes for hostname.
    */
   public com.google.protobuf.ByteString
       getHostnameBytes() {
@@ -230,6 +253,7 @@ public  final class Endpoint extends
   }
 
   private byte memoizedIsInitialized = -1;
+  @Override
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
     if (isInitialized == 1) return true;
@@ -239,6 +263,7 @@ public  final class Endpoint extends
     return true;
   }
 
+  @Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
     if (!getNameBytes().isEmpty()) {
@@ -253,8 +278,10 @@ public  final class Endpoint extends
     if (!getHostnameBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 4, hostname_);
     }
+    unknownFields.writeTo(output);
   }
 
+  @Override
   public int getSerializedSize() {
     int size = memoizedSize;
     if (size != -1) return size;
@@ -272,11 +299,11 @@ public  final class Endpoint extends
     if (!getHostnameBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, hostname_);
     }
+    size += unknownFields.getSerializedSize();
     memoizedSize = size;
     return size;
   }
 
-  private static final long serialVersionUID = 0L;
   @Override
   public boolean equals(final Object obj) {
     if (obj == this) {
@@ -287,16 +314,16 @@ public  final class Endpoint extends
     }
     Endpoint other = (Endpoint) obj;
 
-    boolean result = true;
-    result = result && getName()
-        .equals(other.getName());
-    result = result && getIpAddress()
-        .equals(other.getIpAddress());
-    result = result && getPort()
-        .equals(other.getPort());
-    result = result && getHostname()
-        .equals(other.getHostname());
-    return result;
+    if (!getName()
+        .equals(other.getName())) return false;
+    if (!getIpAddress()
+        .equals(other.getIpAddress())) return false;
+    if (!getPort()
+        .equals(other.getPort())) return false;
+    if (!getHostname()
+        .equals(other.getHostname())) return false;
+    if (!unknownFields.equals(other.unknownFields)) return false;
+    return true;
   }
 
   @Override
@@ -389,6 +416,7 @@ public  final class Endpoint extends
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
 
+  @Override
   public Builder newBuilderForType() { return newBuilder(); }
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
@@ -396,6 +424,7 @@ public  final class Endpoint extends
   public static Builder newBuilder(Endpoint prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
+  @Override
   public Builder toBuilder() {
     return this == DEFAULT_INSTANCE
         ? new Builder() : new Builder().mergeFrom(this);
@@ -413,12 +442,13 @@ public  final class Endpoint extends
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:com.trasier.api.client.protobuf.Endpoint)
-      EndpointOrBuilder {
+          EndpointOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_Endpoint_descriptor;
     }
 
+    @Override
     protected FieldAccessorTable
         internalGetFieldAccessorTable() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_Endpoint_fieldAccessorTable
@@ -441,6 +471,7 @@ public  final class Endpoint extends
               .alwaysUseFieldBuilders) {
       }
     }
+    @Override
     public Builder clear() {
       super.clear();
       name_ = "";
@@ -454,15 +485,18 @@ public  final class Endpoint extends
       return this;
     }
 
+    @Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
       return WriteServiceOuterClass.internal_static_com_trasier_api_client_protobuf_Endpoint_descriptor;
     }
 
+    @Override
     public Endpoint getDefaultInstanceForType() {
       return Endpoint.getDefaultInstance();
     }
 
+    @Override
     public Endpoint build() {
       Endpoint result = buildPartial();
       if (!result.isInitialized()) {
@@ -471,6 +505,7 @@ public  final class Endpoint extends
       return result;
     }
 
+    @Override
     public Endpoint buildPartial() {
       Endpoint result = new Endpoint(this);
       result.name_ = name_;
@@ -481,32 +516,39 @@ public  final class Endpoint extends
       return result;
     }
 
+    @Override
     public Builder clone() {
-      return (Builder) super.clone();
+      return super.clone();
     }
+    @Override
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         Object value) {
-      return (Builder) super.setField(field, value);
+      return super.setField(field, value);
     }
+    @Override
     public Builder clearField(
         com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return (Builder) super.clearField(field);
+      return super.clearField(field);
     }
+    @Override
     public Builder clearOneof(
         com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return (Builder) super.clearOneof(oneof);
+      return super.clearOneof(oneof);
     }
+    @Override
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         int index, Object value) {
-      return (Builder) super.setRepeatedField(field, index, value);
+      return super.setRepeatedField(field, index, value);
     }
+    @Override
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         Object value) {
-      return (Builder) super.addRepeatedField(field, value);
+      return super.addRepeatedField(field, value);
     }
+    @Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
       if (other instanceof Endpoint) {
         return mergeFrom((Endpoint)other);
@@ -534,14 +576,17 @@ public  final class Endpoint extends
         hostname_ = other.hostname_;
         onChanged();
       }
+      this.mergeUnknownFields(other.unknownFields);
       onChanged();
       return this;
     }
 
+    @Override
     public final boolean isInitialized() {
       return true;
     }
 
+    @Override
     public Builder mergeFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -563,6 +608,7 @@ public  final class Endpoint extends
     private Object name_ = "";
     /**
      * <code>string name = 1;</code>
+     * @return The name.
      */
     public String getName() {
       Object ref = name_;
@@ -578,6 +624,7 @@ public  final class Endpoint extends
     }
     /**
      * <code>string name = 1;</code>
+     * @return The bytes for name.
      */
     public com.google.protobuf.ByteString
         getNameBytes() {
@@ -594,6 +641,8 @@ public  final class Endpoint extends
     }
     /**
      * <code>string name = 1;</code>
+     * @param value The name to set.
+     * @return This builder for chaining.
      */
     public Builder setName(
         String value) {
@@ -607,6 +656,7 @@ public  final class Endpoint extends
     }
     /**
      * <code>string name = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearName() {
 
@@ -616,6 +666,8 @@ public  final class Endpoint extends
     }
     /**
      * <code>string name = 1;</code>
+     * @param value The bytes for name to set.
+     * @return This builder for chaining.
      */
     public Builder setNameBytes(
         com.google.protobuf.ByteString value) {
@@ -632,6 +684,7 @@ public  final class Endpoint extends
     private Object ipAddress_ = "";
     /**
      * <code>string ipAddress = 2;</code>
+     * @return The ipAddress.
      */
     public String getIpAddress() {
       Object ref = ipAddress_;
@@ -647,6 +700,7 @@ public  final class Endpoint extends
     }
     /**
      * <code>string ipAddress = 2;</code>
+     * @return The bytes for ipAddress.
      */
     public com.google.protobuf.ByteString
         getIpAddressBytes() {
@@ -663,6 +717,8 @@ public  final class Endpoint extends
     }
     /**
      * <code>string ipAddress = 2;</code>
+     * @param value The ipAddress to set.
+     * @return This builder for chaining.
      */
     public Builder setIpAddress(
         String value) {
@@ -676,6 +732,7 @@ public  final class Endpoint extends
     }
     /**
      * <code>string ipAddress = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearIpAddress() {
 
@@ -685,6 +742,8 @@ public  final class Endpoint extends
     }
     /**
      * <code>string ipAddress = 2;</code>
+     * @param value The bytes for ipAddress to set.
+     * @return This builder for chaining.
      */
     public Builder setIpAddressBytes(
         com.google.protobuf.ByteString value) {
@@ -701,6 +760,7 @@ public  final class Endpoint extends
     private Object port_ = "";
     /**
      * <code>string port = 3;</code>
+     * @return The port.
      */
     public String getPort() {
       Object ref = port_;
@@ -716,6 +776,7 @@ public  final class Endpoint extends
     }
     /**
      * <code>string port = 3;</code>
+     * @return The bytes for port.
      */
     public com.google.protobuf.ByteString
         getPortBytes() {
@@ -732,6 +793,8 @@ public  final class Endpoint extends
     }
     /**
      * <code>string port = 3;</code>
+     * @param value The port to set.
+     * @return This builder for chaining.
      */
     public Builder setPort(
         String value) {
@@ -745,6 +808,7 @@ public  final class Endpoint extends
     }
     /**
      * <code>string port = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearPort() {
 
@@ -754,6 +818,8 @@ public  final class Endpoint extends
     }
     /**
      * <code>string port = 3;</code>
+     * @param value The bytes for port to set.
+     * @return This builder for chaining.
      */
     public Builder setPortBytes(
         com.google.protobuf.ByteString value) {
@@ -770,6 +836,7 @@ public  final class Endpoint extends
     private Object hostname_ = "";
     /**
      * <code>string hostname = 4;</code>
+     * @return The hostname.
      */
     public String getHostname() {
       Object ref = hostname_;
@@ -785,6 +852,7 @@ public  final class Endpoint extends
     }
     /**
      * <code>string hostname = 4;</code>
+     * @return The bytes for hostname.
      */
     public com.google.protobuf.ByteString
         getHostnameBytes() {
@@ -801,6 +869,8 @@ public  final class Endpoint extends
     }
     /**
      * <code>string hostname = 4;</code>
+     * @param value The hostname to set.
+     * @return This builder for chaining.
      */
     public Builder setHostname(
         String value) {
@@ -814,6 +884,7 @@ public  final class Endpoint extends
     }
     /**
      * <code>string hostname = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearHostname() {
 
@@ -823,6 +894,8 @@ public  final class Endpoint extends
     }
     /**
      * <code>string hostname = 4;</code>
+     * @param value The bytes for hostname to set.
+     * @return This builder for chaining.
      */
     public Builder setHostnameBytes(
         com.google.protobuf.ByteString value) {
@@ -835,14 +908,16 @@ public  final class Endpoint extends
       onChanged();
       return this;
     }
+    @Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return this;
+      return super.setUnknownFields(unknownFields);
     }
 
+    @Override
     public final Builder mergeUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return this;
+      return super.mergeUnknownFields(unknownFields);
     }
 
 
@@ -861,11 +936,12 @@ public  final class Endpoint extends
 
   private static final com.google.protobuf.Parser<Endpoint>
       PARSER = new com.google.protobuf.AbstractParser<Endpoint>() {
+    @Override
     public Endpoint parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Endpoint(input, extensionRegistry);
+      return new Endpoint(input, extensionRegistry);
     }
   };
 
@@ -878,6 +954,7 @@ public  final class Endpoint extends
     return PARSER;
   }
 
+  @Override
   public Endpoint getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
