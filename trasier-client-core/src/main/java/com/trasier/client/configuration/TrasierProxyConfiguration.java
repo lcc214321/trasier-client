@@ -2,7 +2,7 @@ package com.trasier.client.configuration;
 
 public class TrasierProxyConfiguration {
     private String host;
-    private int port;
+    private Integer port;
     private String scheme = "BASIC";
     private String username;
     private String password;
@@ -15,11 +15,11 @@ public class TrasierProxyConfiguration {
         this.host = host;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return port;
     }
 
-    public void setPort(final int port) {
+    public void setPort(final Integer port) {
         this.port = port;
     }
 
