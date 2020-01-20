@@ -8,16 +8,16 @@ import org.asynchttpclient.Realm;
 import org.asynchttpclient.proxy.ProxyServer;
 
 public final class AsyncHttpClientFactory {
-    public static DefaultAsyncHttpClientConfig.Builder createBuilder(TrasierProxyConfiguration trasierProxyConfiguration) {
-        DefaultAsyncHttpClientConfig.Builder clientBuilder = createBuilder();
-        ProxyServer.Builder proxyServerBuilder = new ProxyServer.Builder(trasierProxyConfiguration.getHost(), trasierProxyConfiguration.getPort());
-        if (trasierProxyConfiguration.getUsername() != null) {
-            Realm.Builder realm = new Realm.Builder(trasierProxyConfiguration.getUsername(), trasierProxyConfiguration.getPassword());
-            realm.setScheme(Realm.AuthScheme.valueOf(trasierProxyConfiguration.getScheme()));
-            proxyServerBuilder.setRealm(realm.build());
+    public static void setProxy(DefaultAsyncHttpClientConfig.Builder clientBuilder, TrasierProxyConfiguration trasierProxyConfiguration) {
+        if(trasierProxyConfiguration.getHost() != null && trasierProxyConfiguration.getPort() != null) {
+            ProxyServer.Builder proxyServerBuilder = new ProxyServer.Builder(trasierProxyConfiguration.getHost(), trasierProxyConfiguration.getPort());
+            if (trasierProxyConfiguration.getUsername() != null && trasierProxyConfiguration.getPassword() != null && trasierProxyConfiguration.getScheme() != null) {
+                Realm.Builder realm = new Realm.Builder(trasierProxyConfiguration.getUsername(), trasierProxyConfiguration.getPassword());
+                realm.setScheme(Realm.AuthScheme.valueOf(trasierProxyConfiguration.getScheme()));
+                proxyServerBuilder.setRealm(realm.build());
+            }
+            clientBuilder.setProxyServer(proxyServerBuilder.build());
         }
-        clientBuilder.setProxyServer(proxyServerBuilder.build());
-        return clientBuilder;
     }
 
     public static DefaultAsyncHttpClientConfig.Builder createBuilder() {
