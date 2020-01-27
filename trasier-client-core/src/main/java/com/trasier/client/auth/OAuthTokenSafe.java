@@ -56,7 +56,7 @@ public class OAuthTokenSafe {
                     this.refreshTokenExpiresAt = tokenIssued + ((Long.parseLong(token.getRefreshExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
                 }
             } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
+                LOGGER.error("Could not fetch token, maybe you need to set a proxy or consider disabling trasier.", e);
             }
         }
     }

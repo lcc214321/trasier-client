@@ -9,8 +9,8 @@ import org.asynchttpclient.proxy.ProxyServer;
 
 public final class AsyncHttpClientFactory {
     public static void setProxy(DefaultAsyncHttpClientConfig.Builder clientBuilder, TrasierProxyConfiguration trasierProxyConfiguration) {
-        if(trasierProxyConfiguration.getHost() != null && trasierProxyConfiguration.getPort() != null) {
-            ProxyServer.Builder proxyServerBuilder = new ProxyServer.Builder(trasierProxyConfiguration.getHost(), trasierProxyConfiguration.getPort());
+        if(trasierProxyConfiguration.getHost() != null && !trasierProxyConfiguration.getHost().trim().isEmpty() && trasierProxyConfiguration.getPort() != null) {
+            ProxyServer.Builder proxyServerBuilder = new ProxyServer.Builder(trasierProxyConfiguration.getHost().trim(), trasierProxyConfiguration.getPort());
             if (trasierProxyConfiguration.getUsername() != null && trasierProxyConfiguration.getPassword() != null && trasierProxyConfiguration.getScheme() != null) {
                 Realm.Builder realm = new Realm.Builder(trasierProxyConfiguration.getUsername(), trasierProxyConfiguration.getPassword());
                 realm.setScheme(Realm.AuthScheme.valueOf(trasierProxyConfiguration.getScheme()));
