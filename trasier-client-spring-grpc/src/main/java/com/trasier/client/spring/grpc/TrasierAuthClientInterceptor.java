@@ -38,10 +38,13 @@ public class TrasierAuthClientInterceptor implements ClientInterceptor {
         return new ClientInterceptors.CheckedForwardingClientCall(channel.newCall(methodDescriptor, callOptions)) {
             @Override
             protected void checkedStart(Listener listener, Metadata metadata) {
-                metadata.put(Metadata.Key.of("token", Metadata.ASCII_STRING_MARSHALLER), oAuthTokenSafe.getToken());
-                metadata.put(Metadata.Key.of("accountId", Metadata.ASCII_STRING_MARSHALLER), clientConfiguration.getAccountId());
-                metadata.put(Metadata.Key.of("spaceKey", Metadata.ASCII_STRING_MARSHALLER), clientConfiguration.getSpaceKey());
-                delegate().start(listener, metadata);
+                String token = oAuthTokenSafe.getToken();
+                if(token != null && !token.isEmpty()) {
+                    metadata.put(Metadata.Key.of("token", Metadata.ASCII_STRING_MARSHALLER), token);
+                    metadata.put(Metadata.Key.of("accountId", Metadata.ASCII_STRING_MARSHALLER), clientConfiguration.getAccountId());
+                    metadata.put(Metadata.Key.of("spaceKey", Metadata.ASCII_STRING_MARSHALLER), clientConfiguration.getSpaceKey());
+                    delegate().start(listener, metadata);
+                }
             }
         };
     }

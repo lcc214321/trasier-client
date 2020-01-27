@@ -71,14 +71,18 @@ public class TrasierHttpClient implements Client {
     }
 
     protected boolean sendSpansInternal(List<Span> spans) throws JsonProcessingException {
-        BoundRequestBuilder requestBuilder = client
-                .preparePost(writerEndpointUrl)
-                .setHeader("Content-Type", "application/json")
-                .setHeader("Authorization", "Bearer " + tokenSafe.getToken())
-                .setBody(mapper.writeValueAsBytes(spans));
-        Request request = requestBuilder.build();
-        client.executeRequest(request, handler);
-        return true;
+        String token = tokenSafe.getToken();
+        if(token != null && !token.isEmpty()) {
+            BoundRequestBuilder requestBuilder = client
+                    .preparePost(writerEndpointUrl)
+                    .setHeader("Content-Type", "application/json")
+                    .setHeader("Authorization", "Bearer " + token)
+                    .setBody(mapper.writeValueAsBytes(spans));
+            Request request = requestBuilder.build();
+            client.executeRequest(request, handler);
+            return true;
+        }
+        return false;
     }
 
     @Override
