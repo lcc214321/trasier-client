@@ -1,5 +1,7 @@
 package com.trasier.client.spring.noop;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.interceptor.TrasierSpanInterceptor;
@@ -24,6 +26,8 @@ public class TrasierSpringNoopClient implements TrasierSpringClient {
 
     @Autowired(required = false)
     private final List<TrasierSpanInterceptor> spanInterceptors = new ArrayList<>();
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     public TrasierSpringNoopClient(TrasierClientConfiguration clientConfiguration) {
@@ -56,7 +60,13 @@ public class TrasierSpringNoopClient implements TrasierSpringClient {
             compressSpanInterceptor.intercept(span);
         }
 
-        //nothing
+        if(LOGGER.isTraceEnabled()) {
+            try {
+                LOGGER.trace(objectMapper.writeValueAsString(span));
+            } catch (JsonProcessingException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
 
         return true;
     }
