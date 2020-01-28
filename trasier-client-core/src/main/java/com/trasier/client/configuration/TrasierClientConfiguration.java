@@ -9,6 +9,7 @@ public class TrasierClientConfiguration {
 
     private boolean activated = true;
     private boolean payloadTracingDisabled = false;
+    private boolean compressPayloadDisabled = false;
     private long logMetricsInterval = 10 * 60 * 1000;
 
     public String getAccountId() {
@@ -57,6 +58,14 @@ public class TrasierClientConfiguration {
 
     public void setActivated(boolean activated) {
         this.activated = activated;
+    }
+
+    public boolean isCompressPayloadDisabled() {
+        return compressPayloadDisabled;
+    }
+
+    public void setCompressPayloadDisabled(final boolean compressPayloadDisabled) {
+        this.compressPayloadDisabled = compressPayloadDisabled;
     }
 
     public void setPayloadTracingDisabled(boolean payloadTracingDisabled) {

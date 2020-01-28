@@ -10,12 +10,17 @@ import com.trasier.client.util.ContentTypeResolver;
 import com.trasier.client.util.ExceptionUtils;
 import io.opentracing.Span;
 import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -25,13 +30,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecorator {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TrasierServletFilterSpanDecorator.class);
+
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";
     private static final List<String> USER_AGENTS = Arrays.asList("mozilla", "chrome", "opera", "explorer", "safari");
 
     private final TrasierClientConfiguration configuration;
     private final List<TrasierSamplingInterceptor> samplingInterceptors;
     private Endpoint localEndpoint;
-    
+
     public TrasierServletFilterSpanDecorator(TrasierClientConfiguration configuration, List<TrasierSamplingInterceptor> samplingInterceptors) {
         this.configuration = configuration;
         this.samplingInterceptors = samplingInterceptors;
@@ -67,13 +74,14 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             TrasierSpan activeSpan = (TrasierSpan) span;
             com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
             handleResponse(response, trasierSpan);
-            applyInterceptors(httpServletRequest, trasierSpan);
+            handleRequestPayload(httpServletRequest, trasierSpan);
+            handleResponsePayload(response, trasierSpan);
         }
     }
 
     @Override
     public void onError(HttpServletRequest httpServletRequest, HttpServletResponse response, Throwable exception, Span span) {
-        if (configuration.isActivated() && response instanceof CachedServletResponseWrapper) {
+        if (configuration.isActivated() && response instanceof ContentCachingResponseWrapper) {
             MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
             trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
@@ -81,6 +89,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             trasierSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
             trasierSpan.setOutgoingContentType(ContentType.TEXT);
             if (!configuration.isPayloadTracingDisabled()) {
+                handleRequestPayload(httpServletRequest, trasierSpan);
                 trasierSpan.setOutgoingData(ExceptionUtils.getString(exception));
             }
         }
@@ -88,7 +97,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     @Override
     public void onTimeout(HttpServletRequest httpServletRequest, HttpServletResponse response, long timeout, Span span) {
-        if (configuration.isActivated() && response instanceof CachedServletResponseWrapper) {
+        if (configuration.isActivated() && response instanceof ContentCachingResponseWrapper) {
             MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
             trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
@@ -107,8 +116,18 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         currentSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
         enhanceIncomingEndpoint(currentSpan, request, requestHeaders);
         enhanceOutgoingEndpoint(currentSpan, request);
-        if (!configuration.isPayloadTracingDisabled() && request instanceof CachedServletRequestWrapper) {
-            String requestBody = new String(((CachedServletRequestWrapper) request).getContentAsByteArray());
+    }
+
+    private void handleRequestPayload(HttpServletRequest request, com.trasier.client.api.Span currentSpan) {
+        if (!configuration.isPayloadTracingDisabled() && request instanceof ContentCachingRequestWrapper) {
+            ContentCachingRequestWrapper contentCachingRequestWrapper = (ContentCachingRequestWrapper) request;
+            try {
+                //TODO read all left -> should be limited by max payload size
+                while (contentCachingRequestWrapper.getInputStream().read() != -1);
+            } catch (IOException e) {
+                LOGGER.error("Could not handle request.", e);
+            }
+            String requestBody = new String(contentCachingRequestWrapper.getContentAsByteArray());
             currentSpan.setIncomingData(requestBody);
             currentSpan.setIncomingContentType(ContentTypeResolver.resolveFromPayload(requestBody));
         }
@@ -164,8 +183,11 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         //TODO use Clock everywhere
         currentSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
         currentSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
-        if (!configuration.isPayloadTracingDisabled() && response instanceof CachedServletResponseWrapper) {
-            String responseBody = new String(((CachedServletResponseWrapper) response).getContentAsByteArray());
+    }
+
+    private void handleResponsePayload(HttpServletResponse response, com.trasier.client.api.Span currentSpan) {
+        if (!configuration.isPayloadTracingDisabled() && response instanceof ContentCachingResponseWrapper) {
+            String responseBody = new String(((ContentCachingResponseWrapper) response).getContentAsByteArray());
             currentSpan.setOutgoingData(responseBody);
             currentSpan.setOutgoingContentType(ContentTypeResolver.resolveFromPayload(responseBody));
         }

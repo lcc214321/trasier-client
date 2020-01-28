@@ -8,6 +8,7 @@ import com.trasier.client.configuration.TrasierProxyConfiguration;
 import com.trasier.client.http.AsyncHttpClientFactory;
 import com.trasier.client.http.TrasierHttpClient;
 import com.trasier.client.interceptor.TrasierSpanInterceptor;
+import com.trasier.client.spring.TrasierCompressSpanInterceptor;
 import com.trasier.client.spring.client.TrasierSpringClient;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
@@ -21,6 +22,7 @@ import java.util.Optional;
 public class TrasierSpringRestClient implements TrasierSpringClient {
 
     private final TrasierHttpClient client;
+    private TrasierCompressSpanInterceptor compressSpanInterceptor;
 
     @Autowired
     public TrasierSpringRestClient(TrasierEndpointConfiguration endpointConfiguration, TrasierClientConfiguration clientConfiguration, Optional<TrasierProxyConfiguration> optionalProxyConfiguration, Optional<List<TrasierSpanInterceptor>> optionalSpanInterceptors) {
@@ -29,6 +31,10 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
         TrasierHttpClient trasierHttpClient = new TrasierHttpClient(clientConfiguration, endpointConfiguration, tokenSafe, client);
         this.client = trasierHttpClient;
         optionalSpanInterceptors.ifPresent(it -> it.forEach(this.client::addSpanInterceptor));
+
+        if (!clientConfiguration.isCompressPayloadDisabled()) {
+            this.compressSpanInterceptor = new TrasierCompressSpanInterceptor();
+        }
     }
 
     protected AsyncHttpClient createHttpClient(Optional<TrasierProxyConfiguration> optionalProxyConfiguration) {
@@ -39,17 +45,24 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
         return AsyncHttpClientFactory.createClient(clientBuilder);
     }
 
-    public TrasierSpringRestClient(TrasierHttpClient client) {
+    public TrasierSpringRestClient(TrasierHttpClient client, TrasierCompressSpanInterceptor compressSpanInterceptor) {
         this.client = client;
+        this.compressSpanInterceptor = compressSpanInterceptor;
     }
 
     @Override
     public boolean sendSpan(Span span) {
+        if (compressSpanInterceptor != null) {
+            compressSpanInterceptor.intercept(span);
+        }
         return client.sendSpan(span);
     }
 
     @Override
     public boolean sendSpans(List<Span> spans) {
+        if (compressSpanInterceptor != null) {
+            spans.forEach(compressSpanInterceptor::intercept);
+        }
         return client.sendSpans(spans);
     }
 

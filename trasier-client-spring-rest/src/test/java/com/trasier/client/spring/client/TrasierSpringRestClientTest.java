@@ -63,7 +63,7 @@ public class TrasierSpringRestClientTest {
         Mockito.when(requestBuilder.build()).thenReturn(request);
         Mockito.when(httpClient.executeRequest(ArgumentMatchers.any(Request.class))).thenReturn(future);
 
-        sut = new TrasierSpringRestClient(trasierHttpClient);
+        sut = new TrasierSpringRestClient(trasierHttpClient, null);
     }
 
     @Test
