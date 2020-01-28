@@ -47,6 +47,7 @@ public class TrasierSpringRestClientTest {
         clientConfig.setSystemName("ping");
         clientConfig.setClientSecret("abcd1234");
         OAuthTokenSafe tokenSafe = mock(OAuthTokenSafe.class);
+        Mockito.when(tokenSafe.getToken()).thenReturn("a-token");
         TrasierHttpClient trasierHttpClient = new TrasierHttpClient(clientConfig, endpointConfiguration, tokenSafe, httpClient);
 
         ListenableFuture<Response> future = Mockito.mock(ListenableFuture.class);
@@ -62,7 +63,7 @@ public class TrasierSpringRestClientTest {
         Mockito.when(requestBuilder.build()).thenReturn(request);
         Mockito.when(httpClient.executeRequest(ArgumentMatchers.any(Request.class))).thenReturn(future);
 
-        sut = new TrasierSpringRestClient(trasierHttpClient);
+        sut = new TrasierSpringRestClient(trasierHttpClient, null);
     }
 
     @Test

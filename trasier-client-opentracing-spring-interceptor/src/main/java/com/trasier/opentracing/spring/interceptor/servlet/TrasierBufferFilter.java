@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -36,25 +38,25 @@ public class TrasierBufferFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        if (!configuration.isActivated()) {
+        if (!configuration.isActivated() || configuration.isPayloadTracingDisabled()) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
 
-        ServletRequest request = configuration.isPayloadTracingDisabled() ? servletRequest : createCachedRequest((HttpServletRequest) servletRequest);
-        ServletResponse response = configuration.isPayloadTracingDisabled() ? servletResponse : createCachedResponse((HttpServletResponse) servletResponse);
+        ContentCachingRequestWrapper request = createCachedRequest((HttpServletRequest) servletRequest);
+        ContentCachingResponseWrapper response = createCachedResponse((HttpServletResponse) servletResponse);
 
         filterChain.doFilter(request, response);
 
-        response.getWriter().flush();
+        response.copyBodyToResponse();
     }
 
-    protected CachedServletResponseWrapper createCachedResponse(HttpServletResponse servletResponse) throws IOException {
-        return servletResponse instanceof CachedServletResponseWrapper ? (CachedServletResponseWrapper) servletResponse : CachedServletResponseWrapper.create(servletResponse);
+    protected ContentCachingResponseWrapper createCachedResponse(HttpServletResponse servletResponse) throws IOException {
+        return servletResponse instanceof ContentCachingResponseWrapper ? (ContentCachingResponseWrapper) servletResponse : new ContentCachingResponseWrapper(servletResponse);
     }
 
-    protected CachedServletRequestWrapper createCachedRequest(HttpServletRequest servletRequest) throws IOException {
-        return servletRequest instanceof CachedServletResponseWrapper ? (CachedServletRequestWrapper) servletRequest : CachedServletRequestWrapper.create(servletRequest);
+    protected ContentCachingRequestWrapper createCachedRequest(HttpServletRequest servletRequest) throws IOException {
+        return servletRequest instanceof ContentCachingRequestWrapper ? (ContentCachingRequestWrapper) servletRequest : new ContentCachingRequestWrapper(servletRequest);
     }
 
 }

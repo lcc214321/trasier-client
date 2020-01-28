@@ -30,7 +30,9 @@ public class TrasierSpringNoopClient implements TrasierSpringClient {
         this.clientConfiguration = clientConfiguration;
 
         if (clientConfiguration.isActivated()) {
-            this.compressSpanInterceptor = new TrasierCompressSpanInterceptor();
+            if (!clientConfiguration.isCompressPayloadDisabled()) {
+                this.compressSpanInterceptor = new TrasierCompressSpanInterceptor();
+            }
         }
     }
 
@@ -50,7 +52,9 @@ public class TrasierSpringNoopClient implements TrasierSpringClient {
             return false;
         }
 
-        compressSpanInterceptor.intercept(span);
+        if (compressSpanInterceptor != null) {
+            compressSpanInterceptor.intercept(span);
+        }
 
         //nothing
 
@@ -74,10 +78,6 @@ public class TrasierSpringNoopClient implements TrasierSpringClient {
 
     @Override
     public void close() {
-    }
-
-    public void setCompressSpanInterceptor(TrasierCompressSpanInterceptor compressSpanInterceptor) {
-        this.compressSpanInterceptor = compressSpanInterceptor;
     }
 
 }
