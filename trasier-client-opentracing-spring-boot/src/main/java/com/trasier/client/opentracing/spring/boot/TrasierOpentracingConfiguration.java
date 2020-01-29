@@ -8,11 +8,13 @@ import com.trasier.client.opentracing.TrasierScopeManager;
 import com.trasier.client.opentracing.TrasierTracer;
 import com.trasier.client.spring.spancontrol.TrasierSampleByOperationConfiguration;
 import com.trasier.client.spring.spancontrol.TrasierSampleByUrlPatternConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@AutoConfigureBefore(name = "io.opentracing.contrib.spring.tracer.configuration.TracerAutoConfiguration")
 public class TrasierOpentracingConfiguration {
 
     @Bean

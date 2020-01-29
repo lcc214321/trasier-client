@@ -1,6 +1,7 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
 import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.opentracing.TrasierScope;
 import com.trasier.client.opentracing.TrasierScopeManager;
 import com.trasier.client.opentracing.TrasierSpan;
 import io.opentracing.ScopeManager;
@@ -90,7 +91,9 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
     public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
         ScopeManager scopeManager = tracer.scopeManager();
         if (scopeManager instanceof TrasierScopeManager) {
-            ((TrasierScopeManager) scopeManager).activeScope().close();
+            TrasierScope activeScope = (TrasierScope) ((TrasierScopeManager) scopeManager).activeScope();
+            activeScope.close();
+            activeScope.getSpan().finish();
         }
         super.afterCompletion(messageContext, ex);
     }
