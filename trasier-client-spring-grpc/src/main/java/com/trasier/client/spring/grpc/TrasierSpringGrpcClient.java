@@ -57,7 +57,10 @@ public class TrasierSpringGrpcClient implements TrasierSpringClient {
             this.channel = channelBuilder.build();
             this.stub = WriteServiceGrpc.newStub(channel).withInterceptors(authClientInterceptor);
             this.converter = new GrpcSpanConverter();
-            this.compressSpanInterceptor = new TrasierCompressSpanInterceptor();
+
+            if (!clientConfiguration.isCompressPayloadDisabled()) {
+                this.compressSpanInterceptor = new TrasierCompressSpanInterceptor();
+            }
         }
     }
 
@@ -77,7 +80,9 @@ public class TrasierSpringGrpcClient implements TrasierSpringClient {
             return false;
         }
 
-        compressSpanInterceptor.intercept(span);
+        if(compressSpanInterceptor != null) {
+            compressSpanInterceptor.intercept(span);
+        }
 
         SpanRequest.Builder builder = SpanRequest.newBuilder();
         builder.setAccountId(clientConfiguration.getAccountId());
@@ -130,7 +135,11 @@ public class TrasierSpringGrpcClient implements TrasierSpringClient {
                 .filter(span -> !span.isCancel())
                 .peek(this::applyInterceptors)
                 .filter(span -> !span.isCancel())
-                .peek(compressSpanInterceptor::intercept)
+                .peek(span -> {
+                    if(compressSpanInterceptor != null) {
+                        compressSpanInterceptor.intercept(span);
+                    }
+                })
                 .map(converter::convert)
                 .forEach(builder::addSpans);
 

@@ -1,5 +1,7 @@
 package com.trasier.client.spring.noop;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.interceptor.TrasierSpanInterceptor;
@@ -25,12 +27,16 @@ public class TrasierSpringNoopClient implements TrasierSpringClient {
     @Autowired(required = false)
     private final List<TrasierSpanInterceptor> spanInterceptors = new ArrayList<>();
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
     public TrasierSpringNoopClient(TrasierClientConfiguration clientConfiguration) {
         this.clientConfiguration = clientConfiguration;
 
         if (clientConfiguration.isActivated()) {
-            this.compressSpanInterceptor = new TrasierCompressSpanInterceptor();
+            if (!clientConfiguration.isCompressPayloadDisabled()) {
+                this.compressSpanInterceptor = new TrasierCompressSpanInterceptor();
+            }
         }
     }
 
@@ -50,9 +56,17 @@ public class TrasierSpringNoopClient implements TrasierSpringClient {
             return false;
         }
 
-        compressSpanInterceptor.intercept(span);
+        if (compressSpanInterceptor != null) {
+            compressSpanInterceptor.intercept(span);
+        }
 
-        //nothing
+        if(LOGGER.isTraceEnabled()) {
+            try {
+                LOGGER.trace(objectMapper.writeValueAsString(span));
+            } catch (JsonProcessingException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
 
         return true;
     }
@@ -74,10 +88,6 @@ public class TrasierSpringNoopClient implements TrasierSpringClient {
 
     @Override
     public void close() {
-    }
-
-    public void setCompressSpanInterceptor(TrasierCompressSpanInterceptor compressSpanInterceptor) {
-        this.compressSpanInterceptor = compressSpanInterceptor;
     }
 
 }
