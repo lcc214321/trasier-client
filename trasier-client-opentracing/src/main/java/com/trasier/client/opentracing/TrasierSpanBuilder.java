@@ -139,7 +139,7 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
         com.trasier.client.api.Span wrapped = wrappedBuilder.build();
         wrapped.setTags(tags);
 
-        TrasierSpan span = new TrasierSpan(client, configuration, wrapped, baggageItems);
+        TrasierSpan span = new TrasierSpan(client, wrapped, baggageItems);
         return span;
     }
 }

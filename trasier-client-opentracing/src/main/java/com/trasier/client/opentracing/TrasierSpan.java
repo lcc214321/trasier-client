@@ -1,7 +1,6 @@
 package com.trasier.client.opentracing;
 
 import com.trasier.client.api.Client;
-import com.trasier.client.configuration.TrasierClientConfiguration;
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.tag.Tag;
@@ -10,14 +9,12 @@ import java.util.Map;
 
 public class TrasierSpan implements Span {
     private final Client client;
-    private TrasierClientConfiguration configuration;
     private final com.trasier.client.api.Span wrapped;
     private Map<String, String> baggageItems;
     private boolean finished;
 
-    public TrasierSpan(Client client, TrasierClientConfiguration configuration, com.trasier.client.api.Span wrapped, Map<String, String> baggageItems) {
+    public TrasierSpan(Client client, com.trasier.client.api.Span wrapped, Map<String, String> baggageItems) {
         this.client = client;
-        this.configuration = configuration;
         this.wrapped = wrapped;
         this.baggageItems = baggageItems;
     }
@@ -96,10 +93,6 @@ public class TrasierSpan implements Span {
         return this;
     }
 
-    public boolean isFinished() {
-        return finished;
-    }
-
     @Override
     public void finish() {
         finish(System.currentTimeMillis());
@@ -107,7 +100,7 @@ public class TrasierSpan implements Span {
 
     @Override
     public void finish(long endTimestamp) {
-        if (!finished) {
+        if (!finished) { //do not call finish twice
             wrapped.setEndTimestamp(endTimestamp);
             finished = true;
             client.sendSpan(unwrap());
