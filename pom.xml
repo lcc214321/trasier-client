@@ -56,6 +56,7 @@
         <module>trasier-client-api</module>
         <module>trasier-client-api-protobuf</module>
         <module>trasier-client-core</module>
+        <module>trasier-client-ws</module>
         <module>trasier-client-spring</module>
         <module>trasier-client-spring-noop</module>
         <module>trasier-client-spring-noop-starter</module>
@@ -100,6 +101,11 @@
             <dependency>
                 <groupId>com.trasier</groupId>
                 <artifactId>trasier-client-spring-grpc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trasier</groupId>
+                <artifactId>trasier-client-ws</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
