@@ -1,11 +1,11 @@
 package com.trasier.client.spring.context;
 
 import com.trasier.client.api.Span;
-import org.springframework.core.NamedThreadLocal;
+import org.springframework.core.NamedInheritableThreadLocal;
 
 public class TrasierContextHolder {
 
-    private static final ThreadLocal<TrasierContext> CURRENT_TRASIER_CONTEXT = new NamedThreadLocal<>("TrasierContext");
+    private static final InheritableThreadLocal<TrasierContext> CURRENT_TRASIER_CONTEXT = new NamedInheritableThreadLocal<>("TrasierContext");
 
     static Span getSpan() {
         return isTracing() ? CURRENT_TRASIER_CONTEXT.get().span : null;
