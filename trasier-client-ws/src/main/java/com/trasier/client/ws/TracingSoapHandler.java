@@ -53,7 +53,7 @@ public class TracingSoapHandler implements SOAPHandler<SOAPMessageContext> {
 
     @Override
     public boolean handleMessage(SOAPMessageContext soapMessageContext) {
-        if (tracer instanceof TrasierTracer) {
+        if (tracer instanceof TrasierTracer && clientConfig.isActivated()) {
             handle(soapMessageContext, false);
         }
         return true;
@@ -61,7 +61,7 @@ public class TracingSoapHandler implements SOAPHandler<SOAPMessageContext> {
 
     @Override
     public boolean handleFault(SOAPMessageContext soapMessageContext) {
-        if (tracer instanceof TrasierTracer) {
+        if (tracer instanceof TrasierTracer && clientConfig.isActivated()) {
             handle(soapMessageContext, true);
         }
         return true;
