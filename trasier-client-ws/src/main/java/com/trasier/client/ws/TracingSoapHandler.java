@@ -104,6 +104,7 @@ public class TracingSoapHandler implements SOAPHandler<SOAPMessageContext> {
                 span.setStatus(isFault ? "ERROR" : "OK");
                 TrasierScopeManager scopeManager = (TrasierScopeManager)tracer.scopeManager();
                 scopeManager.activeScope().close();
+                trasierSpan.finish();
             }
         } catch (Exception e) {
             LOGGER.debug(e.getMessage(), e);

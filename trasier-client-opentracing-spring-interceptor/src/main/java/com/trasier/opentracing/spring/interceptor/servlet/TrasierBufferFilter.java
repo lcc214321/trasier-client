@@ -18,6 +18,8 @@ import java.io.IOException;
 
 public class TrasierBufferFilter extends GenericFilterBean {
 
+    private static final Integer MAX_REQUEST_SIZE = 1024 * 1024;
+
     @Autowired
     private TrasierClientConfiguration configuration;
 
@@ -25,8 +27,7 @@ public class TrasierBufferFilter extends GenericFilterBean {
     }
 
     public TrasierBufferFilter(TrasierClientConfiguration configuration) {
-        this.configuration = configuration;
-    }
+        this.configuration = configuration;    }
 
     @Override
     protected void initFilterBean() {
@@ -51,12 +52,12 @@ public class TrasierBufferFilter extends GenericFilterBean {
         response.copyBodyToResponse();
     }
 
-    protected ContentCachingResponseWrapper createCachedResponse(HttpServletResponse servletResponse) throws IOException {
+    protected ContentCachingResponseWrapper createCachedResponse(HttpServletResponse servletResponse) {
         return servletResponse instanceof ContentCachingResponseWrapper ? (ContentCachingResponseWrapper) servletResponse : new ContentCachingResponseWrapper(servletResponse);
     }
 
-    protected ContentCachingRequestWrapper createCachedRequest(HttpServletRequest servletRequest) throws IOException {
-        return servletRequest instanceof ContentCachingRequestWrapper ? (ContentCachingRequestWrapper) servletRequest : new ContentCachingRequestWrapper(servletRequest);
+    protected ContentCachingRequestWrapper createCachedRequest(HttpServletRequest servletRequest) {
+        return servletRequest instanceof ContentCachingRequestWrapper ? (ContentCachingRequestWrapper) servletRequest : new ContentCachingRequestWrapper(servletRequest, MAX_REQUEST_SIZE);
     }
 
 }

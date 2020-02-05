@@ -32,6 +32,7 @@ import java.util.TreeMap;
 public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecorator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrasierServletFilterSpanDecorator.class);
 
+    private static final Integer MAX_RESPONSE_SIZE = 1024 * 1024;
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";
     private static final List<String> USER_AGENTS = Arrays.asList("mozilla", "chrome", "opera", "explorer", "safari");
 
@@ -123,11 +124,15 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             ContentCachingRequestWrapper contentCachingRequestWrapper = (ContentCachingRequestWrapper) request;
             try {
                 //TODO read all left -> should be limited by max payload size
-                while (contentCachingRequestWrapper.getInputStream().read() != -1);
+                while (contentCachingRequestWrapper.getInputStream().read() != -1) ;
             } catch (IOException e) {
                 LOGGER.error("Could not handle request.", e);
             }
-            String requestBody = new String(contentCachingRequestWrapper.getContentAsByteArray());
+            byte[] requestData = contentCachingRequestWrapper.getContentAsByteArray();
+            if (GzipUtil.isGzipStream(requestData)) {
+                requestData = GzipUtil.decompress(requestData);
+            }
+            String requestBody = new String(requestData); //TODO memory waste?
             currentSpan.setIncomingData(requestBody);
             currentSpan.setIncomingContentType(ContentTypeResolver.resolveFromPayload(requestBody));
         }
@@ -187,10 +192,32 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     private void handleResponsePayload(HttpServletResponse response, com.trasier.client.api.Span currentSpan) {
         if (!configuration.isPayloadTracingDisabled() && response instanceof ContentCachingResponseWrapper) {
-            String responseBody = new String(((ContentCachingResponseWrapper) response).getContentAsByteArray());
+            String responseBody = extractResponseBody((ContentCachingResponseWrapper) response);
             currentSpan.setOutgoingData(responseBody);
             currentSpan.setOutgoingContentType(ContentTypeResolver.resolveFromPayload(responseBody));
         }
+    }
+
+    private String extractResponseBody(ContentCachingResponseWrapper response) {
+        byte[] responseData;
+
+        if (response.getContentSize() <= MAX_RESPONSE_SIZE) {
+            responseData = response.getContentAsByteArray();
+        } else {
+            responseData = new byte[MAX_RESPONSE_SIZE];
+            try {
+                response.getContentInputStream().read(responseData);
+            } catch (IOException e) {
+                LOGGER.error("Response cannot be extracted", e);
+                return null;
+            }
+        }
+
+        if (GzipUtil.isGzipStream(responseData)) {
+            responseData = GzipUtil.decompress(responseData);
+        }
+
+        return new String(responseData); //TODO memory waste?
     }
 
     private Map<String, String> getResponseHeaders(HttpServletResponse response) {
