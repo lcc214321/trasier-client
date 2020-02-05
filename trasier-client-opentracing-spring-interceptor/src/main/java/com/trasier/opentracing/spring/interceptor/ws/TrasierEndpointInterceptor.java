@@ -48,7 +48,7 @@ public class TrasierEndpointInterceptor implements SmartEndpointInterceptor {
     }
 
     @Override
-    public boolean handleFault(MessageContext messageContext, Object endpoint) throws Exception {
+    public boolean handleFault(MessageContext messageConttext, Object endpoint) throws Exception {
         return true;
     }
 

@@ -1,9 +1,8 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
 import com.trasier.client.interceptor.TrasierSamplingInterceptor;
-import com.trasier.client.opentracing.TrasierScopeManager;
 import com.trasier.client.opentracing.TrasierSpan;
-import io.opentracing.ScopeManager;
+import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
@@ -72,7 +71,9 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
             });
         }
 
-        tracer.activateSpan(span);
+        Scope scope = tracer.activateSpan(span);
+        messageContext.setProperty("TRASIER_ACTIVE_SPAN", span);
+        scope.close(); //close immediately as the response may be handled asynchronously
         return super.handleRequest(messageContext);
     }
 
@@ -88,9 +89,9 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
 
     @Override
     public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
-        ScopeManager scopeManager = tracer.scopeManager();
-        if (scopeManager instanceof TrasierScopeManager) {
-            ((TrasierScopeManager) scopeManager).activeScope().close();
+        Span span = (Span) messageContext.getProperty("TRASIER_ACTIVE_SPAN");
+        if (span != null) {
+            span.finish();
         }
         super.afterCompletion(messageContext, ex);
     }

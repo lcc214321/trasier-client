@@ -13,8 +13,6 @@ public class TrasierScope implements Scope {
 
     @Override
     public void close() {
-        //We need to finish, as we don't know if finish gets called. If it has been finished nothing happens.
-        span.finish();
         scopeManager.deactivate(this);
     }
 

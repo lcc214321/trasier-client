@@ -7,6 +7,7 @@ import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ExceptionUtils;
+import com.trasier.client.util.LocalEndpointHolder;
 import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +26,6 @@ import javax.xml.soap.MimeHeader;
 import javax.xml.transform.dom.DOMSource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -34,9 +33,6 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(TrasierClientInterceptor.class);
 
     private final Tracer tracer;
-
-    private Endpoint localEndpoint;
-
     private final TrasierClientConfiguration configuration;
 
     public TrasierClientInterceptor(Tracer tracer, TrasierClientConfiguration configuration) {
@@ -56,7 +52,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                 Endpoint outgoingEndpoint = new Endpoint(StringUtils.isEmpty(endpointName) ? TrasierConstants.UNKNOWN_OUT : endpointName);
                 trasierSpan.setOutgoingEndpoint(outgoingEndpoint);
                 trasierSpan.getIncomingHeader().putAll(extractHeaders(messageContext.getRequest()));
-                enhanceIncomingEndpoint(trasierSpan);
+                trasierSpan.setIncomingEndpoint(LocalEndpointHolder.getLocalEndpoint(configuration.getSystemName()));
                 trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
                 trasierSpan.setIncomingContentType(ContentType.XML);
                 if (!configuration.isPayloadTracingDisabled()) {
@@ -166,29 +162,6 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
 
         }
         return result.toSingleValueMap();
-    }
-
-    private void enhanceIncomingEndpoint(com.trasier.client.api.Span span) {
-        // no synchronisation on purpose
-        if (this.localEndpoint == null) {
-            Endpoint endpoint = new Endpoint(configuration.getSystemName());
-            InetAddress inetAddress = getInetAddress();
-            if (inetAddress != null) {
-                endpoint.setHostname(inetAddress.getHostName());
-                endpoint.setIpAddress(inetAddress.getHostAddress());
-            }
-            this.localEndpoint = endpoint;
-        }
-        span.setIncomingEndpoint(localEndpoint);
-    }
-
-    private InetAddress getInetAddress() {
-        try {
-            return InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            // ignore
-        }
-        return null;
     }
 
 }
