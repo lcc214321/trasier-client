@@ -2,11 +2,7 @@ package com.trasier.client.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import org.asynchttpclient.AsyncCompletionHandler;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.BoundRequestBuilder;
-import org.asynchttpclient.Request;
-import org.asynchttpclient.Response;
+import org.asynchttpclient.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +22,7 @@ public class OAuthTokenSafe {
     private final ObjectMapper mapper;
 
     private OAuthToken token;
+    private AsyncHandler<Void> asyncHandler;
     private long tokenExpiresAt;
     private long refreshTokenExpiresAt;
     private AtomicBoolean isFeatching = new AtomicBoolean(false);
@@ -35,13 +32,14 @@ public class OAuthTokenSafe {
         this.authUrl = authUrl;
         this.client = client;
         this.mapper = new ObjectMapper();
+        this.asyncHandler = new AsyncTokenHandler();
     }
 
     public String getToken() {
         if (isTokenInvalid()) {
             refreshToken();
         }
-        return token.getAccessToken();
+        return token != null ? token.getAccessToken() : null;
     }
 
     public void refreshToken() {
@@ -51,7 +49,7 @@ public class OAuthTokenSafe {
                     try {
                         String basicAuth = Base64.getEncoder().encodeToString((clientConfiguration.getClientId() + ":" + clientConfiguration.getClientSecret()).getBytes());
                         Request request = createRequest(basicAuth, createTokenRequest());
-                        client.executeRequest(request, new AsyncTokenHandler());
+                        client.executeRequest(request, asyncHandler);
                     } catch (Exception e) {
                         LOGGER.error("Could not fetch token, maybe you need to set a proxy or consider disabling trasier.", e);
                     }
@@ -98,27 +96,28 @@ public class OAuthTokenSafe {
 
         @Override
         public Void onCompleted(Response response) throws Exception {
-            int responseCode = response.getStatusCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                OAuthToken token = mapper.readValue(response.getResponseBody(), OAuthToken.class);
-                if (token != null) {
-                    long tokenIssued = System.currentTimeMillis();
-                    OAuthTokenSafe.this.token = token;
-                    OAuthTokenSafe.this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
-                    OAuthTokenSafe.this.refreshTokenExpiresAt = tokenIssued + ((Long.parseLong(token.getRefreshExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
+            try {
+                int responseCode = response.getStatusCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    OAuthToken token = mapper.readValue(response.getResponseBody(), OAuthToken.class);
+                    if (token != null) {
+                        long tokenIssued = System.currentTimeMillis();
+                        OAuthTokenSafe.this.token = token;
+                        OAuthTokenSafe.this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
+                        OAuthTokenSafe.this.refreshTokenExpiresAt = tokenIssued + ((Long.parseLong(token.getRefreshExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
+                        return null;
+                    }
                 }
-                isFeatching.getAndSet(false);
-            } else {
-                isFeatching.getAndSet(false);
                 throw new IOException("Could not fetch token. " + responseCode);
+            } finally {
+                isFeatching.getAndSet(false);
             }
-            return null;
         }
 
         @Override
         public void onThrowable(Throwable t) {
-            super.onThrowable(t);
             isFeatching.getAndSet(false);
+            super.onThrowable(t);
         }
     }
 
