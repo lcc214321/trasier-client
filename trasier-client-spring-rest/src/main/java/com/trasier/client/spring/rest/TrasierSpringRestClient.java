@@ -28,6 +28,7 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
     public TrasierSpringRestClient(TrasierEndpointConfiguration endpointConfiguration, TrasierClientConfiguration clientConfiguration, Optional<TrasierProxyConfiguration> optionalProxyConfiguration, Optional<List<TrasierSpanInterceptor>> optionalSpanInterceptors) {
         AsyncHttpClient client = createHttpClient(optionalProxyConfiguration);
         OAuthTokenSafe tokenSafe = new OAuthTokenSafe(clientConfiguration, endpointConfiguration.getAuthEndpoint(), client);
+        tokenSafe.refreshToken();
         TrasierHttpClient trasierHttpClient = new TrasierHttpClient(clientConfiguration, endpointConfiguration, tokenSafe, client);
         this.client = trasierHttpClient;
         optionalSpanInterceptors.ifPresent(it -> it.forEach(this.client::addSpanInterceptor));
