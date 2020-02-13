@@ -4,43 +4,39 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.BoundRequestBuilder;
-import org.asynchttpclient.ListenableFuture;
-import org.asynchttpclient.Request;
-import org.asynchttpclient.Response;
+import org.asynchttpclient.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class OAuthTokenSafeTest {
 
     private TrasierClientConfiguration clientConfig = new TrasierClientConfiguration();
     private TrasierEndpointConfiguration appConfig = new TrasierEndpointConfiguration();
     private ObjectMapper mapper = new ObjectMapper();
-    private Response response = Mockito.mock(Response.class);
-    private AsyncHttpClient client = Mockito.mock(AsyncHttpClient.class);
+    private Response response = mock(Response.class);
+    private AsyncHttpClient client;
 
     @Before
-    public void init() throws InterruptedException, ExecutionException, TimeoutException {
-        ListenableFuture<Response> future = Mockito.mock(ListenableFuture.class);
-        Request request = Mockito.mock(Request.class);
-        BoundRequestBuilder requestBuilder = Mockito.mock(BoundRequestBuilder.class);
-        Mockito.when(future.get(Mockito.anyLong(), Mockito.any(TimeUnit.class))).thenReturn(response);
-        Mockito.when(client.preparePost(ArgumentMatchers.anyString())).thenReturn(requestBuilder);
-        Mockito.when(requestBuilder.setReadTimeout(ArgumentMatchers.anyInt())).thenReturn(requestBuilder);
-        Mockito.when(requestBuilder.setRequestTimeout(ArgumentMatchers.anyInt())).thenReturn(requestBuilder);
-        Mockito.when(requestBuilder.setCharset(ArgumentMatchers.any())).thenReturn(requestBuilder);
-        Mockito.when(requestBuilder.setHeader(ArgumentMatchers.anyString(), ArgumentMatchers.anyString())).thenReturn(requestBuilder);
-        Mockito.when(requestBuilder.setBody(ArgumentMatchers.anyString())).thenReturn(requestBuilder);
-        Mockito.when(requestBuilder.build()).thenReturn(request);
-        Mockito.when(client.executeRequest(ArgumentMatchers.any(Request.class))).thenReturn(future);
+    public void init() {
+        AsyncHttpClient httpClient = new DefaultAsyncHttpClient() {
+            @Override
+            public ListenableFuture<Response> executeRequest(Request request, AsyncHandler handler) {
+                return null;
+            }
+        };
+        AsyncHttpClient client =  spy(httpClient);
+        when(client.executeRequest(any(org.asynchttpclient.Request.class), any())).thenAnswer(invocation -> {
+            AsyncCompletionHandler<Response> handler = invocation.getArgument(1);
+            handler.onCompleted(response);
+            return null;
+        });
+        this.client = client;
     }
 
     @Test
@@ -52,8 +48,8 @@ public class OAuthTokenSafeTest {
         token.setExpiresIn("" + (80 * 1000));
         token.setRefreshExpiresIn("" + (160 * 1000));
 
-        Mockito.when(response.getStatusCode()).thenReturn(200);
-        Mockito.when(response.getResponseBody()).thenReturn(mapper.writeValueAsString(token));
+        when(response.getStatusCode()).thenReturn(200);
+        when(response.getResponseBody()).thenReturn(mapper.writeValueAsString(token));
         OAuthTokenSafe sut = new OAuthTokenSafe(clientConfig, appConfig.getAuthEndpoint(), client);
 
         // when
@@ -61,7 +57,7 @@ public class OAuthTokenSafeTest {
         sut.getToken();
 
         // then
-        Mockito.verify(client, Mockito.times(1)).executeRequest(ArgumentMatchers.any(Request.class));
+        verify(client, times(1)).executeRequest(any(Request.class), any(AsyncHandler.class));
     }
 
     @Test
@@ -73,8 +69,8 @@ public class OAuthTokenSafeTest {
         token.setExpiresIn("" + (-80 * 1000));
         token.setRefreshExpiresIn("" + (-40 * 1000));
 
-        Mockito.when(response.getStatusCode()).thenReturn(200);
-        Mockito.when(response.getResponseBody()).thenReturn(mapper.writeValueAsString(token));
+        when(response.getStatusCode()).thenReturn(200);
+        when(response.getResponseBody()).thenReturn(mapper.writeValueAsString(token));
         OAuthTokenSafe sut = new OAuthTokenSafe(clientConfig, appConfig.getAuthEndpoint(), client);
 
         // when
@@ -82,7 +78,7 @@ public class OAuthTokenSafeTest {
         sut.getToken();
 
         // then
-        Mockito.verify(client, Mockito.times(2)).executeRequest(ArgumentMatchers.any(Request.class));
+        verify(client, times(2)).executeRequest(any(Request.class), any(AsyncHandler.class));
     }
 
     @Test
@@ -94,8 +90,8 @@ public class OAuthTokenSafeTest {
         token.setExpiresIn("" + (-80 * 1000));
         token.setRefreshExpiresIn("" + (80 * 1000));
 
-        Mockito.when(response.getStatusCode()).thenReturn(200);
-        Mockito.when(response.getResponseBody()).thenReturn(mapper.writeValueAsString(token));
+        when(response.getStatusCode()).thenReturn(200);
+        when(response.getResponseBody()).thenReturn(mapper.writeValueAsString(token));
         OAuthTokenSafe sut = new OAuthTokenSafe(clientConfig, appConfig.getAuthEndpoint(), client);
 
         // when 1
@@ -104,7 +100,7 @@ public class OAuthTokenSafeTest {
 
         // then 1
         Assert.assertTrue(withoutTokenRequestEntity.contains("client_credentials"));
-        Mockito.verify(client, Mockito.times(1)).executeRequest(ArgumentMatchers.any(Request.class));
+        verify(client, times(1)).executeRequest(any(Request.class), any(AsyncHandler.class));
 
         // when 2
         String withInvalidTokenRequestEntity = sut.createTokenRequest();
@@ -113,6 +109,46 @@ public class OAuthTokenSafeTest {
         // then 2
         Assert.assertTrue(withInvalidTokenRequestEntity.contains("refresh_token"));
         Assert.assertTrue(withInvalidTokenRequestEntity.contains("refreshTokenMock"));
-        Mockito.verify(client, Mockito.times(2)).executeRequest(ArgumentMatchers.any(Request.class));
+        verify(client, times(2)).executeRequest(any(Request.class), any(AsyncHandler.class));
     }
+
+    @Test
+    public void testRefreshTokenKeepsFailing() {
+        // given
+        when(response.getStatusCode()).thenReturn(404);
+        OAuthTokenSafe sut = new OAuthTokenSafe(clientConfig, appConfig.getAuthEndpoint(), client);
+
+        // when
+        String token1 = sut.getToken();
+        String token2 = sut.getToken();
+
+        // then
+        assertNull(token1);
+        assertNull(token2);
+        verify(client, times(2)).executeRequest(any(Request.class), any(AsyncHandler.class));
+    }
+
+    @Test
+    public void testRefreshTokenFailedOnceOnce() throws JsonProcessingException {
+        // given
+        OAuthToken token = new OAuthToken();
+        token.setAccessToken("accessTokenMock");
+        token.setRefreshToken("refreshTokenMock");
+        token.setExpiresIn("" + (80 * 1000));
+        token.setRefreshExpiresIn("" + (160 * 1000));
+
+        when(response.getStatusCode()).thenReturn(404).thenReturn(200);
+        when(response.getResponseBody()).thenReturn(mapper.writeValueAsString(token));
+        OAuthTokenSafe sut = new OAuthTokenSafe(clientConfig, appConfig.getAuthEndpoint(), client);
+
+        // when
+        String token1 = sut.getToken();
+        String token2 = sut.getToken();
+
+        // then
+        assertNull(token1);
+        assertNotNull(token2);
+        verify(client, times(2)).executeRequest(any(Request.class), any(AsyncHandler.class));
+    }
+
 }

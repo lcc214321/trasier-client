@@ -129,8 +129,13 @@ public class TrasierSpanBuilder implements Tracer.SpanBuilder {
         }
 
         com.trasier.client.api.Span.SpanBuilder wrappedBuilder = com.trasier.client.api.Span.newSpan(operationName, conversationId, traceId, spanId);
-        wrappedBuilder.incomingEndpoint(new Endpoint(configuration.getSystemName()));
-        wrappedBuilder.outgoingEndpoint(new Endpoint(configuration.getSystemName()));
+        if (server) {
+            wrappedBuilder.outgoingEndpoint(new Endpoint(configuration.getSystemName()));
+            wrappedBuilder.incomingEndpoint(new Endpoint("UNKNOWN"));
+        } else {
+            wrappedBuilder.incomingEndpoint(new Endpoint(configuration.getSystemName()));
+            wrappedBuilder.outgoingEndpoint(new Endpoint("UNKNOWN"));
+        }
         wrappedBuilder.startTimestamp(startTimestamp);
         wrappedBuilder.cancel(cancel);
         if (reference != null) {

@@ -2,9 +2,10 @@ package com.trasier.client.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import org.asynchttpclient.AsyncCompletionHandler;
+import org.asynchttpclient.AsyncHandler;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.BoundRequestBuilder;
-import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.Response;
 import org.slf4j.Logger;
@@ -14,9 +15,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OAuthTokenSafe {
     private static final Logger LOGGER = LoggerFactory.getLogger(OAuthTokenSafe.class);
@@ -28,51 +27,39 @@ public class OAuthTokenSafe {
     private final ObjectMapper mapper;
 
     private OAuthToken token;
+    private AsyncHandler<Void> asyncHandler;
     private long tokenExpiresAt;
     private long refreshTokenExpiresAt;
+    private AtomicBoolean isFeatching = new AtomicBoolean(false);
 
     public OAuthTokenSafe(TrasierClientConfiguration clientConfiguration, String authUrl, AsyncHttpClient client) {
         this.clientConfiguration = clientConfiguration;
         this.authUrl = authUrl;
         this.client = client;
         this.mapper = new ObjectMapper();
+        this.asyncHandler = new AsyncTokenHandler();
     }
 
     public String getToken() {
         if (isTokenInvalid()) {
             refreshToken();
         }
-        return token.getAccessToken();
+        return token != null ? token.getAccessToken() : null;
     }
 
-    private synchronized void refreshToken() {
+    public void refreshToken() {
         if (isTokenInvalid()) {
-            long tokenIssued = System.currentTimeMillis();
-            try {
-                OAuthToken newToken = fetchToken();
-                if (newToken != null) {
-                    this.token = newToken;
-                    this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
-                    this.refreshTokenExpiresAt = tokenIssued + ((Long.parseLong(token.getRefreshExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
+            if (!isFeatching.getAndSet(true)) {
+                if (isTokenInvalid()) {
+                    try {
+                        String basicAuth = Base64.getEncoder().encodeToString((clientConfiguration.getClientId() + ":" + clientConfiguration.getClientSecret()).getBytes());
+                        Request request = createRequest(basicAuth, createTokenRequest());
+                        client.executeRequest(request, asyncHandler);
+                    } catch (Exception e) {
+                        LOGGER.error("Could not fetch token, maybe you need to set a proxy or consider disabling trasier.", e);
+                    }
                 }
-            } catch (Exception e) {
-                LOGGER.error("Could not fetch token, maybe you need to set a proxy or consider disabling trasier.", e);
             }
-        }
-    }
-
-    private OAuthToken fetchToken() throws InterruptedException, ExecutionException, TimeoutException, IOException {
-        String basicAuth = Base64.getEncoder().encodeToString((clientConfiguration.getClientId() + ":" + clientConfiguration.getClientSecret()).getBytes());
-        String tokenRequest = createTokenRequest();
-        Request request = createRequest(basicAuth, tokenRequest);
-        ListenableFuture<Response> future = client.executeRequest(request);
-        Response response = future.get(5, TimeUnit.SECONDS);
-
-        int responseCode = response.getStatusCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            return mapper.readValue(response.getResponseBody(), OAuthToken.class);
-        } else {
-            throw new IOException("Could not fetch token. " + responseCode);
         }
     }
 
@@ -108,6 +95,36 @@ public class OAuthTokenSafe {
 
     private boolean isRefreshTokenInvalid() {
         return token == null || token.getRefreshToken() == null || refreshTokenExpiresAt < System.currentTimeMillis();
+    }
+
+    private class AsyncTokenHandler extends AsyncCompletionHandler<Void> {
+
+        @Override
+        public Void onCompleted(Response response) throws Exception {
+            try {
+                int responseCode = response.getStatusCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    OAuthToken token = mapper.readValue(response.getResponseBody(), OAuthToken.class);
+                    if (token != null) {
+                        long tokenIssued = System.currentTimeMillis();
+                        OAuthTokenSafe.this.token = token;
+                        OAuthTokenSafe.this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
+                        OAuthTokenSafe.this.refreshTokenExpiresAt = tokenIssued + ((Long.parseLong(token.getRefreshExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
+                        return null;
+                    }
+                }
+                throw new IOException("Could not fetch token. " + responseCode);
+            } finally {
+                isFeatching.getAndSet(false);
+            }
+        }
+
+        @Override
+        public void onThrowable(Throwable t) {
+            isFeatching.getAndSet(false);
+            super.onThrowable(t);
+            throw new RuntimeException(t);
+        }
     }
 
 }
