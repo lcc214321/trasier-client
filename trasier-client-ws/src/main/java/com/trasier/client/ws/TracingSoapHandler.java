@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,8 +74,7 @@ public class TracingSoapHandler implements SOAPHandler<SOAPMessageContext> {
 
         boolean isRequest = (Boolean) soapMessageContext.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
         if (isRequest) {
-            Method method = (Method) soapMessageContext.get("java.lang.reflect.Method");
-            String methodName = method != null ? method.getName() : "soap";
+            String methodName = resolveMethodName(soapMessageContext);
             trasierSpan = (TrasierSpan) tracer.buildSpan(methodName).withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).start();
             tracer.activateSpan(trasierSpan);
         } else {
@@ -90,9 +90,11 @@ public class TracingSoapHandler implements SOAPHandler<SOAPMessageContext> {
             if (isRequest) {
                 span.setIncomingContentType(ContentType.XML);
                 span.setIncomingEndpoint(LocalEndpointHolder.getLocalEndpoint(clientConfig.getSystemName()));
-                URL url = getHttpConnectionUrl(soapMessageContext);
+                URL url = getOutgoingEndpointUrl(soapMessageContext);
                 if (url != null) {
-                    span.setOutgoingEndpoint(createEndpoint(url.getHost().substring(0, url.getHost().indexOf(".")), url.getHost()));
+                    int indexOfDot = url.getHost().indexOf(".");
+                    String endpointName = indexOfDot > 0 ? url.getHost().substring(0, indexOfDot) : url.getHost();
+                    span.setOutgoingEndpoint(createEndpoint(endpointName, url.getHost(), url.getPort()));
                 }
                 span.setStartTimestamp(new Date().getTime());
                 span.setIncomingHeader(createIncommingHeaders(url));
@@ -111,9 +113,20 @@ public class TracingSoapHandler implements SOAPHandler<SOAPMessageContext> {
         }
     }
 
-    private URL getHttpConnectionUrl(SOAPMessageContext soapMessageContext) {
+    private URL getOutgoingEndpointUrl(SOAPMessageContext soapMessageContext) {
         HttpURLConnection httpConnection = (HttpURLConnection) soapMessageContext.get("http.connection");
-        return httpConnection != null ? httpConnection.getURL() : null;
+        if (httpConnection != null && httpConnection.getURL() != null) {
+            return httpConnection.getURL();
+        }
+        Object address = soapMessageContext.get("javax.xml.ws.service.endpoint.address");
+        if (address instanceof String) {
+            try {
+                return new URL(String.valueOf(address));
+            } catch (MalformedURLException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     private String getMessagePayload(SOAPMessageContext soapMessageContext) throws SOAPException, IOException {
@@ -130,10 +143,25 @@ public class TracingSoapHandler implements SOAPHandler<SOAPMessageContext> {
         return traceableHeaders;
     }
 
-    private static Endpoint createEndpoint(String name, String host) {
+    private static Endpoint createEndpoint(String name, String host, Integer port) {
         Endpoint endpoint = new Endpoint(name);
         endpoint.setHostname(host);
+        endpoint.setPort(String.valueOf(port));
         return endpoint;
+    }
+
+    private String resolveMethodName(SOAPMessageContext soapMessageContext) {
+        Method method = (Method) soapMessageContext.get("java.lang.reflect.Method");
+        String methodName = "soap";
+        if (method != null) {
+            methodName = method.getName();
+        } else {
+            Object operation = soapMessageContext.get(MessageContext.WSDL_OPERATION);
+            if (operation instanceof QName) {
+                methodName = ((QName) operation).getLocalPart();
+            }
+        }
+        return methodName;
     }
 
 }
