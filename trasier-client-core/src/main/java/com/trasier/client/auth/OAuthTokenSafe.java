@@ -2,7 +2,12 @@ package com.trasier.client.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import org.asynchttpclient.*;
+import org.asynchttpclient.AsyncCompletionHandler;
+import org.asynchttpclient.AsyncHandler;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.BoundRequestBuilder;
+import org.asynchttpclient.Request;
+import org.asynchttpclient.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,6 +123,7 @@ public class OAuthTokenSafe {
         public void onThrowable(Throwable t) {
             isFeatching.getAndSet(false);
             super.onThrowable(t);
+            throw new RuntimeException(t);
         }
     }
 
