@@ -28,6 +28,10 @@ public class TrasierSampleByOperationInterceptor implements TrasierSamplingInter
             return false;
         }
 
+        if ("OPTIONS".equals(span.getName())) {
+            return false;
+        }
+
         if (!isOnWhitelist(span)) {
             return false;
         }
