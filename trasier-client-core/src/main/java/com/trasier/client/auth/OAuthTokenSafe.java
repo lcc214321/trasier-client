@@ -122,8 +122,7 @@ public class OAuthTokenSafe {
         @Override
         public void onThrowable(Throwable t) {
             isFeatching.getAndSet(false);
-            super.onThrowable(t);
-            throw new RuntimeException(t);
+            LOGGER.error("Could not fetch token, maybe you need to set a proxy or consider disabling trasier.", t);
         }
     }
 
