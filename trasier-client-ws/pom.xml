@@ -22,34 +22,28 @@
             <artifactId>trasier-client-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.trasier</groupId>
+            <artifactId>trasier-client-opentracing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-api</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>io.opentracing</groupId>
-            <artifactId>opentracing-api</artifactId>
-         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.trasier</groupId>
-            <artifactId>trasier-client-opentracing</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.trasier</groupId>
-            <artifactId>trasier-client-spring</artifactId>
         </dependency>
     </dependencies>
 
