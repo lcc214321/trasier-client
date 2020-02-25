@@ -15,6 +15,8 @@ import org.asynchttpclient.AsyncHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Component
 public class TrasierAuthClientInterceptor implements ClientInterceptor {
 
@@ -26,12 +28,18 @@ public class TrasierAuthClientInterceptor implements ClientInterceptor {
         this.clientConfiguration = clientConfiguration;
         AsyncHttpClient client = AsyncHttpClientFactory.createDefaultClient();
         this.oAuthTokenSafe = new OAuthTokenSafe(clientConfiguration, endpointConfiguration.getAuthEndpoint(), client);
-        oAuthTokenSafe.refreshToken();
     }
 
     public TrasierAuthClientInterceptor(TrasierClientConfiguration clientConfiguration, OAuthTokenSafe tokenSafe) {
         this.clientConfiguration = clientConfiguration;
         this.oAuthTokenSafe = tokenSafe;
+    }
+
+    @PostConstruct
+    public void init() {
+        if (clientConfiguration.isActivated()) {
+            oAuthTokenSafe.refreshToken();
+        }
     }
 
     @Override
