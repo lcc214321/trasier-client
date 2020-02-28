@@ -5,6 +5,7 @@ import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.Span;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.interceptor.TrasierCompressSpanInterceptor;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ExceptionUtils;
 import com.trasier.client.util.LocalEndpointHolder;
@@ -112,6 +113,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
 
             if (e != null) {
                 if (!configuration.isPayloadTracingDisabled()) {
+                    trasierSpan.getTags().remove(TrasierCompressSpanInterceptor.OUTGOING_DATA_COMPRESSION);
                     trasierSpan.setOutgoingData(ExceptionUtils.getString(e));
                 }
                 trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
