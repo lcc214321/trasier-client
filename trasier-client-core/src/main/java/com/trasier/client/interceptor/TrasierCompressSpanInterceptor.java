@@ -1,8 +1,7 @@
-package com.trasier.client.spring;
+package com.trasier.client.interceptor;
 
 import com.trasier.client.api.Span;
 import org.iq80.snappy.Snappy;
-import org.springframework.util.StringUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -13,10 +12,14 @@ import java.util.Base64;
 
 public class TrasierCompressSpanInterceptor {
 
+    public static final String INCOMING_DATA_COMPRESSION = "INCOMING_DATA_COMPRESSION";
+    public static final String OUTGOING_DATA_COMPRESSION = "OUTGOING_DATA_COMPRESSION";
+
     private static final int PAYLOAD_LIMIT_BYTES = 940_000;
     private static final byte[] PAYLOAD_TOO_BIG = "PAYLOAD_TOO_BIG".getBytes();
     private static final byte[] EMPTY = new byte[0];
     private static final String SPAN_KIND_SERVER = "server";
+    private static final String SNAPPY = "SNAPPY";
 
     private int payloadLimitBytes = PAYLOAD_LIMIT_BYTES;
     private boolean truncateMessage = false;
@@ -25,9 +28,8 @@ public class TrasierCompressSpanInterceptor {
         String incomingData = span.getIncomingData();
         String outgoingData = span.getOutgoingData();
 
-        byte[] incomingDataBytes = !StringUtils.isEmpty(incomingData) ? Snappy.compress(incomingData.getBytes()) : EMPTY;
-        byte[] outgoingDataBytes = !StringUtils.isEmpty(outgoingData) ? Snappy.compress(outgoingData.getBytes()) : EMPTY;
-
+        byte[] incomingDataBytes = incomingData != null && incomingData.trim().length() > 0 && !span.getTags().containsKey(INCOMING_DATA_COMPRESSION) ? Snappy.compress(incomingData.getBytes()) : EMPTY;
+        byte[] outgoingDataBytes = outgoingData != null && outgoingData.trim().length() > 0 && !span.getTags().containsKey(OUTGOING_DATA_COMPRESSION) ? Snappy.compress(outgoingData.getBytes()) : EMPTY;
         int totalBytes = incomingDataBytes.length + outgoingDataBytes.length;
 
         if (incomingDataBytes.length > 0) {
@@ -38,6 +40,7 @@ public class TrasierCompressSpanInterceptor {
             }
             String compressedData = Base64.getEncoder().encodeToString(incomingDataBytes);
             span.setIncomingData(compressedData);
+            span.getTags().put(INCOMING_DATA_COMPRESSION, SNAPPY);
         }
 
         if (outgoingDataBytes.length > 0) {
@@ -48,6 +51,7 @@ public class TrasierCompressSpanInterceptor {
             }
             String compressedData = Base64.getEncoder().encodeToString(outgoingDataBytes);
             span.setOutgoingData(compressedData);
+            span.getTags().put(OUTGOING_DATA_COMPRESSION, SNAPPY);
         }
     }
 

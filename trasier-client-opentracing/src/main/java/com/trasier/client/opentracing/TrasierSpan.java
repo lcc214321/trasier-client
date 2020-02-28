@@ -107,6 +107,12 @@ public class TrasierSpan implements Span {
         }
     }
 
+    public void handleException(Exception e) {
+        if(e != null && finished) {
+            client.sendSpan(unwrap());
+        }
+    }
+
     public com.trasier.client.api.Span unwrap() {
         return wrapped;
     }
