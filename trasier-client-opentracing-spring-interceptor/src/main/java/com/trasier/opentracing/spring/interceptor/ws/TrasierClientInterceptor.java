@@ -32,11 +32,9 @@ import java.util.Map;
 public class TrasierClientInterceptor extends ClientInterceptorAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(TrasierClientInterceptor.class);
 
-    private final Tracer tracer;
     private final TrasierClientConfiguration configuration;
 
     public TrasierClientInterceptor(Tracer tracer, TrasierClientConfiguration configuration) {
-        this.tracer = tracer;
         this.configuration = configuration;
     }
 
@@ -45,7 +43,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
         boolean result = super.handleRequest(messageContext);
 
         if (result) {
-            TrasierSpan span = (TrasierSpan) tracer.activeSpan();
+            TrasierSpan span = (TrasierSpan) messageContext.getProperty("TRASIER_ACTIVE_SPAN");
             if (span != null) {
                 Span trasierSpan = span.unwrap();
                 String endpointName = extractOutgoingEndpointName(messageContext);
@@ -72,7 +70,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
 
     @Override
     public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
-        TrasierSpan span = (TrasierSpan) tracer.activeSpan();
+        TrasierSpan span = (TrasierSpan) messageContext.getProperty("TRASIER_ACTIVE_SPAN");
         if (span != null) {
             Span trasierSpan = span.unwrap();
             trasierSpan.getOutgoingHeader().putAll(extractHeaders(messageContext.getResponse()));
@@ -96,7 +94,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
     public boolean handleFault(MessageContext messageContext) throws WebServiceClientException {
         handleResponse(messageContext);
 
-        TrasierSpan span = (TrasierSpan) tracer.activeSpan();
+        TrasierSpan span = (TrasierSpan) messageContext.getProperty("TRASIER_ACTIVE_SPAN");
         if (span != null) {
             Span trasierSpan = span.unwrap();
             trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
@@ -107,7 +105,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
 
     @Override
     public void afterCompletion(MessageContext messageContext, Exception e) throws WebServiceClientException {
-        TrasierSpan span = (TrasierSpan) tracer.activeSpan();
+        TrasierSpan span = (TrasierSpan) messageContext.getProperty("TRASIER_ACTIVE_SPAN");
         if (span != null) {
             Span trasierSpan = span.unwrap();
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
