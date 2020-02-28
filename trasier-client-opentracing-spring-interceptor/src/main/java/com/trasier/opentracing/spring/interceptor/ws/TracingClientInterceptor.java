@@ -89,8 +89,11 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
 
     @Override
     public void afterCompletion(MessageContext messageContext, Exception ex) throws WebServiceClientException {
-        Span span = (Span) messageContext.getProperty("TRASIER_ACTIVE_SPAN");
+        TrasierSpan span = (TrasierSpan) messageContext.getProperty("TRASIER_ACTIVE_SPAN");
         if (span != null) {
+            if(ex != null) {
+                span.handleException(ex);
+            }
             span.finish();
         }
         super.afterCompletion(messageContext, ex);
