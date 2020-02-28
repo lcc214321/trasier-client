@@ -1,7 +1,7 @@
 package com.trasier.client.spring.client;
 
 import com.trasier.client.api.Span;
-import com.trasier.client.spring.TrasierCompressSpanInterceptor;
+import com.trasier.client.interceptor.TrasierCompressSpanInterceptor;
 import org.iq80.snappy.Snappy;
 import org.junit.Test;
 
