@@ -4,7 +4,7 @@
 
     <groupId>com.trasier</groupId>
     <artifactId>trasier-client</artifactId>
-    <version>2.2.9-SNAPSHOT</version>
+    <version>2.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>trasier-client</name>
@@ -105,7 +105,7 @@
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-ws</artifactId>
+                <artifactId>trasier-client-spring-interceptor-ws</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -115,12 +115,12 @@
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-opentracing-spring-interceptor</artifactId>
+                <artifactId>trasier-client-spring-interceptor</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-opentracing-spring-boot</artifactId>
+                <artifactId>trasier-client-spring-boot</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
