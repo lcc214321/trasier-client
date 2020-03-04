@@ -86,10 +86,13 @@ public class TrasierTracer implements Tracer {
             }
 
             if (conversationId != null) {
-                if (traceId == null) {
+                if (conversationId.isEmpty()) {
+                    conversationId = UUID.randomUUID().toString();
+                }
+                if (traceId == null || traceId.isEmpty()) {
                     traceId = UUID.randomUUID().toString();
                 }
-                if (spanId == null) {
+                if (spanId == null || spanId.isEmpty()) {
                     spanId = UUID.randomUUID().toString();
                 }
                 TrasierSpanContext spanContext = new TrasierSpanContext(conversationId, traceId, spanId, sample, baggageItems);
