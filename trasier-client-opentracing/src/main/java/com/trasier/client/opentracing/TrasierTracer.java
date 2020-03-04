@@ -85,10 +85,7 @@ public class TrasierTracer implements Tracer {
                 }
             }
 
-            if (conversationId != null) {
-                if (conversationId.isEmpty()) {
-                    conversationId = UUID.randomUUID().toString();
-                }
+            if (conversationId != null && !conversationId.trim().isEmpty()) {
                 if (traceId == null || traceId.isEmpty()) {
                     traceId = UUID.randomUUID().toString();
                 }
