@@ -9,7 +9,7 @@ import java.util.zip.GZIPInputStream;
 public class GzipUtil {
 
     public static boolean isGzipStream(byte[] bytes) {
-        return bytes.length > 0 && GZIPInputStream.GZIP_MAGIC == ((int) bytes[0] & 0xff | bytes[1] << 8 & 0xff00);
+        return bytes.length > 1 && GZIPInputStream.GZIP_MAGIC == ((int) bytes[0] & 0xff | bytes[1] << 8 & 0xff00);
     }
 
     public static byte[] decompress(byte[] compressed) {
