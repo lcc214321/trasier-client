@@ -3,7 +3,7 @@
     <parent>
         <artifactId>trasier-client</artifactId>
         <groupId>com.trasier</groupId>
-        <version>2.2.8</version>
+        <version>2.3.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -17,7 +17,7 @@
         </dependency>
         <dependency>
             <groupId>com.trasier</groupId>
-            <artifactId>trasier-client-opentracing-spring-interceptor-boot</artifactId>
+            <artifactId>trasier-client-spring-interceptor-boot</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
