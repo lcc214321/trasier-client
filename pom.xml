@@ -4,7 +4,7 @@
 
     <groupId>com.trasier</groupId>
     <artifactId>trasier-client</artifactId>
-    <version>2.2.9-SNAPSHOT</version>
+    <version>2.3.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>trasier-client</name>
@@ -56,7 +56,6 @@
         <module>trasier-client-api</module>
         <module>trasier-client-api-protobuf</module>
         <module>trasier-client-core</module>
-        <module>trasier-client-ws</module>
         <module>trasier-client-spring</module>
         <module>trasier-client-spring-noop</module>
         <module>trasier-client-spring-noop-starter</module>
@@ -65,10 +64,11 @@
         <module>trasier-client-spring-grpc</module>
         <module>trasier-client-spring-grpc-starter</module>
         <module>trasier-client-opentracing</module>
-        <module>trasier-client-opentracing-spring-boot</module>
-        <module>trasier-client-opentracing-spring-interceptor</module>
-        <module>trasier-client-opentracing-spring-interceptor-boot</module>
-        <module>trasier-client-opentracing-spring-interceptor-boot-legacy</module>
+        <module>trasier-client-spring-interceptor</module>
+        <module>trasier-client-spring-interceptor-ws</module>
+        <module>trasier-client-spring-boot</module>
+        <module>trasier-client-spring-interceptor-boot</module>
+        <module>trasier-client-spring-interceptor-boot-legacy</module>
     </modules>
 
     <dependencyManagement>
@@ -105,7 +105,7 @@
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-ws</artifactId>
+                <artifactId>trasier-client-spring-interceptor-ws</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -115,12 +115,12 @@
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-opentracing-spring-interceptor</artifactId>
+                <artifactId>trasier-client-spring-interceptor</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.trasier</groupId>
-                <artifactId>trasier-client-opentracing-spring-boot</artifactId>
+                <artifactId>trasier-client-spring-boot</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
