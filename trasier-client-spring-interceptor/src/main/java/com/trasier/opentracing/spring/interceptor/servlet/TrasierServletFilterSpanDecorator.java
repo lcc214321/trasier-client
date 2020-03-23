@@ -34,7 +34,8 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     private static final Integer MAX_RESPONSE_SIZE = 1024 * 1024;
     private static final String HEADER_KEY_AUTHORIZATION = "Authorization";
-    private static final List<String> USER_AGENTS = Arrays.asList("mozilla", "chrome", "opera", "explorer", "safari");
+    private static final List<String> USER_AGENTS_WEB = Arrays.asList("mozilla", "chrome", "opera", "explorer", "safari");
+    private static final List<String> USER_AGENTS_HANDHELD_DEVICE = Arrays.asList("iphone", "ipad", "android", "blackberry", "phone", "kindle");
 
     private final TrasierClientConfiguration configuration;
     private final List<TrasierSamplingInterceptor> samplingInterceptors;
@@ -159,9 +160,14 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         if (StringUtils.isEmpty(incomingEndpointName)) {
             String userAgent = requestHeaders.get("user-agent");
             if (!StringUtils.isEmpty(userAgent)) {
-                for (String agent : USER_AGENTS) {
+                for (String agent : USER_AGENTS_WEB) {
                     if (userAgent.toLowerCase().contains(agent)) {
                         return "Web Browser";
+                    }
+                }
+                for (String agent : USER_AGENTS_HANDHELD_DEVICE) {
+                    if (userAgent.toLowerCase().contains(agent)) {
+                        return "Handheld Device";
                     }
                 }
             }
