@@ -110,13 +110,23 @@ public class OAuthTokenSafe {
                         OAuthTokenSafe.this.token = token;
                         OAuthTokenSafe.this.tokenExpiresAt = tokenIssued + ((Long.parseLong(token.getExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
                         OAuthTokenSafe.this.refreshTokenExpiresAt = tokenIssued + ((Long.parseLong(token.getRefreshExpiresIn()) - EXPIRES_IN_TOLERANCE) * 1000);
-                        return null;
+                    } else {
+                        throw new IOException("Cannot parse token.");
                     }
+                } else {
+                    throw new IOException("Cannot fetch token. Responce code: " + responseCode);
                 }
-                throw new IOException("Could not fetch token. " + responseCode);
+            } catch(Exception e) {
+                LOGGER.error("Could not fetch token -> resetting.", e);
+
+                OAuthTokenSafe.this.token = null;
+                OAuthTokenSafe.this.tokenExpiresAt = 0;
+                OAuthTokenSafe.this.refreshTokenExpiresAt = 0;
             } finally {
                 isFeatching.getAndSet(false);
             }
+
+            return null;
         }
 
         @Override

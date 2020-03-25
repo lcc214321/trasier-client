@@ -60,12 +60,10 @@ public class TrasierSpringNoopClient implements TrasierSpringClient {
             compressSpanInterceptor.intercept(span);
         }
 
-        if(LOGGER.isTraceEnabled()) {
-            try {
-                LOGGER.trace(objectMapper.writeValueAsString(span));
-            } catch (JsonProcessingException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
+        try {
+            LOGGER.trace(objectMapper.writeValueAsString(span));
+        } catch (JsonProcessingException e) {
+            LOGGER.error(e.getMessage(), e);
         }
 
         return true;
