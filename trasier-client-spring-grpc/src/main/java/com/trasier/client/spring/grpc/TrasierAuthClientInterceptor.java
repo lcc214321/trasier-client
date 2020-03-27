@@ -26,7 +26,7 @@ public class TrasierAuthClientInterceptor implements ClientInterceptor {
     @Autowired
     public TrasierAuthClientInterceptor(TrasierClientConfiguration clientConfiguration, TrasierEndpointConfiguration endpointConfiguration) {
         this.clientConfiguration = clientConfiguration;
-        AsyncHttpClient client = AsyncHttpClientFactory.createDefaultClient();
+        AsyncHttpClient client = AsyncHttpClientFactory.createDefaultClient(clientConfiguration);
         this.oAuthTokenSafe = new OAuthTokenSafe(clientConfiguration, endpointConfiguration.getAuthEndpoint(), client);
     }
 

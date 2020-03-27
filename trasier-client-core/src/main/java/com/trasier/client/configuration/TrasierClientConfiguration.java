@@ -12,6 +12,11 @@ public class TrasierClientConfiguration {
     private boolean compressPayloadDisabled = false;
     private long logMetricsInterval = 10 * 60 * 1000;
 
+    private int ahcMaxConnections = 1000;
+    private int ahcConnectTimeout = 2500;
+    private int ahcReadTimeout = 1000;
+    private int ahcRequestTimeout = 1000;
+
     public String getAccountId() {
         return accountId;
     }
@@ -82,6 +87,38 @@ public class TrasierClientConfiguration {
 
     public void setLogMetricsInterval(final long logMetricsInterval) {
         this.logMetricsInterval = logMetricsInterval;
+    }
+
+    public int getAhcMaxConnections() {
+        return ahcMaxConnections;
+    }
+
+    public void setAhcMaxConnections(final int ahcMaxConnections) {
+        this.ahcMaxConnections = ahcMaxConnections;
+    }
+
+    public int getAhcConnectTimeout() {
+        return ahcConnectTimeout;
+    }
+
+    public void setAhcConnectTimeout(final int ahcConnectTimeout) {
+        this.ahcConnectTimeout = ahcConnectTimeout;
+    }
+
+    public int getAhcReadTimeout() {
+        return ahcReadTimeout;
+    }
+
+    public void setAhcReadTimeout(final int ahcReadTimeout) {
+        this.ahcReadTimeout = ahcReadTimeout;
+    }
+
+    public int getAhcRequestTimeout() {
+        return ahcRequestTimeout;
+    }
+
+    public void setAhcRequestTimeout(final int ahcRequestTimeout) {
+        this.ahcRequestTimeout = ahcRequestTimeout;
     }
 
 }

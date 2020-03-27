@@ -26,7 +26,7 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
 
     @Autowired
     public TrasierSpringRestClient(TrasierEndpointConfiguration endpointConfiguration, TrasierClientConfiguration clientConfiguration, Optional<TrasierProxyConfiguration> optionalProxyConfiguration, Optional<List<TrasierSpanInterceptor>> optionalSpanInterceptors) {
-        AsyncHttpClient client = createHttpClient(optionalProxyConfiguration);
+        AsyncHttpClient client = createHttpClient(clientConfiguration, optionalProxyConfiguration);
         OAuthTokenSafe tokenSafe = new OAuthTokenSafe(clientConfiguration, endpointConfiguration.getAuthEndpoint(), client);
         TrasierHttpClient trasierHttpClient = new TrasierHttpClient(clientConfiguration, endpointConfiguration, tokenSafe, client);
         this.client = trasierHttpClient;
@@ -39,10 +39,22 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
         }
     }
 
-    protected AsyncHttpClient createHttpClient(Optional<TrasierProxyConfiguration> optionalProxyConfiguration) {
-        DefaultAsyncHttpClientConfig.Builder clientBuilder = AsyncHttpClientFactory.createBuilder();
+    protected AsyncHttpClient createHttpClient(TrasierClientConfiguration clientConfiguration, Optional<TrasierProxyConfiguration> optionalProxyConfiguration) {
+        DefaultAsyncHttpClientConfig.Builder clientBuilder = AsyncHttpClientFactory.createBuilder(clientConfiguration);
         if (optionalProxyConfiguration.isPresent()) {
             AsyncHttpClientFactory.setProxy(clientBuilder, optionalProxyConfiguration.get());
+        } else {
+            String httpProxyHost = System.getProperty("http.proxyHost");
+            Integer httpProxyPort = Integer.getInteger("http.proxyPort");
+            if (httpProxyHost != null && httpProxyPort != null) {
+                AsyncHttpClientFactory.setProxy(clientBuilder, httpProxyHost, httpProxyPort);
+            } else {
+                String httpsProxyHost = System.getProperty("https.proxyHost");
+                Integer httpsProxyPort = Integer.getInteger("https.proxyPort");
+                if (httpsProxyHost != null && httpsProxyPort != null) {
+                    AsyncHttpClientFactory.setProxy(clientBuilder, httpsProxyHost, httpsProxyPort);
+                }
+            }
         }
         return AsyncHttpClientFactory.createClient(clientBuilder);
     }
