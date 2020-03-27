@@ -1,5 +1,6 @@
 package com.trasier.client.http;
 
+import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierProxyConfiguration;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
@@ -9,22 +10,33 @@ import org.asynchttpclient.proxy.ProxyServer;
 
 public final class AsyncHttpClientFactory {
     public static void setProxy(DefaultAsyncHttpClientConfig.Builder clientBuilder, TrasierProxyConfiguration trasierProxyConfiguration) {
-        if(trasierProxyConfiguration.getHost() != null && !trasierProxyConfiguration.getHost().trim().isEmpty() && trasierProxyConfiguration.getPort() != null) {
-            ProxyServer.Builder proxyServerBuilder = new ProxyServer.Builder(trasierProxyConfiguration.getHost().trim(), trasierProxyConfiguration.getPort());
-            if (trasierProxyConfiguration.getUsername() != null && trasierProxyConfiguration.getPassword() != null && trasierProxyConfiguration.getScheme() != null) {
-                Realm.Builder realm = new Realm.Builder(trasierProxyConfiguration.getUsername(), trasierProxyConfiguration.getPassword());
-                realm.setScheme(Realm.AuthScheme.valueOf(trasierProxyConfiguration.getScheme()));
+        setProxy(clientBuilder, trasierProxyConfiguration.getHost(), trasierProxyConfiguration.getPort(), trasierProxyConfiguration.getUsername(), trasierProxyConfiguration.getPassword(), trasierProxyConfiguration.getScheme());
+    }
+
+    public static void setProxy(DefaultAsyncHttpClientConfig.Builder clientBuilder, String host, Integer port) {
+        setProxy(clientBuilder, host, port, null, null, null);
+    }
+
+    public static void setProxy(DefaultAsyncHttpClientConfig.Builder clientBuilder, String host, Integer port, String username, String password, String scheme) {
+        if(host != null && !host.trim().isEmpty() && port != null) {
+            ProxyServer.Builder proxyServerBuilder = new ProxyServer.Builder(host.trim(), port);
+            if (username != null && password != null && scheme != null) {
+                Realm.Builder realm = new Realm.Builder(username, password);
+                realm.setScheme(Realm.AuthScheme.valueOf(scheme));
                 proxyServerBuilder.setRealm(realm.build());
             }
             clientBuilder.setProxyServer(proxyServerBuilder.build());
         }
     }
 
-    public static DefaultAsyncHttpClientConfig.Builder createBuilder() {
+    public static DefaultAsyncHttpClientConfig.Builder createBuilder(TrasierClientConfiguration clientConfiguration) {
         //setting values via -Dorg.asynchttpclient.nameOfTheProperty is possible
         return Dsl.config()
                 .setThreadPoolName("trasier")
-                .setMaxConnections(500)
+                .setMaxConnections(clientConfiguration.getAhcMaxConnections())
+                .setConnectTimeout(clientConfiguration.getAhcConnectTimeout())
+                .setReadTimeout(clientConfiguration.getAhcReadTimeout())
+                .setRequestTimeout(clientConfiguration.getAhcRequestTimeout())
                 .setUseInsecureTrustManager(true);
     }
 
@@ -32,8 +44,8 @@ public final class AsyncHttpClientFactory {
         return Dsl.asyncHttpClient(clientBuilder);
     }
 
-    public static AsyncHttpClient createDefaultClient() {
-        return AsyncHttpClientFactory.createClient(AsyncHttpClientFactory.createBuilder());
+    public static AsyncHttpClient createDefaultClient(TrasierClientConfiguration clientConfiguration) {
+        return AsyncHttpClientFactory.createClient(AsyncHttpClientFactory.createBuilder(clientConfiguration));
     }
 
 }
