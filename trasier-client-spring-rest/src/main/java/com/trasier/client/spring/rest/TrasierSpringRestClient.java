@@ -41,7 +41,7 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
 
     protected AsyncHttpClient createHttpClient(TrasierClientConfiguration clientConfiguration, Optional<TrasierProxyConfiguration> optionalProxyConfiguration) {
         DefaultAsyncHttpClientConfig.Builder clientBuilder = AsyncHttpClientFactory.createBuilder(clientConfiguration);
-        if (optionalProxyConfiguration.isPresent()) {
+        if (optionalProxyConfiguration.isPresent() && optionalProxyConfiguration.get().getHost() != null && !optionalProxyConfiguration.get().getHost().trim().isEmpty()) {
             AsyncHttpClientFactory.setProxy(clientBuilder, optionalProxyConfiguration.get());
         } else {
             String httpProxyHost = System.getProperty("http.proxyHost");
