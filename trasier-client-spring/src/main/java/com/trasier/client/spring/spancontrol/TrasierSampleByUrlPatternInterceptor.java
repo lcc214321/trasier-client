@@ -1,15 +1,14 @@
 package com.trasier.client.spring.spancontrol;
 
 import com.trasier.client.api.Span;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 
 @Component
-public class TrasierSampleByUrlPatternInterceptor implements TrasierSamplingInterceptor {
+public class TrasierSampleByUrlPatternInterceptor implements TrasierSpanResolverInterceptor {
 
     @Autowired(required = false)
     private TrasierSampleByUrlPatternConfiguration patternConfiguration;
@@ -23,18 +22,18 @@ public class TrasierSampleByUrlPatternInterceptor implements TrasierSamplingInte
     }
 
     @Override
-    public boolean shouldSample(Span span, Map<String, Object> params) {
-        if (span.isCancel()) {
-            return false;
+    public void interceptRequestUrlResolved(Span span, String url) {
+        if (!span.isCancel()) {
+            if (!shouldSample(url)) {
+                span.setCancel(true);
+            }
         }
-        Object url = params.get("url");
-        if (url instanceof String) {
-            return shouldSample((String)url);
-        }
-        return true;
     }
 
     private boolean shouldSample(String urlPart) {
+        if (patternConfiguration == null) {
+            return true;
+        }
         Pattern skipPattern = patternConfiguration.getSkipPattern();
         Pattern defaultSkipPattern = patternConfiguration.getDefaultSkipPattern();
         if (skipPattern != null && skipPattern.matcher(urlPart).matches()) {
@@ -42,4 +41,13 @@ public class TrasierSampleByUrlPatternInterceptor implements TrasierSamplingInte
         }
         return !defaultSkipPattern.matcher(urlPart).matches();
     }
+
+    @Override
+    public void interceptMetdataResolved(Span span) {
+    }
+
+    @Override
+    public void interceptMessagePayloadResolved(Span span) {
+    }
+
 }

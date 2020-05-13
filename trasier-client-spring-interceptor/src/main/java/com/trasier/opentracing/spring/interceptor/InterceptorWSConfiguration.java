@@ -1,7 +1,7 @@
 package com.trasier.opentracing.spring.interceptor;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import com.trasier.opentracing.spring.interceptor.ws.TracingClientInterceptor;
 import com.trasier.opentracing.spring.interceptor.ws.TrasierClientInterceptor;
 import com.trasier.opentracing.spring.interceptor.ws.TrasierEndpointInterceptor;
@@ -36,16 +36,16 @@ public class InterceptorWSConfiguration {
     private Set<WebServiceGatewaySupport> webServiceGatewaySupports;
 
     @Autowired(required = false)
-    private List<TrasierSamplingInterceptor> samplingFilter;
+    private List<TrasierSpanResolverInterceptor> spanResolverInterceptors;
 
     @Bean
     public TrasierClientInterceptor trasierClientInterceptor() {
-        return new TrasierClientInterceptor(tracer, configuration);
+        return new TrasierClientInterceptor(tracer, configuration, spanResolverInterceptors);
     }
 
     @Bean
     public TrasierEndpointInterceptor trasierEndpointInterceptor() {
-        return new TrasierEndpointInterceptor(tracer, configuration);
+        return new TrasierEndpointInterceptor(tracer, configuration, spanResolverInterceptors);
     }
 
     @PostConstruct
@@ -69,10 +69,10 @@ public class InterceptorWSConfiguration {
                     interceptors.addAll(Arrays.asList(existingInterceptors));
                 }
                 if (interceptors.stream().noneMatch(i -> i instanceof TracingClientInterceptor)) {
-                    interceptors.add(new TracingClientInterceptor(tracer, samplingFilter == null ? Collections.emptyList() : samplingFilter));
+                    interceptors.add(new TracingClientInterceptor(tracer, spanResolverInterceptors == null ? Collections.emptyList() : spanResolverInterceptors));
                 }
                 if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientInterceptor)) {
-                    interceptors.add(new TrasierClientInterceptor(tracer, configuration));
+                    interceptors.add(new TrasierClientInterceptor(tracer, configuration, spanResolverInterceptors == null ? Collections.emptyList() : spanResolverInterceptors));
                 }
                 webServiceTemplate.setInterceptors(interceptors.toArray(new ClientInterceptor[interceptors.size()]));
             }

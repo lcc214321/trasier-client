@@ -5,7 +5,9 @@ import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.Span;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
+import com.trasier.client.interceptor.SafeSpanResolverInterceptorInvoker;
 import com.trasier.client.interceptor.TrasierCompressSpanInterceptor;
+import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ExceptionUtils;
 import com.trasier.client.util.LocalEndpointHolder;
@@ -28,15 +30,18 @@ import javax.xml.transform.dom.DOMSource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class TrasierClientInterceptor extends ClientInterceptorAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(TrasierClientInterceptor.class);
 
     private final TrasierClientConfiguration configuration;
+    private final SafeSpanResolverInterceptorInvoker interceptorInvoker;
 
-    public TrasierClientInterceptor(Tracer tracer, TrasierClientConfiguration configuration) {
+    public TrasierClientInterceptor(Tracer tracer, TrasierClientConfiguration configuration, List<TrasierSpanResolverInterceptor> samplingInterceptors) {
         this.configuration = configuration;
+        this.interceptorInvoker = new SafeSpanResolverInterceptorInvoker(samplingInterceptors);
     }
 
     @Override
@@ -45,7 +50,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
 
         if (result) {
             TrasierSpan span = (TrasierSpan) messageContext.getProperty("TRASIER_ACTIVE_SPAN");
-            if (span != null) {
+            if (span != null && !span.unwrap().isCancel()) {
                 Span trasierSpan = span.unwrap();
                 String endpointName = extractOutgoingEndpointName(messageContext);
                 Endpoint outgoingEndpoint = new Endpoint(StringUtils.isEmpty(endpointName) ? TrasierConstants.UNKNOWN_OUT : endpointName);
@@ -54,11 +59,13 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                 trasierSpan.setIncomingEndpoint(LocalEndpointHolder.getLocalEndpoint(configuration.getSystemName()));
                 trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
                 trasierSpan.setIncomingContentType(ContentType.XML);
-                if (!configuration.isPayloadTracingDisabled()) {
+                interceptorInvoker.invokeOnMetadataResolved(trasierSpan);
+                if (!configuration.isPayloadTracingDisabled() && !trasierSpan.isCancel()) {
                     try {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         messageContext.getRequest().writeTo(out);
                         trasierSpan.setIncomingData(out.toString());
+                        interceptorInvoker.invokeOnPayloadResolved(span.unwrap());
                     } catch (IOException e) {
                         LOG.error(e.getMessage(), e);
                     }
@@ -72,7 +79,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
     @Override
     public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
         TrasierSpan span = (TrasierSpan) messageContext.getProperty("TRASIER_ACTIVE_SPAN");
-        if (span != null) {
+        if (span != null && !span.unwrap().isCancel()) {
             Span trasierSpan = span.unwrap();
             trasierSpan.getOutgoingHeader().putAll(extractHeaders(messageContext.getResponse()));
             trasierSpan.setOutgoingContentType(ContentType.XML);
@@ -82,6 +89,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                 try {
                     messageContext.getResponse().writeTo(out);
                     trasierSpan.setOutgoingData(out.toString());
+                    interceptorInvoker.invokeOnPayloadResolved(span.unwrap());
                 } catch (IOException e) {
                     LOG.error(e.getMessage(), e);
                 }

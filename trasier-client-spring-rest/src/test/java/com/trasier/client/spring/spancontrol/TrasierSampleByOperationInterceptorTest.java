@@ -14,6 +14,19 @@ public class TrasierSampleByOperationInterceptorTest {
     private TrasierSampleByOperationInterceptor sut;
 
     @Test
+    public void testOptionsNotTraced() throws Exception {
+        // given
+        sut = new TrasierSampleByOperationInterceptor(new TrasierSampleByOperationConfiguration());
+        Span span1 = newSpan("OPTIONS", "", "", "").build();
+
+        // when
+        sut.interceptMetdataResolved(span1);
+
+        // then
+        assertTrue(span1.isCancel());
+    }
+
+    @Test
     public void testWhitelist() {
         // given
         TrasierSampleByOperationConfiguration configuration = new TrasierSampleByOperationConfiguration();
@@ -24,10 +37,15 @@ public class TrasierSampleByOperationInterceptorTest {
         Span span2 = newSpan("PING", "", "", "").build();
         Span span3 = newSpan("checkServlet", "", "", "").build();
 
-        // when / then
-        assertTrue(sut.shouldSample(span1, null));
-        assertFalse(sut.shouldSample(span2, null));
-        assertTrue(sut.shouldSample(span3, null));
+        // when
+        sut.interceptMetdataResolved(span1);
+        sut.interceptMetdataResolved(span2);
+        sut.interceptMetdataResolved(span3);
+
+        // then
+        assertFalse(span1.isCancel());
+        assertTrue(span2.isCancel());
+        assertFalse(span3.isCancel());
     }
 
     @Test
@@ -41,10 +59,15 @@ public class TrasierSampleByOperationInterceptorTest {
         Span span2 = newSpan("PING", "", "", "").build();
         Span span3 = newSpan("checkServlet", "", "", "").build();
 
-        // when / then
-        assertFalse(sut.shouldSample(span1, null));
-        assertTrue(sut.shouldSample(span2, null));
-        assertFalse(sut.shouldSample(span3, null));
+        // when
+        sut.interceptMetdataResolved(span1);
+        sut.interceptMetdataResolved(span2);
+        sut.interceptMetdataResolved(span3);
+
+        // then
+        assertTrue(span1.isCancel());
+        assertFalse(span2.isCancel());
+        assertTrue(span3.isCancel());
     }
 
 }

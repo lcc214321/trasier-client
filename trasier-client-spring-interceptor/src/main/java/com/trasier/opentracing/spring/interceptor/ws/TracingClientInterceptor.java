@@ -1,6 +1,7 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.interceptor.SafeSpanResolverInterceptorInvoker;
+import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import com.trasier.client.opentracing.TrasierSpan;
 import io.opentracing.Scope;
 import io.opentracing.Span;
@@ -18,18 +19,17 @@ import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class TracingClientInterceptor extends ClientInterceptorAdapter {
     private final Tracer tracer;
-    private final List<TrasierSamplingInterceptor> samplingInterceptors;
+    private final SafeSpanResolverInterceptorInvoker interceptorInvoker;
 
-    public TracingClientInterceptor(Tracer tracer, List<TrasierSamplingInterceptor> samplingInterceptors) {
+    public TracingClientInterceptor(Tracer tracer, List<TrasierSpanResolverInterceptor> samplingInterceptors) {
         this.tracer = tracer;
-        this.samplingInterceptors = samplingInterceptors;
+        this.interceptorInvoker = new SafeSpanResolverInterceptorInvoker(samplingInterceptors);
     }
 
     @Override
@@ -38,13 +38,9 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).start();
 
         if (span instanceof TrasierSpan) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("url", extractUrlPath(messageContext));
-            for (TrasierSamplingInterceptor samplingInterceptor : samplingInterceptors) {
-                if (!samplingInterceptor.shouldSample(((TrasierSpan) span).unwrap(), params)) {
-                    ((TrasierSpan) span).unwrap().setCancel(true);
-                }
-            }
+            com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
+            interceptorInvoker.invokeOnRequestUriResolved(trasierSpan, extractUrlPath(messageContext));
+            interceptorInvoker.invokeOnMetadataResolved(trasierSpan);
         }
 
         TransportContext context = TransportContextHolder.getTransportContext();

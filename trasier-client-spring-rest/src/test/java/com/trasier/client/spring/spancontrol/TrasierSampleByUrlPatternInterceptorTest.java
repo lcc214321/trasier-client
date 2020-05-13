@@ -3,9 +3,6 @@ package com.trasier.client.spring.spancontrol;
 import com.trasier.client.api.Span;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -15,28 +12,45 @@ public class TrasierSampleByUrlPatternInterceptorTest {
     public void testDefaultConfig() {
         // given
         TrasierSampleByUrlPatternInterceptor sut = new TrasierSampleByUrlPatternInterceptor();
-        Span span = Span.newSpan("name", "id", "id", "id").build();
+        Span span0 = Span.newSpan("name", "id", "id", "id").build();
+        Span span1 = Span.newSpan("name", "id", "id", "id").build();
+        Span span2 = Span.newSpan("name", "id", "id", "id").build();
+        Span span3 = Span.newSpan("name", "id", "id", "id").build();
+        Span span4 = Span.newSpan("name", "id", "id", "id").build();
 
-        // when // then
-        assertTrue(sut.shouldSample(span, new HashMap<>()));
-        assertTrue(sut.shouldSample(span, createUrlMap("/getWeather")));
-        assertTrue(sut.shouldSample(span, createUrlMap("/admin/health")));
-        assertFalse(sut.shouldSample(span, createUrlMap("/checkServlet")));
-        assertFalse(sut.shouldSample(span, createUrlMap("/health")));
+        // when
+        sut.interceptRequestUrlResolved(span0, "");
+        sut.interceptRequestUrlResolved(span1, "/getWeather");
+        sut.interceptRequestUrlResolved(span2, "/admin/health");
+        sut.interceptRequestUrlResolved(span3, "/checkServlet");
+        sut.interceptRequestUrlResolved(span4, "/health");
+
+        // then
+        assertFalse(span0.isCancel());
+        assertFalse(span1.isCancel());
+        assertFalse(span2.isCancel());
+        assertTrue(span3.isCancel());
+        assertTrue(span4.isCancel());
     }
 
     @Test
     public void testCancelledSpan() {
         // given
         TrasierSampleByUrlPatternInterceptor sut = new TrasierSampleByUrlPatternInterceptor();
-        Span span = Span.newSpan("name", "id", "id", "id").build();
+        Span span1 = Span.newSpan("name", "id", "id", "id").build();
+        Span span2 = Span.newSpan("name", "id", "id", "id").build();
         Span cancelledSpan = Span.newSpan("name", "id", "id", "id").build();
         cancelledSpan.setCancel(true);
 
-        // when // then
-        assertFalse(sut.shouldSample(span, createUrlMap("/admin/checkServlet")));
-        assertFalse(sut.shouldSample(span, createUrlMap("/checkServlet")));
-        assertFalse(sut.shouldSample(cancelledSpan, createUrlMap("checkServlet")));
+        // when
+        sut.interceptRequestUrlResolved(span1, "/admin/checkServlet");
+        sut.interceptRequestUrlResolved(span2, "/checkServlet");
+        sut.interceptRequestUrlResolved(cancelledSpan, "checkServlet");
+
+        // then
+        assertTrue(span1.isCancel());
+        assertTrue(span2.isCancel());
+        assertTrue(cancelledSpan.isCancel());
     }
 
     @Test
@@ -46,20 +60,19 @@ public class TrasierSampleByUrlPatternInterceptorTest {
         config.setSkipPattern("/admin.*");
         TrasierSampleByUrlPatternInterceptor sut = new TrasierSampleByUrlPatternInterceptor(config);
 
-        Span span = Span.newSpan("name", "id", "id", "id").build();
+        Span span1 = Span.newSpan("name", "id", "id", "id").build();
+        Span span2 = Span.newSpan("name", "id", "id", "id").build();
+        Span span3 = Span.newSpan("name", "id", "id", "id").build();
 
-        // when // then
-        assertFalse(sut.shouldSample(span, createUrlMap("/admin/health")));
-        assertFalse(sut.shouldSample(span, createUrlMap("/admin/checkServlet")));
-        assertTrue(sut.shouldSample(span, createUrlMap("/info/checkInfoServlet")));
+        // when
+        sut.interceptRequestUrlResolved(span1, "/admin/health");
+        sut.interceptRequestUrlResolved(span2, "/admin/checkServlet");
+        sut.interceptRequestUrlResolved(span3, "/info/checkInfoServlet");
+
+        // then
+        assertTrue(span1.isCancel());
+        assertTrue(span2.isCancel());
+        assertFalse(span3.isCancel());
     }
-
-    private Map<String, Object> createUrlMap(String url) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("url", url);
-        return map;
-    }
-
-
 
 }
