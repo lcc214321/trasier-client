@@ -70,7 +70,6 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
                 handleResponse(response, trasierSpan);
                 handleRequestPayload(httpServletRequest, trasierSpan);
                 handleResponsePayload(response, trasierSpan);
-                interceptorInvoker.invokeOnPayloadResolved(trasierSpan);
             }
         }
     }
@@ -84,10 +83,9 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
             trasierSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
             trasierSpan.setOutgoingContentType(ContentType.TEXT);
-            if (!configuration.isPayloadTracingDisabled()) {
+            if (!configuration.isPayloadTracingDisabled() && !trasierSpan.isPayloadDisabled() && !trasierSpan.isPayloadDisabled()) {
                 handleRequestPayload(httpServletRequest, trasierSpan);
                 trasierSpan.setOutgoingData(ExceptionUtils.getString(exception));
-                interceptorInvoker.invokeOnPayloadResolved(trasierSpan);
             }
         }
     }
@@ -102,7 +100,6 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             trasierSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
             trasierSpan.setOutgoingData("Execution timeout after " + timeout);
             trasierSpan.setOutgoingContentType(ContentType.TEXT);
-            interceptorInvoker.invokeOnPayloadResolved(trasierSpan);
         }
     }
 
@@ -117,7 +114,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     }
 
     private void handleRequestPayload(HttpServletRequest request, com.trasier.client.api.Span currentSpan) {
-        if (!configuration.isPayloadTracingDisabled() && request instanceof ContentCachingRequestWrapper) {
+        if (!configuration.isPayloadTracingDisabled() && !currentSpan.isPayloadDisabled() && request instanceof ContentCachingRequestWrapper) {
             ContentCachingRequestWrapper contentCachingRequestWrapper = (ContentCachingRequestWrapper) request;
             try {
                 //TODO read all left -> should be limited by max payload size
@@ -193,7 +190,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     }
 
     private void handleResponsePayload(HttpServletResponse response, com.trasier.client.api.Span currentSpan) {
-        if (!configuration.isPayloadTracingDisabled() && response instanceof ContentCachingResponseWrapper) {
+        if (!configuration.isPayloadTracingDisabled() && !currentSpan.isPayloadDisabled() && response instanceof ContentCachingResponseWrapper) {
             String responseBody = extractResponseBody((ContentCachingResponseWrapper) response);
             currentSpan.setOutgoingData(responseBody);
             currentSpan.setOutgoingContentType(ContentTypeResolver.resolveFromPayload(responseBody));

@@ -6,8 +6,7 @@ import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.configuration.TrasierProxyConfiguration;
 import com.trasier.client.opentracing.TrasierScopeManager;
 import com.trasier.client.opentracing.TrasierTracer;
-import com.trasier.client.spring.spancontrol.TrasierSampleByOperationConfiguration;
-import com.trasier.client.spring.spancontrol.TrasierSampleByUrlPatternConfiguration;
+import com.trasier.client.spring.spancontrol.TrasierSpanFilterConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -41,15 +40,55 @@ public class TrasierOpentracingConfiguration {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "trasier.client.interceptor.sampling.operation")
-    public TrasierSampleByOperationConfiguration samplingFilterOperationConfiguration() {
-        return new TrasierSampleByOperationConfiguration();
-    }
-
-    @Bean
-    @ConfigurationProperties(prefix = "trasier.client.interceptor.sampling.url")
-    public TrasierSampleByUrlPatternConfiguration samplingFilterUrlConfiguration() {
-        return new TrasierSampleByUrlPatternConfiguration();
+    @ConfigurationProperties(prefix = "trasier.client.span")
+    public TrasierSpanFilterConfiguration spancontrolConfiguration() {
+        return new TrasierSpanFilterConfiguration();
     }
 
 }
+
+// trasier.client.interceptor.sampling.operation.whitelist=angebote
+// trasier.client.interceptor.sampling.url.skipPattern=.*netz.*
+
+/*
+
+trasier:
+    client:
+        interceptor:
+            sampling:
+                operation:
+                    whitelist:
+                    - angebote
+                    - vorabbuchungen
+                    blacklist:
+                    - zahlungPruefen
+                url:
+                    skipUrl: .*netz.*|*.zahlung.*
+
+ */
+
+// trasier.client.span.skipUrl=.*netz.*
+// trasier.client.span.skipOperation=ermittleAngebote
+
+/*
+trasier:
+    client:
+        span:
+            filters:
+            -
+               strategy: cancel
+               url: .*netz.*|*.zahlung.*
+               operation: *.zahlungPruefen.*
+            -
+               strategy: allow
+               url: .*angebote.*
+               operation: *.vorabbuchungen.*
+            -
+               strategy: disablePayload
+               url: .*netz.*|*.zahlung.*
+               operation: *.zahlungPruefen.*
+ */
+
+// trasier.client.span.disablePayloadByUrl=payment.*
+// trasier.client.span.disablePayloadByOperation=zahlungPruefen
+

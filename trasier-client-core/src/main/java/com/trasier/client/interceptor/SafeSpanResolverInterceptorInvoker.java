@@ -44,17 +44,4 @@ public final class SafeSpanResolverInterceptorInvoker {
         }
     }
 
-    public void invokeOnPayloadResolved(Span trasierSpan) {
-        if (!trasierSpan.isCancel()) {
-            for (TrasierSpanResolverInterceptor samplingInterceptor : samplingInterceptors) {
-                try {
-                    samplingInterceptor.interceptMessagePayloadResolved(trasierSpan);
-                } catch (Exception e) {
-                    trasierSpan.setCancel(true); // span should not be processed in case sensitive data could not be processed
-                    LOGGER.error("Error while intercepting span message payload. Cancelling span with " + trasierSpan.getId(), e);
-                }
-            }
-        }
-    }
-
 }

@@ -60,12 +60,11 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                 trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
                 trasierSpan.setIncomingContentType(ContentType.XML);
                 interceptorInvoker.invokeOnMetadataResolved(trasierSpan);
-                if (!configuration.isPayloadTracingDisabled() && !trasierSpan.isCancel()) {
+                if (!configuration.isPayloadTracingDisabled() && !trasierSpan.isPayloadDisabled() && !trasierSpan.isCancel()) {
                     try {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         messageContext.getRequest().writeTo(out);
                         trasierSpan.setIncomingData(out.toString());
-                        interceptorInvoker.invokeOnPayloadResolved(span.unwrap());
                     } catch (IOException e) {
                         LOG.error(e.getMessage(), e);
                     }
@@ -84,12 +83,11 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
             trasierSpan.getOutgoingHeader().putAll(extractHeaders(messageContext.getResponse()));
             trasierSpan.setOutgoingContentType(ContentType.XML);
 
-            if (!configuration.isPayloadTracingDisabled()) {
+            if (!configuration.isPayloadTracingDisabled() && !trasierSpan.isPayloadDisabled()) {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 try {
                     messageContext.getResponse().writeTo(out);
                     trasierSpan.setOutgoingData(out.toString());
-                    interceptorInvoker.invokeOnPayloadResolved(span.unwrap());
                 } catch (IOException e) {
                     LOG.error(e.getMessage(), e);
                 }
@@ -120,7 +118,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
 
             if (e != null) {
-                if (!configuration.isPayloadTracingDisabled()) {
+                if (!configuration.isPayloadTracingDisabled() && trasierSpan.isPayloadDisabled()) {
                     trasierSpan.getTags().remove(TrasierCompressSpanInterceptor.OUTGOING_DATA_COMPRESSION);
                     trasierSpan.setOutgoingData(ExceptionUtils.getString(e));
                 }

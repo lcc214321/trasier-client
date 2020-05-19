@@ -39,13 +39,12 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
     public ClientHttpResponse intercept(HttpRequest request, byte[] data, ClientHttpRequestExecution execution) throws IOException {
         TrasierSpan span = (TrasierSpan) tracer.activeSpan();
         interceptorInvoker.invokeOnRequestUriResolved(span.unwrap(), request.getURI().getPath());
+        interceptorInvoker.invokeOnMetadataResolved(span.unwrap());
         handleRequest(request, data, span);
 
         ClientHttpResponse response = execution.execute(request, data);
 
         handleResponse(response, span);
-        interceptorInvoker.invokeOnMetadataResolved(span.unwrap());
-        interceptorInvoker.invokeOnPayloadResolved(span.unwrap());
         return response;
     }
 
@@ -56,7 +55,7 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
             if (response != null) {
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 trasierSpan.getOutgoingHeader().putAll(response.getHeaders().toSingleValueMap());
-                if (!configuration.isPayloadTracingDisabled()) {
+                if (!configuration.isPayloadTracingDisabled() && !trasierSpan.isPayloadDisabled()) {
                     try {
                         InputStream body = null;
                         try {
@@ -84,7 +83,7 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
             trasierSpan.setIncomingContentType(ContentType.JSON);
             try {
                 trasierSpan.getIncomingHeader().putAll(request.getHeaders().toSingleValueMap());
-                if (!configuration.isPayloadTracingDisabled()) {
+                if (!configuration.isPayloadTracingDisabled() && !span.unwrap().isPayloadDisabled()) {
                     trasierSpan.setIncomingData(new String(data));
                 }
             } catch (Exception e) {
