@@ -19,16 +19,16 @@ trasier:
             filters:
             -
                strategy: cancel
-               url: .*admin.*|*.payment.*
-               operation: *.checkPayment.*
+               url: .*admin.*|.*payment.*
+               operation: .*checkPayment.*
             -
                strategy: allow
-               url: .*offer.*
-               operation: *.booking.*
+               url: /offer.*
+               operation: booking.*
             -
                strategy: disablePayload
-               url: .*login.*|*.payment.*
-               operation: *.checkPayment.*|userLogin
+               url: .*login.*|.*payment.*
+               operation: checkPayment.*|userLogin
  </code>
  */
 @Data
