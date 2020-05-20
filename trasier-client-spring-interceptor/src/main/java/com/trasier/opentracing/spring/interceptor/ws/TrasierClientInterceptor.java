@@ -5,9 +5,7 @@ import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.Span;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.interceptor.SafeSpanResolverInterceptorInvoker;
 import com.trasier.client.interceptor.TrasierCompressSpanInterceptor;
-import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ExceptionUtils;
 import com.trasier.client.util.LocalEndpointHolder;
@@ -30,18 +28,15 @@ import javax.xml.transform.dom.DOMSource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 public class TrasierClientInterceptor extends ClientInterceptorAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(TrasierClientInterceptor.class);
 
     private final TrasierClientConfiguration configuration;
-    private final SafeSpanResolverInterceptorInvoker interceptorInvoker;
 
-    public TrasierClientInterceptor(Tracer tracer, TrasierClientConfiguration configuration, List<TrasierSpanResolverInterceptor> samplingInterceptors) {
+    public TrasierClientInterceptor(Tracer tracer, TrasierClientConfiguration configuration) {
         this.configuration = configuration;
-        this.interceptorInvoker = new SafeSpanResolverInterceptorInvoker(samplingInterceptors);
     }
 
     @Override
@@ -59,7 +54,7 @@ public class TrasierClientInterceptor extends ClientInterceptorAdapter {
                 trasierSpan.setIncomingEndpoint(LocalEndpointHolder.getLocalEndpoint(configuration.getSystemName()));
                 trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
                 trasierSpan.setIncomingContentType(ContentType.XML);
-                interceptorInvoker.invokeOnMetadataResolved(trasierSpan);
+                // interceptors were already invoked through TracingClientInterceptor
                 if (!configuration.isPayloadTracingDisabled() && !trasierSpan.isPayloadDisabled() && !trasierSpan.isCancel()) {
                     try {
                         ByteArrayOutputStream out = new ByteArrayOutputStream();

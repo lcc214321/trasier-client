@@ -1,6 +1,7 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
 import com.trasier.client.api.Span;
+import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.interceptor.SafeSpanResolverInterceptorInvoker;
 import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
@@ -38,7 +39,7 @@ public class TrasierEndpointInterceptor implements SmartEndpointInterceptor {
         Span trasierSpan = activeSpan.unwrap();
         if (!trasierSpan.isCancel()) {
             String operationName = WSUtil.extractOperationName(messageContext, o);
-            if (operationName != null && !WSUtil.UNKNOWN_WS_CALL.equals(operationName)) {
+            if (operationName != null && !TrasierConstants.UNKNOWN_WS_CALL.equals(operationName)) {
                 trasierSpan.setName(operationName);
                 interceptorInvoker.invokeOnMetadataResolved(trasierSpan);
             }

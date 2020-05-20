@@ -1,5 +1,6 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
+import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.interceptor.SafeSpanResolverInterceptorInvoker;
 import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import com.trasier.client.opentracing.TrasierSpan;
@@ -34,13 +35,16 @@ public class TracingClientInterceptor extends ClientInterceptorAdapter {
 
     @Override
     public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
-        Span span = tracer.buildSpan(WSUtil.extractOperationName(messageContext, null))
+        Span span = tracer.buildSpan(TrasierConstants.UNKNOWN_WS_CALL)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT).start();
 
         if (span instanceof TrasierSpan) {
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
             interceptorInvoker.invokeOnRequestUriResolved(trasierSpan, extractUrlPath(messageContext));
-            interceptorInvoker.invokeOnMetadataResolved(trasierSpan);
+            if (!trasierSpan.isCancel()) {
+                trasierSpan.setName(WSUtil.extractOperationName(messageContext, null));
+                interceptorInvoker.invokeOnMetadataResolved(trasierSpan);
+            }
         }
 
         TransportContext context = TransportContextHolder.getTransportContext();

@@ -1,6 +1,10 @@
 package com.trasier.client.spring.spancontrol;
 
 import com.trasier.client.api.Span;
+import com.trasier.client.api.TrasierConstants;
+import com.trasier.client.configuration.TrasierFilterConfiguration;
+import com.trasier.client.configuration.TrasierFilterConfiguration.Filter;
+import com.trasier.client.configuration.TrasierFilterConfiguration.Strategy;
 import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,59 +14,53 @@ import java.util.regex.Pattern;
 @Component
 public class TrasierSpanFilterInterceptor implements TrasierSpanResolverInterceptor {
 
-    private static final Pattern DEFAULT_SKIP_PATTERN = Pattern.compile(
-            "/api-docs.*|/autoconfig|/configprops|/dump|/health|/info|/metrics.*|" +
-                    ".*/healthCheckServlet|.*/checkServlet|/admin/check|/actuatorhealth|" +
-                    "/hystrix.stream|/mappings|/swagger.*|" +
-                    ".*\\.wsdl|.*\\.xsd|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico");
-
     @Autowired(required = false)
-    private TrasierSpanFilterConfiguration filterConfiguration;
+    private TrasierFilterConfiguration filterConfiguration;
 
     public TrasierSpanFilterInterceptor() {
-        this.filterConfiguration = new TrasierSpanFilterConfiguration();
+        this.filterConfiguration = new TrasierFilterConfiguration();
     }
 
-    public TrasierSpanFilterInterceptor(TrasierSpanFilterConfiguration configuration) {
+    public TrasierSpanFilterInterceptor(TrasierFilterConfiguration configuration) {
         this.filterConfiguration = configuration;
     }
 
     @Override
-    public void interceptRequestUrlResolved(Span span, String url) {
+    public void interceptUrlResolved(Span span, String url) {
         if (!span.isCancel()) {
             interceptByUrl(span, url);
         }
     }
 
     @Override
-    public void interceptMetdataResolved(Span span) {
+    public void interceptMetadataResolved(Span span) {
         if (!span.isCancel()) {
             interceptByOperationName(span);
         }
     }
 
     private void interceptByUrl(Span span, String url) {
-        if (DEFAULT_SKIP_PATTERN.matcher(url).matches()) {
+        if (TrasierConstants.DEFAULT_SKIP_PATTERN.matcher(url).matches()) {
             span.setCancel(true);
             return;
         }
         if (filterConfiguration != null && filterConfiguration.getFilters() != null) {
-            for (SpanFilter spanFilters : filterConfiguration.getFilters()) {
-                Strategy strategy = spanFilters.getStrategy();
+            for (Filter filters : filterConfiguration.getFilters()) {
+                Strategy strategy = filters.getStrategy();
                 if (strategy == Strategy.disablePayload) {
-                    Pattern disablePattern = spanFilters.getUrl();
+                    Pattern disablePattern = filters.getUrl();
                     if (!span.isCancel() && disablePattern != null && disablePattern.matcher(url).matches()) {
                         span.setPayloadDisabled(true);
                     }
                 }
                 if (strategy == Strategy.allow) {
-                    Pattern allowPattern = spanFilters.getUrl();
+                    Pattern allowPattern = filters.getUrl();
                     if (!span.isCancel() && allowPattern != null && !allowPattern.matcher(url).matches()) {
                         span.setCancel(true);
                     }
                 }
                 if (strategy == Strategy.cancel) {
-                    Pattern skipPattern = spanFilters.getUrl();
+                    Pattern skipPattern = filters.getUrl();
                     if (!span.isCancel() && skipPattern != null && skipPattern.matcher(url).matches()) {
                         span.setCancel(true);
                     }
@@ -78,22 +76,22 @@ public class TrasierSpanFilterInterceptor implements TrasierSpanResolverIntercep
             return;
         }
         if (filterConfiguration != null && filterConfiguration.getFilters() != null) {
-            for (SpanFilter spanFilters : filterConfiguration.getFilters()) {
-                Strategy strategy = spanFilters.getStrategy();
+            for (Filter filters : filterConfiguration.getFilters()) {
+                Strategy strategy = filters.getStrategy();
                 if (strategy == Strategy.disablePayload) {
-                    Pattern disablePattern = spanFilters.getOperation();
+                    Pattern disablePattern = filters.getOperation();
                     if (!span.isCancel() && disablePattern != null && disablePattern.matcher(operationName).matches()) {
                         span.setPayloadDisabled(true);
                     }
                 }
                 if (strategy == Strategy.allow) {
-                    Pattern allowPattern = spanFilters.getOperation();
+                    Pattern allowPattern = filters.getOperation();
                     if (!span.isCancel() && allowPattern != null && !allowPattern.matcher(operationName).matches()) {
                         span.setCancel(true);
                     }
                 }
                 if (strategy == Strategy.cancel) {
-                    Pattern skipPattern = spanFilters.getOperation();
+                    Pattern skipPattern = filters.getOperation();
                     if (!span.isCancel() && skipPattern != null && skipPattern.matcher(operationName).matches()) {
                         span.setCancel(true);
                     }

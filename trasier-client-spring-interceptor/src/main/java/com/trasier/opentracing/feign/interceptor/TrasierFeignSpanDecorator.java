@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+// TODO LP 20.05.2020: Filter interceptors
 public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TrasierClientRequestInterceptor.class);
 
@@ -54,7 +55,7 @@ public class TrasierFeignSpanDecorator implements FeignSpanDecorator {
                 trasierSpan.setOutgoingContentType(ContentType.JSON);
                 try {
                     trasierSpan.getOutgoingHeader().putAll(toSingleValueMap(response.headers()));
-                    // TODO
+                    // TODO LP 20.05.2020: Activate and retest
 //                    String responseBody = StreamUtils.copyToString(response.body().asInputStream(), Charset.defaultCharset());
 //                    trasierSpan.setOutgoingData(responseBody);
                 } catch (Exception e) {

@@ -38,8 +38,10 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] data, ClientHttpRequestExecution execution) throws IOException {
         TrasierSpan span = (TrasierSpan) tracer.activeSpan();
-        interceptorInvoker.invokeOnRequestUriResolved(span.unwrap(), request.getURI().getPath());
-        interceptorInvoker.invokeOnMetadataResolved(span.unwrap());
+        Span unwrap = span.unwrap();
+        unwrap.setName(extractOperationName(request.getURI(), unwrap.getName()));
+        interceptorInvoker.invokeOnRequestUriResolved(unwrap, request.getURI().getPath());
+        interceptorInvoker.invokeOnMetadataResolved(unwrap);
         handleRequest(request, data, span);
 
         ClientHttpResponse response = execution.execute(request, data);
@@ -78,7 +80,6 @@ public class TrasierClientRequestInterceptor implements ClientHttpRequestInterce
     private void handleRequest(HttpRequest request, byte[] data, TrasierSpan span) {
         if (span != null && !span.unwrap().isCancel()) {
             Span trasierSpan = span.unwrap();
-            trasierSpan.setName(extractOperationName(request.getURI(), trasierSpan.getName()));
             trasierSpan.setBeginProcessingTimestamp(System.currentTimeMillis());
             trasierSpan.setIncomingContentType(ContentType.JSON);
             try {

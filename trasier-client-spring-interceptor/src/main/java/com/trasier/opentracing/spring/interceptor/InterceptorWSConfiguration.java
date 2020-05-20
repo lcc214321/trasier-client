@@ -40,7 +40,7 @@ public class InterceptorWSConfiguration {
 
     @Bean
     public TrasierClientInterceptor trasierClientInterceptor() {
-        return new TrasierClientInterceptor(tracer, configuration, spanResolverInterceptors);
+        return new TrasierClientInterceptor(tracer, configuration);
     }
 
     @Bean
@@ -72,7 +72,7 @@ public class InterceptorWSConfiguration {
                     interceptors.add(new TracingClientInterceptor(tracer, spanResolverInterceptors == null ? Collections.emptyList() : spanResolverInterceptors));
                 }
                 if (interceptors.stream().noneMatch(i -> i instanceof TrasierClientInterceptor)) {
-                    interceptors.add(new TrasierClientInterceptor(tracer, configuration, spanResolverInterceptors == null ? Collections.emptyList() : spanResolverInterceptors));
+                    interceptors.add(new TrasierClientInterceptor(tracer, configuration));
                 }
                 webServiceTemplate.setInterceptors(interceptors.toArray(new ClientInterceptor[interceptors.size()]));
             }

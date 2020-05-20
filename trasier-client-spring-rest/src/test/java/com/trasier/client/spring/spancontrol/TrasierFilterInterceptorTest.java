@@ -1,6 +1,9 @@
 package com.trasier.client.spring.spancontrol;
 
 import com.trasier.client.api.Span;
+import com.trasier.client.configuration.TrasierFilterConfiguration;
+import com.trasier.client.configuration.TrasierFilterConfiguration.Filter;
+import com.trasier.client.configuration.TrasierFilterConfiguration.Strategy;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -9,7 +12,7 @@ import static com.trasier.client.api.Span.newSpan;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class TrasierSpanFilterInterceptorTest {
+public class TrasierFilterInterceptorTest {
 
     @Test
     public void testDefaultConfig() {
@@ -22,11 +25,11 @@ public class TrasierSpanFilterInterceptorTest {
         Span span4 = Span.newSpan("name", "id", "id", "id").build();
 
         // when
-        sut.interceptRequestUrlResolved(span0, "");
-        sut.interceptRequestUrlResolved(span1, "/getWeather");
-        sut.interceptRequestUrlResolved(span2, "/admin/health");
-        sut.interceptRequestUrlResolved(span3, "/checkServlet");
-        sut.interceptRequestUrlResolved(span4, "/health");
+        sut.interceptUrlResolved(span0, "");
+        sut.interceptUrlResolved(span1, "/getWeather");
+        sut.interceptUrlResolved(span2, "/admin/health");
+        sut.interceptUrlResolved(span3, "/checkServlet");
+        sut.interceptUrlResolved(span4, "/health");
 
         // then
         assertFalse(span0.isCancel());
@@ -46,9 +49,9 @@ public class TrasierSpanFilterInterceptorTest {
         cancelledSpan.setCancel(true);
 
         // when
-        sut.interceptRequestUrlResolved(span1, "/admin/checkServlet");
-        sut.interceptRequestUrlResolved(span2, "/checkServlet");
-        sut.interceptRequestUrlResolved(cancelledSpan, "checkServlet");
+        sut.interceptUrlResolved(span1, "/admin/checkServlet");
+        sut.interceptUrlResolved(span2, "/checkServlet");
+        sut.interceptUrlResolved(cancelledSpan, "checkServlet");
 
         // then
         assertTrue(span1.isCancel());
@@ -59,11 +62,11 @@ public class TrasierSpanFilterInterceptorTest {
     @Test
     public void testCustomConfig() {
         // given
-        SpanFilter skipUrlFilterConfig = new SpanFilter();
+        Filter skipUrlFilterConfig = new Filter();
         skipUrlFilterConfig.setStrategy(Strategy.cancel);
         skipUrlFilterConfig.setUrl("/admin.*");
 
-        TrasierSpanFilterConfiguration config = new TrasierSpanFilterConfiguration();
+        TrasierFilterConfiguration config = new TrasierFilterConfiguration();
         config.setFilters(Arrays.asList(skipUrlFilterConfig));
         TrasierSpanFilterInterceptor sut = new TrasierSpanFilterInterceptor(config);
 
@@ -72,9 +75,9 @@ public class TrasierSpanFilterInterceptorTest {
         Span span3 = Span.newSpan("name", "id", "id", "id").build();
 
         // when
-        sut.interceptRequestUrlResolved(span1, "/admin/health");
-        sut.interceptRequestUrlResolved(span2, "/admin/checkServlet");
-        sut.interceptRequestUrlResolved(span3, "/info/checkInfoServlet");
+        sut.interceptUrlResolved(span1, "/admin/health");
+        sut.interceptUrlResolved(span2, "/admin/checkServlet");
+        sut.interceptUrlResolved(span3, "/info/checkInfoServlet");
 
         // then
         assertTrue(span1.isCancel());
@@ -89,7 +92,7 @@ public class TrasierSpanFilterInterceptorTest {
         Span span1 = newSpan("OPTIONS", "", "", "").build();
 
         // when
-        sut.interceptMetdataResolved(span1);
+        sut.interceptMetadataResolved(span1);
 
         // then
         assertTrue(span1.isCancel());
@@ -98,11 +101,11 @@ public class TrasierSpanFilterInterceptorTest {
     @Test
     public void testWhitelist() {
         // given
-        SpanFilter spanFilter = new SpanFilter();
-        spanFilter.setStrategy(Strategy.allow);
-        spanFilter.setOperation("ping|pong|checkServlet");
-        TrasierSpanFilterConfiguration configuration = new TrasierSpanFilterConfiguration();
-        configuration.setFilters(Arrays.asList(spanFilter));
+        Filter filter = new Filter();
+        filter.setStrategy(Strategy.allow);
+        filter.setOperation("ping|pong|checkServlet");
+        TrasierFilterConfiguration configuration = new TrasierFilterConfiguration();
+        configuration.setFilters(Arrays.asList(filter));
         TrasierSpanFilterInterceptor sut = new TrasierSpanFilterInterceptor(configuration);
 
         Span span1 = newSpan("ping", "", "", "").build();
@@ -110,9 +113,9 @@ public class TrasierSpanFilterInterceptorTest {
         Span span3 = newSpan("checkServlet", "", "", "").build();
 
         // when
-        sut.interceptMetdataResolved(span1);
-        sut.interceptMetdataResolved(span2);
-        sut.interceptMetdataResolved(span3);
+        sut.interceptMetadataResolved(span1);
+        sut.interceptMetadataResolved(span2);
+        sut.interceptMetadataResolved(span3);
 
         // then
         assertFalse(span1.isCancel());
@@ -123,11 +126,11 @@ public class TrasierSpanFilterInterceptorTest {
     @Test
     public void testBlacklist() {
         // given
-        SpanFilter spanFilter = new SpanFilter();
-        spanFilter.setStrategy(Strategy.cancel);
-        spanFilter.setOperation("ping|pong|checkServlet");
-        TrasierSpanFilterConfiguration configuration = new TrasierSpanFilterConfiguration();
-        configuration.setFilters(Arrays.asList(spanFilter));
+        Filter filter = new Filter();
+        filter.setStrategy(Strategy.cancel);
+        filter.setOperation("ping|pong|checkServlet");
+        TrasierFilterConfiguration configuration = new TrasierFilterConfiguration();
+        configuration.setFilters(Arrays.asList(filter));
         TrasierSpanFilterInterceptor sut = new TrasierSpanFilterInterceptor(configuration);
 
         Span span1 = newSpan("ping", "", "", "").build();
@@ -135,9 +138,9 @@ public class TrasierSpanFilterInterceptorTest {
         Span span3 = newSpan("checkServlet", "", "", "").build();
 
         // when
-        sut.interceptMetdataResolved(span1);
-        sut.interceptMetdataResolved(span2);
-        sut.interceptMetdataResolved(span3);
+        sut.interceptMetadataResolved(span1);
+        sut.interceptMetadataResolved(span2);
+        sut.interceptMetadataResolved(span3);
 
         // then
         assertTrue(span1.isCancel());

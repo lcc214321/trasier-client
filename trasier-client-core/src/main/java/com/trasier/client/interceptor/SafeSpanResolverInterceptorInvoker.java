@@ -24,7 +24,7 @@ public final class SafeSpanResolverInterceptorInvoker {
         if (!trasierSpan.isCancel()) {
             for (TrasierSpanResolverInterceptor samplingInterceptor : samplingInterceptors) {
                 try {
-                    samplingInterceptor.interceptRequestUrlResolved(trasierSpan, url);
+                    samplingInterceptor.interceptUrlResolved(trasierSpan, url);
                 } catch(Exception e) {
                     LOGGER.error("Error while intercepting span url. Span is not cancelled", e);
                 }
@@ -36,7 +36,7 @@ public final class SafeSpanResolverInterceptorInvoker {
         if (!trasierSpan.isCancel()) {
             for (TrasierSpanResolverInterceptor samplingInterceptor : samplingInterceptors) {
                 try {
-                    samplingInterceptor.interceptMetdataResolved(trasierSpan);
+                    samplingInterceptor.interceptMetadataResolved(trasierSpan);
                 } catch (Exception e) {
                     LOGGER.error("Error while intercepting span metadata. Span is not cancelled.", e);
                 }

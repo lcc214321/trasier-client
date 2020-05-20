@@ -13,12 +13,13 @@ public interface TrasierSpanResolverInterceptor {
      * @param span - raw span, not filled with metadata
      * @param url - request url
      */
-    void interceptRequestUrlResolved(Span span, String url);
+    void interceptUrlResolved(Span span, String url);
 
     /**
      * Resolved metadata like operation name, endpoints
      * @param span - span filled with metadata
      */
-    void interceptMetdataResolved(Span span);
+    void interceptMetadataResolved(Span span);
+
 
 }

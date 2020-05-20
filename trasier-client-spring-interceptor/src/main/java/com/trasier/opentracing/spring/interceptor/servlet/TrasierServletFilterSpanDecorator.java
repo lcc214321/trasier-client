@@ -76,16 +76,18 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
 
     @Override
     public void onError(HttpServletRequest httpServletRequest, HttpServletResponse response, Throwable exception, Span span) {
-        if (configuration.isActivated() && response instanceof ContentCachingResponseWrapper) {
+        if (configuration.isActivated()) {
             cleanupMDC();
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
-            trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
-            trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
-            trasierSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
-            trasierSpan.setOutgoingContentType(ContentType.TEXT);
-            if (!configuration.isPayloadTracingDisabled() && !trasierSpan.isPayloadDisabled() && !trasierSpan.isPayloadDisabled()) {
-                handleRequestPayload(httpServletRequest, trasierSpan);
-                trasierSpan.setOutgoingData(ExceptionUtils.getString(exception));
+            if (!trasierSpan.isCancel() && response instanceof ContentCachingResponseWrapper) {
+                trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
+                trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
+                trasierSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
+                trasierSpan.setOutgoingContentType(ContentType.TEXT);
+                if (!configuration.isPayloadTracingDisabled() && !trasierSpan.isPayloadDisabled() && !trasierSpan.isPayloadDisabled()) {
+                    handleRequestPayload(httpServletRequest, trasierSpan);
+                    trasierSpan.setOutgoingData(ExceptionUtils.getString(exception));
+                }
             }
         }
     }
