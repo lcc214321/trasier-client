@@ -107,8 +107,8 @@ public class TracingSoapHandler implements SOAPHandler<SOAPMessageContext> {
                     interceptorInvoker.invokeOnRequestUriResolved(span, url.getPath());
                 }
                 span.setStartTimestamp(new Date().getTime());
+                span.setIncomingHeader(createIncommingHeaders(url));
                 if (!clientConfig.isPayloadTracingDisabled() && !span.isPayloadDisabled()) {
-                    span.setIncomingHeader(createIncommingHeaders(url));
                     span.setIncomingData(getMessagePayload(soapMessageContext));
                 }
             } else {
@@ -120,9 +120,7 @@ public class TracingSoapHandler implements SOAPHandler<SOAPMessageContext> {
                 span.setStatus(isFault ? "ERROR" : "OK");
                 TrasierScopeManager scopeManager = (TrasierScopeManager)tracer.scopeManager();
                 scopeManager.activeScope().close();
-                if (!span.isCancel()) {
-                    trasierSpan.finish();
-                }
+                trasierSpan.finish();
             }
         } catch (Exception e) {
             LOGGER.debug(e.getMessage(), e);
