@@ -2,9 +2,7 @@ package com.trasier.opentracing.spring.interceptor.servlet;
 
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.configuration.TrasierFilterConfiguration;
-import com.trasier.client.configuration.TrasierFilterConfiguration.Filter;
-import com.trasier.client.configuration.TrasierFilterConfiguration.Strategy;
+import com.trasier.client.configuration.TrasierFilterConfigurations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -29,7 +27,7 @@ public class TrasierBufferFilter extends GenericFilterBean {
     private TrasierClientConfiguration configuration;
 
     @Autowired(required = false)
-    private TrasierFilterConfiguration filterConfiguration;
+    private TrasierFilterConfigurations filterConfigurations;
 
     public TrasierBufferFilter() {
     }
@@ -38,20 +36,20 @@ public class TrasierBufferFilter extends GenericFilterBean {
         this.configuration = configuration;
     }
 
-    public TrasierBufferFilter(TrasierClientConfiguration configuration, TrasierFilterConfiguration filterConfiguration) {
+    public TrasierBufferFilter(TrasierClientConfiguration configuration, TrasierFilterConfigurations filterConfigurations) {
         this.configuration = configuration;
-        this.filterConfiguration = filterConfiguration;
+        this.filterConfigurations = filterConfigurations;
     }
 
     @Override
     protected void initFilterBean() {
-        if (configuration == null || filterConfiguration == null) {
+        if (configuration == null || filterConfigurations == null) {
             WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
             if (configuration == null) {
                 configuration = webApplicationContext.getBean(TrasierClientConfiguration.class);
             }
-            if (filterConfiguration == null) {
-                filterConfiguration = webApplicationContext.getBean(TrasierFilterConfiguration.class);
+            if (filterConfigurations == null) {
+                filterConfigurations = webApplicationContext.getBean(TrasierFilterConfigurations.class);
             }
         }
     }
@@ -99,31 +97,27 @@ public class TrasierBufferFilter extends GenericFilterBean {
         if (TrasierConstants.DEFAULT_SKIP_PATTERN.matcher(url).matches()) {
             return false;
         }
-        if (filterConfiguration != null && filterConfiguration.getFilters() != null) {
-            for (Filter filters : filterConfiguration.getFilters()) {
-                Strategy strategy = filters.getStrategy();
-                if (strategy == Strategy.disablePayload) {
-                    Pattern disablePattern = filters.getUrl();
-                    if (disablePattern != null && disablePattern.matcher(url).matches()) {
-                        return false;
-                    }
+        if (filterConfigurations != null) {
+            if (filterConfigurations.getDisablePayload() != null) {
+                Pattern disablePattern = filterConfigurations.getDisablePayload().getUrl();
+                if (disablePattern != null && disablePattern.matcher(url).matches()) {
+                    return false;
                 }
-                if (strategy == Strategy.allow) {
-                    Pattern allowPattern = filters.getUrl();
-                    if (allowPattern != null && !allowPattern.matcher(url).matches()) {
-                        return false;
-                    }
+            }
+            if (filterConfigurations.getAllow() != null) {
+                Pattern allowPattern = filterConfigurations.getAllow().getUrl();
+                if (allowPattern != null && !allowPattern.matcher(url).matches()) {
+                    return false;
                 }
-                if (strategy == Strategy.cancel) {
-                    Pattern skipPattern = filters.getUrl();
-                    if (skipPattern != null && skipPattern.matcher(url).matches()) {
-                        return false;
-                    }
+            }
+            if (filterConfigurations.getCancel() != null) {
+                Pattern cancelPattern = filterConfigurations.getCancel().getUrl();
+                if (cancelPattern != null && !cancelPattern.matcher(url).matches()) {
+                    return false;
                 }
             }
         }
         return true;
     }
-
 
 }

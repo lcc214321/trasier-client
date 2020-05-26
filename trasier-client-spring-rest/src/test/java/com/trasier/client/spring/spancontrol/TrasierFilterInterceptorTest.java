@@ -2,11 +2,8 @@ package com.trasier.client.spring.spancontrol;
 
 import com.trasier.client.api.Span;
 import com.trasier.client.configuration.TrasierFilterConfiguration;
-import com.trasier.client.configuration.TrasierFilterConfiguration.Filter;
-import com.trasier.client.configuration.TrasierFilterConfiguration.Strategy;
+import com.trasier.client.configuration.TrasierFilterConfigurations;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 import static com.trasier.client.api.Span.newSpan;
 import static org.junit.Assert.assertFalse;
@@ -62,13 +59,12 @@ public class TrasierFilterInterceptorTest {
     @Test
     public void testCustomConfig() {
         // given
-        Filter skipUrlFilterConfig = new Filter();
-        skipUrlFilterConfig.setStrategy(Strategy.cancel);
-        skipUrlFilterConfig.setUrl("/admin.*");
+        TrasierFilterConfiguration cancelConfiguration = new TrasierFilterConfiguration();
+        cancelConfiguration.setUrl("/admin.*");
+        TrasierFilterConfigurations filterConfigurations = new TrasierFilterConfigurations();
+        filterConfigurations.setCancel(cancelConfiguration);
 
-        TrasierFilterConfiguration config = new TrasierFilterConfiguration();
-        config.setFilters(Arrays.asList(skipUrlFilterConfig));
-        TrasierSpanFilterInterceptor sut = new TrasierSpanFilterInterceptor(config);
+        TrasierSpanFilterInterceptor sut = new TrasierSpanFilterInterceptor(filterConfigurations);
 
         Span span1 = Span.newSpan("name", "id", "id", "id").build();
         Span span2 = Span.newSpan("name", "id", "id", "id").build();
@@ -101,12 +97,11 @@ public class TrasierFilterInterceptorTest {
     @Test
     public void testWhitelist() {
         // given
-        Filter filter = new Filter();
-        filter.setStrategy(Strategy.allow);
-        filter.setOperation("ping|pong|checkServlet");
-        TrasierFilterConfiguration configuration = new TrasierFilterConfiguration();
-        configuration.setFilters(Arrays.asList(filter));
-        TrasierSpanFilterInterceptor sut = new TrasierSpanFilterInterceptor(configuration);
+        TrasierFilterConfiguration allowConfiguration = new TrasierFilterConfiguration();
+        allowConfiguration.setOperation("ping|pong|checkServlet");
+        TrasierFilterConfigurations filterConfigurations = new TrasierFilterConfigurations();
+        filterConfigurations.setAllow(allowConfiguration);
+        TrasierSpanFilterInterceptor sut = new TrasierSpanFilterInterceptor(filterConfigurations);
 
         Span span1 = newSpan("ping", "", "", "").build();
         Span span2 = newSpan("PING", "", "", "").build();
@@ -126,12 +121,11 @@ public class TrasierFilterInterceptorTest {
     @Test
     public void testBlacklist() {
         // given
-        Filter filter = new Filter();
-        filter.setStrategy(Strategy.cancel);
-        filter.setOperation("ping|pong|checkServlet");
-        TrasierFilterConfiguration configuration = new TrasierFilterConfiguration();
-        configuration.setFilters(Arrays.asList(filter));
-        TrasierSpanFilterInterceptor sut = new TrasierSpanFilterInterceptor(configuration);
+        TrasierFilterConfiguration cancelConfiguration = new TrasierFilterConfiguration();
+        cancelConfiguration.setOperation("ping|pong|checkServlet");
+        TrasierFilterConfigurations filterConfigurations = new TrasierFilterConfigurations();
+        filterConfigurations.setCancel(cancelConfiguration);
+        TrasierSpanFilterInterceptor sut = new TrasierSpanFilterInterceptor(filterConfigurations);
 
         Span span1 = newSpan("ping", "", "", "").build();
         Span span2 = newSpan("PING", "", "", "").build();

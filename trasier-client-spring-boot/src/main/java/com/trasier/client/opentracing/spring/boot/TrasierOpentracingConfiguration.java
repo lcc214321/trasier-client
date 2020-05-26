@@ -3,7 +3,7 @@ package com.trasier.client.opentracing.spring.boot;
 import com.trasier.client.api.Client;
 import com.trasier.client.configuration.TrasierClientConfiguration;
 import com.trasier.client.configuration.TrasierEndpointConfiguration;
-import com.trasier.client.configuration.TrasierFilterConfiguration;
+import com.trasier.client.configuration.TrasierFilterConfigurations;
 import com.trasier.client.configuration.TrasierProxyConfiguration;
 import com.trasier.client.opentracing.TrasierScopeManager;
 import com.trasier.client.opentracing.TrasierTracer;
@@ -40,9 +40,9 @@ public class TrasierOpentracingConfiguration {
     }
 
     @Bean
-    @ConfigurationProperties(prefix = "trasier.client.span")
-    public TrasierFilterConfiguration trasierFilterConfiguration() {
-        return new TrasierFilterConfiguration();
+    @ConfigurationProperties(prefix = "trasier.client.filters")
+    public TrasierFilterConfigurations trasierFilterConfigurations() {
+        return new TrasierFilterConfigurations();
     }
 
 }

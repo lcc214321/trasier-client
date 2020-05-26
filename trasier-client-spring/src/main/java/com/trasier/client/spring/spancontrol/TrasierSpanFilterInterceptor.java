@@ -2,9 +2,7 @@ package com.trasier.client.spring.spancontrol;
 
 import com.trasier.client.api.Span;
 import com.trasier.client.api.TrasierConstants;
-import com.trasier.client.configuration.TrasierFilterConfiguration;
-import com.trasier.client.configuration.TrasierFilterConfiguration.Filter;
-import com.trasier.client.configuration.TrasierFilterConfiguration.Strategy;
+import com.trasier.client.configuration.TrasierFilterConfigurations;
 import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,14 +13,14 @@ import java.util.regex.Pattern;
 public class TrasierSpanFilterInterceptor implements TrasierSpanResolverInterceptor {
 
     @Autowired(required = false)
-    private TrasierFilterConfiguration filterConfiguration;
+    private TrasierFilterConfigurations filterConfigurations;
 
     public TrasierSpanFilterInterceptor() {
-        this.filterConfiguration = new TrasierFilterConfiguration();
+        this.filterConfigurations = new TrasierFilterConfigurations();
     }
 
-    public TrasierSpanFilterInterceptor(TrasierFilterConfiguration configuration) {
-        this.filterConfiguration = configuration;
+    public TrasierSpanFilterInterceptor(TrasierFilterConfigurations configurations) {
+        this.filterConfigurations = configurations;
     }
 
     @Override
@@ -44,26 +42,23 @@ public class TrasierSpanFilterInterceptor implements TrasierSpanResolverIntercep
             span.setCancel(true);
             return;
         }
-        if (filterConfiguration != null && filterConfiguration.getFilters() != null) {
-            for (Filter filters : filterConfiguration.getFilters()) {
-                Strategy strategy = filters.getStrategy();
-                if (strategy == Strategy.disablePayload) {
-                    Pattern disablePattern = filters.getUrl();
-                    if (!span.isCancel() && disablePattern != null && disablePattern.matcher(url).matches()) {
-                        span.setPayloadDisabled(true);
-                    }
+        if (filterConfigurations != null) {
+            if (filterConfigurations.getDisablePayload() != null) {
+                Pattern disablePattern = filterConfigurations.getDisablePayload().getUrl();
+                if (!span.isCancel() && disablePattern != null && disablePattern.matcher(url).matches()) {
+                    span.setPayloadDisabled(true);
                 }
-                if (strategy == Strategy.allow) {
-                    Pattern allowPattern = filters.getUrl();
-                    if (!span.isCancel() && allowPattern != null && !allowPattern.matcher(url).matches()) {
-                        span.setCancel(true);
-                    }
+            }
+            if (filterConfigurations.getAllow() != null) {
+                Pattern allowPattern = filterConfigurations.getAllow().getUrl();
+                if (!span.isCancel() && allowPattern != null && !allowPattern.matcher(url).matches()) {
+                    span.setCancel(true);
                 }
-                if (strategy == Strategy.cancel) {
-                    Pattern skipPattern = filters.getUrl();
-                    if (!span.isCancel() && skipPattern != null && skipPattern.matcher(url).matches()) {
-                        span.setCancel(true);
-                    }
+            }
+            if (filterConfigurations.getCancel() != null) {
+                Pattern skipPattern = filterConfigurations.getCancel().getUrl();
+                if (!span.isCancel() && skipPattern != null && skipPattern.matcher(url).matches()) {
+                    span.setCancel(true);
                 }
             }
         }
@@ -75,26 +70,24 @@ public class TrasierSpanFilterInterceptor implements TrasierSpanResolverIntercep
             span.setCancel(true);
             return;
         }
-        if (filterConfiguration != null && filterConfiguration.getFilters() != null) {
-            for (Filter filters : filterConfiguration.getFilters()) {
-                Strategy strategy = filters.getStrategy();
-                if (strategy == Strategy.disablePayload) {
-                    Pattern disablePattern = filters.getOperation();
-                    if (!span.isCancel() && disablePattern != null && disablePattern.matcher(operationName).matches()) {
-                        span.setPayloadDisabled(true);
-                    }
+
+        if (filterConfigurations != null) {
+            if (filterConfigurations.getDisablePayload() != null) {
+                Pattern disablePattern = filterConfigurations.getDisablePayload().getOperation();
+                if (!span.isCancel() && disablePattern != null && disablePattern.matcher(operationName).matches()) {
+                    span.setPayloadDisabled(true);
                 }
-                if (strategy == Strategy.allow) {
-                    Pattern allowPattern = filters.getOperation();
-                    if (!span.isCancel() && allowPattern != null && !allowPattern.matcher(operationName).matches()) {
-                        span.setCancel(true);
-                    }
+            }
+            if (filterConfigurations.getAllow() != null) {
+                Pattern allowPattern = filterConfigurations.getAllow().getOperation();
+                if (!span.isCancel() && allowPattern != null && !allowPattern.matcher(operationName).matches()) {
+                    span.setCancel(true);
                 }
-                if (strategy == Strategy.cancel) {
-                    Pattern skipPattern = filters.getOperation();
-                    if (!span.isCancel() && skipPattern != null && skipPattern.matcher(operationName).matches()) {
-                        span.setCancel(true);
-                    }
+            }
+            if (filterConfigurations.getCancel() != null) {
+                Pattern skipPattern = filterConfigurations.getCancel().getOperation();
+                if (!span.isCancel() && skipPattern != null && skipPattern.matcher(operationName).matches()) {
+                    span.setCancel(true);
                 }
             }
         }

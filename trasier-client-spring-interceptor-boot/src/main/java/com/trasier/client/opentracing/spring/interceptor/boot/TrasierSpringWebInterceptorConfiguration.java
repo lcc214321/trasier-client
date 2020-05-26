@@ -1,7 +1,7 @@
 package com.trasier.client.opentracing.spring.interceptor.boot;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.configuration.TrasierFilterConfiguration;
+import com.trasier.client.configuration.TrasierFilterConfigurations;
 import com.trasier.opentracing.spring.interceptor.InterceptorWebConfiguration;
 import com.trasier.opentracing.spring.interceptor.servlet.TrasierBufferFilter;
 import io.opentracing.Tracer;
@@ -30,10 +30,10 @@ public class TrasierSpringWebInterceptorConfiguration {
     private List<FilterRegistrationBean> filterRegistrationBeanList;
 
     @Bean
-    public FilterRegistrationBean trasierBufferFilter(TrasierClientConfiguration configuration, TrasierFilterConfiguration filterConfiguration, WebTracingProperties tracingConfiguration) {
+    public FilterRegistrationBean trasierBufferFilter(TrasierClientConfiguration configuration, TrasierFilterConfigurations filterConfigurations, WebTracingProperties tracingConfiguration) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
         registrationBean.setOrder(calculateAndFixOrder(tracingConfiguration));
-        registrationBean.setFilter(new TrasierBufferFilter(configuration, filterConfiguration));
+        registrationBean.setFilter(new TrasierBufferFilter(configuration, filterConfigurations));
         registrationBean.setUrlPatterns(tracingConfiguration.getUrlPatterns());
         registrationBean.setAsyncSupported(true);
         return registrationBean;
