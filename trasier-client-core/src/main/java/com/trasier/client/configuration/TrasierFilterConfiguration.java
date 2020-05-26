@@ -1,6 +1,3 @@
-/*
- * Copyright (C) Schweizerische Bundesbahnen SBB, 2020.
- */
 package com.trasier.client.configuration;
 
 import lombok.Data;

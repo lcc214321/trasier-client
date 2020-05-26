@@ -1,6 +1,3 @@
-/*
- * Copyright (C) Schweizerische Bundesbahnen SBB, 2020.
- */
 package com.trasier.client.interceptor;
 
 import com.trasier.client.api.Span;
