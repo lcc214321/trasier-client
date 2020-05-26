@@ -3,6 +3,10 @@ package com.trasier.client.interceptor;
 
 import com.trasier.client.api.Span;
 
+/**
+ * This interceptor is executed short before sending it into tracing bakcend.
+ * At this point the span data are completed.
+ */
 public interface TrasierSpanInterceptor {
 
     /**

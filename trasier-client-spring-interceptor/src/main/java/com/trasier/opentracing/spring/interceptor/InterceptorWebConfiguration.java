@@ -1,7 +1,7 @@
 package com.trasier.opentracing.spring.interceptor;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import com.trasier.opentracing.spring.interceptor.rest.TrasierClientRequestInterceptor;
 import com.trasier.opentracing.spring.interceptor.servlet.TrasierServletFilterSpanDecorator;
 import io.opentracing.Tracer;
@@ -36,7 +36,7 @@ public class InterceptorWebConfiguration {
     private List<RestTemplateSpanDecorator> spanDecorators;
 
     @Autowired(required = false)
-    private List<TrasierSamplingInterceptor> samplingFilter;
+    private List<TrasierSpanResolverInterceptor> samplingFilter;
 
     @Bean
     public TrasierServletFilterSpanDecorator trasierServletFilterSpanDecorator() {

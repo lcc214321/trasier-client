@@ -103,7 +103,9 @@ public class TrasierSpan implements Span {
         if (!finished) { //do not call finish twice
             wrapped.setEndTimestamp(endTimestamp);
             finished = true;
-            client.sendSpan(unwrap());
+            if (!wrapped.isCancel()) {
+                client.sendSpan(unwrap());
+            }
         }
     }
 
