@@ -4,7 +4,8 @@ import com.trasier.client.api.ContentType;
 import com.trasier.client.api.Endpoint;
 import com.trasier.client.api.TrasierConstants;
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.interceptor.SafeSpanResolverInterceptorInvoker;
+import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import com.trasier.client.opentracing.TrasierSpan;
 import com.trasier.client.util.ContentTypeResolver;
 import com.trasier.client.util.ExceptionUtils;
@@ -24,7 +25,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -38,12 +38,12 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     private static final List<String> USER_AGENTS_HANDHELD_DEVICE = Arrays.asList("iphone", "ipad", "android", "blackberry", "phone", "kindle");
 
     private final TrasierClientConfiguration configuration;
-    private final List<TrasierSamplingInterceptor> samplingInterceptors;
+    private final SafeSpanResolverInterceptorInvoker interceptorInvoker;
     private Endpoint localEndpoint;
 
-    public TrasierServletFilterSpanDecorator(TrasierClientConfiguration configuration, List<TrasierSamplingInterceptor> samplingInterceptors) {
+    public TrasierServletFilterSpanDecorator(TrasierClientConfiguration configuration, List<TrasierSpanResolverInterceptor> samplingInterceptors) {
         this.configuration = configuration;
-        this.samplingInterceptors = samplingInterceptors;
+        this.interceptorInvoker = new SafeSpanResolverInterceptorInvoker(samplingInterceptors);
     }
 
     @Override
@@ -51,20 +51,11 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
         if (configuration.isActivated()) {
             TrasierSpan activeSpan = (TrasierSpan) span;
             com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
-            String conversationId = trasierSpan.getConversationId();
-            MDC.put(TrasierConstants.HEADER_CONVERSATION_ID, conversationId);
-            handleRequest(httpServletRequest, trasierSpan);
-            applyInterceptors(httpServletRequest, trasierSpan);
-        }
-    }
-
-    private void applyInterceptors(HttpServletRequest httpServletRequest, com.trasier.client.api.Span trasierSpan) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("url", httpServletRequest.getServletPath());
-        for (TrasierSamplingInterceptor samplingInterceptor : samplingInterceptors) {
-            boolean shouldSample = samplingInterceptor.shouldSample(trasierSpan, params);
-            if (!shouldSample) {
-                trasierSpan.setCancel(true);
+            interceptorInvoker.invokeOnRequestUriResolved(trasierSpan, httpServletRequest.getServletPath());
+            if (!trasierSpan.isCancel()) {
+                setupMDC(trasierSpan);
+                handleRequest(httpServletRequest, trasierSpan);
+                interceptorInvoker.invokeOnMetadataResolved(trasierSpan);
             }
         }
     }
@@ -72,27 +63,31 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     @Override
     public void onResponse(HttpServletRequest httpServletRequest, HttpServletResponse response, Span span) {
         if (configuration.isActivated()) {
-            MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
+            cleanupMDC();
             TrasierSpan activeSpan = (TrasierSpan) span;
             com.trasier.client.api.Span trasierSpan = activeSpan.unwrap();
-            handleResponse(response, trasierSpan);
-            handleRequestPayload(httpServletRequest, trasierSpan);
-            handleResponsePayload(response, trasierSpan);
+            if (!trasierSpan.isCancel()) {
+                handleResponse(response, trasierSpan);
+                handleRequestPayload(httpServletRequest, trasierSpan);
+                handleResponsePayload(response, trasierSpan);
+            }
         }
     }
 
     @Override
     public void onError(HttpServletRequest httpServletRequest, HttpServletResponse response, Throwable exception, Span span) {
-        if (configuration.isActivated() && response instanceof ContentCachingResponseWrapper) {
-            MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
+        if (configuration.isActivated()) {
+            cleanupMDC();
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
-            trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
-            trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
-            trasierSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
-            trasierSpan.setOutgoingContentType(ContentType.TEXT);
-            if (!configuration.isPayloadTracingDisabled()) {
-                handleRequestPayload(httpServletRequest, trasierSpan);
-                trasierSpan.setOutgoingData(ExceptionUtils.getString(exception));
+            if (!trasierSpan.isCancel() && response instanceof ContentCachingResponseWrapper) {
+                trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
+                trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
+                trasierSpan.getOutgoingHeader().putAll(getResponseHeaders(response));
+                trasierSpan.setOutgoingContentType(ContentType.TEXT);
+                if (!configuration.isPayloadTracingDisabled() && !trasierSpan.isPayloadDisabled() && !trasierSpan.isPayloadDisabled()) {
+                    handleRequestPayload(httpServletRequest, trasierSpan);
+                    trasierSpan.setOutgoingData(ExceptionUtils.getString(exception));
+                }
             }
         }
     }
@@ -100,7 +95,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     @Override
     public void onTimeout(HttpServletRequest httpServletRequest, HttpServletResponse response, long timeout, Span span) {
         if (configuration.isActivated() && response instanceof ContentCachingResponseWrapper) {
-            MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
+            cleanupMDC();
             com.trasier.client.api.Span trasierSpan = ((TrasierSpan) span).unwrap();
             trasierSpan.setStatus(TrasierConstants.STATUS_ERROR);
             trasierSpan.setFinishProcessingTimestamp(System.currentTimeMillis());
@@ -121,7 +116,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     }
 
     private void handleRequestPayload(HttpServletRequest request, com.trasier.client.api.Span currentSpan) {
-        if (!configuration.isPayloadTracingDisabled() && request instanceof ContentCachingRequestWrapper) {
+        if (!configuration.isPayloadTracingDisabled() && !currentSpan.isPayloadDisabled() && request instanceof ContentCachingRequestWrapper) {
             ContentCachingRequestWrapper contentCachingRequestWrapper = (ContentCachingRequestWrapper) request;
             try {
                 //TODO read all left -> should be limited by max payload size
@@ -197,7 +192,7 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
     }
 
     private void handleResponsePayload(HttpServletResponse response, com.trasier.client.api.Span currentSpan) {
-        if (!configuration.isPayloadTracingDisabled() && response instanceof ContentCachingResponseWrapper) {
+        if (!configuration.isPayloadTracingDisabled() && !currentSpan.isPayloadDisabled() && response instanceof ContentCachingResponseWrapper) {
             String responseBody = extractResponseBody((ContentCachingResponseWrapper) response);
             currentSpan.setOutgoingData(responseBody);
             currentSpan.setOutgoingContentType(ContentTypeResolver.resolveFromPayload(responseBody));
@@ -234,6 +229,18 @@ public class TrasierServletFilterSpanDecorator implements ServletFilterSpanDecor
             headerMap.put(headerName, headerValue);
         }
         return headerMap;
+    }
+
+    private void setupMDC(com.trasier.client.api.Span trasierSpan) {
+        MDC.put(TrasierConstants.HEADER_CONVERSATION_ID, trasierSpan.getConversationId());
+        MDC.put(TrasierConstants.HEADER_TRACE_ID, trasierSpan.getTraceId());
+        MDC.put(TrasierConstants.HEADER_SPAN_ID, trasierSpan.getId());
+    }
+
+    private void cleanupMDC() {
+        MDC.remove(TrasierConstants.HEADER_CONVERSATION_ID);
+        MDC.remove(TrasierConstants.HEADER_TRACE_ID);
+        MDC.remove(TrasierConstants.HEADER_SPAN_ID);
     }
 
 }

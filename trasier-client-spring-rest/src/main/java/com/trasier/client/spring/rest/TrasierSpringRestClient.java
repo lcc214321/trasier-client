@@ -66,6 +66,9 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
 
     @Override
     public boolean sendSpan(Span span) {
+        if (span.isCancel()) {
+            return false;
+        }
         if (compressSpanInterceptor != null) {
             compressSpanInterceptor.intercept(span);
         }
@@ -74,9 +77,11 @@ public class TrasierSpringRestClient implements TrasierSpringClient {
 
     @Override
     public boolean sendSpans(List<Span> spans) {
+        spans.removeIf(Span::isCancel);
         if (compressSpanInterceptor != null) {
             spans.forEach(compressSpanInterceptor::intercept);
         }
+
         return client.sendSpans(spans);
     }
 

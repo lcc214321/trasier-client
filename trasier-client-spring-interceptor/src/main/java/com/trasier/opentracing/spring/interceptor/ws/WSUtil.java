@@ -1,5 +1,6 @@
 package com.trasier.opentracing.spring.interceptor.ws;
 
+import com.trasier.client.api.TrasierConstants;
 import org.springframework.util.StringUtils;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.MethodEndpoint;
@@ -10,8 +11,6 @@ import org.w3c.dom.Node;
 import javax.xml.transform.dom.DOMSource;
 
 public final class WSUtil {
-
-    public static final String UNKNOWN_WS_CALL = "UNKNOWN-WS-CALL";
 
     public static String extractOperationName(MessageContext messageContext, Object endpoint) {
         if (endpoint instanceof MethodEndpoint) {
@@ -37,7 +36,7 @@ public final class WSUtil {
             }
         }
 
-        return UNKNOWN_WS_CALL;
+        return TrasierConstants.UNKNOWN_WS_CALL;
     }
 
 }

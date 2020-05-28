@@ -1,14 +1,14 @@
 package com.trasier.client.api;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Builder(builderMethodName = "hiddenBuilder")
 @Getter
@@ -44,6 +44,7 @@ public class Span {
     private String outgoingData;
     private Map<String, String> outgoingHeader;
     private boolean cancel;
+    private boolean payloadDisabled;
 
     public static SpanBuilder newSpan(String name, String conversationId, String traceId, String spanId) {
         return hiddenBuilder().name(name).conversationId(conversationId).traceId(traceId).id(spanId).status("OK");

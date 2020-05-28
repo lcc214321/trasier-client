@@ -1,7 +1,7 @@
 package com.trasier.opentracing.spring.interceptor.servlet;
 
 import com.trasier.client.configuration.TrasierClientConfiguration;
-import com.trasier.client.interceptor.TrasierSamplingInterceptor;
+import com.trasier.client.interceptor.TrasierSpanResolverInterceptor;
 import com.trasier.client.opentracing.TrasierTracer;
 import io.opentracing.contrib.web.servlet.filter.ServletFilterSpanDecorator;
 import io.opentracing.contrib.web.servlet.filter.TracingFilter;
@@ -26,9 +26,9 @@ public class TrasierSpringConfigListener implements ServletContextListener {
         WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(event.getServletContext());
 
         TrasierClientConfiguration configuration = webApplicationContext.getBean(TrasierClientConfiguration.class);
-        Map<String, TrasierSamplingInterceptor> interceptorBeans = webApplicationContext.getBeansOfType(TrasierSamplingInterceptor.class);
+        Map<String, TrasierSpanResolverInterceptor> interceptorBeans = webApplicationContext.getBeansOfType(TrasierSpanResolverInterceptor.class);
 
-        List<TrasierSamplingInterceptor> samplingInterceptors = new ArrayList<>();
+        List<TrasierSpanResolverInterceptor> samplingInterceptors = new ArrayList<>();
         if (!CollectionUtils.isEmpty(interceptorBeans)) {
             samplingInterceptors = new ArrayList<>(interceptorBeans.values());
         }

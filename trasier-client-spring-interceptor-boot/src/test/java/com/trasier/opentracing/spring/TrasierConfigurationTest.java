@@ -5,8 +5,7 @@ import com.trasier.client.configuration.TrasierEndpointConfiguration;
 import com.trasier.client.opentracing.TrasierTracer;
 import com.trasier.client.opentracing.spring.boot.TrasierOpentracingConfiguration;
 import com.trasier.client.spring.rest.TrasierSpringRestConfiguration;
-import com.trasier.client.spring.spancontrol.TrasierSampleByOperationConfiguration;
-import com.trasier.client.spring.spancontrol.TrasierSampleByUrlPatternConfiguration;
+import com.trasier.client.spring.spancontrol.TrasierSpanFilterInterceptor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +28,14 @@ public class TrasierConfigurationTest {
     private TrasierTracer trasierTracer;
 
     @Autowired
-    private TrasierSampleByOperationConfiguration samplingFilterOperationConfiguration;
-
-    @Autowired
-    private TrasierSampleByUrlPatternConfiguration samplingFilterUrlConfiguration;
+    private TrasierSpanFilterInterceptor spanFilterInterceptor;
 
     @Test
     public void testAutoconfigWorks() {
         assertNotNull(trasierSpringClientConfiguration);
         assertNotNull(endpointConfig);
         assertNotNull(trasierTracer);
-        assertNotNull(samplingFilterOperationConfiguration);
-        assertNotNull(samplingFilterUrlConfiguration);
+        assertNotNull(spanFilterInterceptor);
     }
 
 }
