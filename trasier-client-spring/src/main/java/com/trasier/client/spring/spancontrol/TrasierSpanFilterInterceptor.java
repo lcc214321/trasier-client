@@ -56,8 +56,8 @@ public class TrasierSpanFilterInterceptor implements TrasierSpanResolverIntercep
                 }
             }
             if (filterConfigurations.getCancel() != null) {
-                Pattern skipPattern = filterConfigurations.getCancel().getUrl();
-                if (!span.isCancel() && skipPattern != null && skipPattern.matcher(url).matches()) {
+                Pattern cancelPattern = filterConfigurations.getCancel().getUrl();
+                if (!span.isCancel() && cancelPattern != null && cancelPattern.matcher(url).matches()) {
                     span.setCancel(true);
                 }
             }
@@ -85,8 +85,8 @@ public class TrasierSpanFilterInterceptor implements TrasierSpanResolverIntercep
                 }
             }
             if (filterConfigurations.getCancel() != null) {
-                Pattern skipPattern = filterConfigurations.getCancel().getOperation();
-                if (!span.isCancel() && skipPattern != null && skipPattern.matcher(operationName).matches()) {
+                Pattern cancelPattern = filterConfigurations.getCancel().getOperation();
+                if (!span.isCancel() && cancelPattern != null && cancelPattern.matcher(operationName).matches()) {
                     span.setCancel(true);
                 }
             }

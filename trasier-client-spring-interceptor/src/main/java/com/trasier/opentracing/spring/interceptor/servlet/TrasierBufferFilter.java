@@ -112,7 +112,7 @@ public class TrasierBufferFilter extends GenericFilterBean {
             }
             if (filterConfigurations.getCancel() != null) {
                 Pattern cancelPattern = filterConfigurations.getCancel().getUrl();
-                if (cancelPattern != null && !cancelPattern.matcher(url).matches()) {
+                if (cancelPattern != null && cancelPattern.matcher(url).matches()) {
                     return false;
                 }
             }
